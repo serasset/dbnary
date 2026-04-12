@@ -23,26 +23,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString;
 
-  protected final static String languageSectionPatternString1 =
-      "={2}\\s*([^=]+)\\s*={2}\\n|\\{{2}=([^=]*)=\\}{2}";
+  protected final static String languageSectionPatternString1 = "={2}\\s*([^=]+)\\s*={2}\\n|\\{{2}=([^=]*)=\\}{2}";
 
   protected final static String blockPatternString;
-  protected final static String blockPatternStringLevel =
-      "={3,5}\\s*([^=]+)\\s*={3,5}|\\{{2}-([^\\}]*)\\}{2}";
+  protected final static String blockPatternStringLevel = "={3,5}\\s*([^=]+)\\s*={3,5}|\\{{2}-([^\\}]*)\\}{2}";
 
-  protected final static String tradPatternString =
-      "\\*\\s*([^:\\{\\}]*):[^\\[,^\\{]*[\\[,\\{]*([^\\],^\\}]*)|\\{{2}pr\\|([^\\|]*)\\|([^\\}]*)";
+  protected final static String tradPatternString = "\\*\\s*([^:\\{\\}]*):[^\\[,^\\{]*[\\[,\\{]*([^\\],^\\}]*)|\\{{2}pr\\|([^\\|]*)\\|([^\\}]*)";
 
-  protected final static String localdefinitionPatternString =
-      "#\\s*([^:][^#]*)|:\\s*\\([^\\)]*\\)\\s*([^:]*)";
+  protected final static String localdefinitionPatternString = "#\\s*([^:][^#]*)|:\\s*\\([^\\)]*\\)\\s*([^:]*)";
   protected final static String examplePatternString = "#:\\s*(.+)";
 
   protected final static String posPatternString = "(\\{{2}([^\\{]+)\\}{2})";
 
   protected final static String pronPatternString = "\\{{2}([^\\{]+)\\}{2}";
 
-  protected final static String nymsPatternString =
-      "#\\s*\\[{2}([^\\]]*)\\]{2}|\\*\\s*\\{{2}([^\\}]*)\\}{2}";
+  protected final static String nymsPatternString = "#\\s*\\[{2}([^\\]]*)\\]{2}|\\*\\s*\\{{2}([^\\}]*)\\}{2}";
 
   protected final static String izvedenicePatternString = "\\{{2}l\\|sh\\|([^\\}]*)\\}{2}";
   protected final static String flektiraniPatternString = "#\\s*([^\\[]*)\\[{2}([^#]*)#";
@@ -393,8 +388,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractDeklinacija(int start, int end) {
     if (wdh.currentWiktionaryPos() != null) {
-      SerboCroatianMorphoExtractorWikiModel morpho = new SerboCroatianMorphoExtractorWikiModel(wdh,
-          wi, new Locale("sh"), "/${Bild}", "/${Titel}");
+      SerboCroatianMorphoExtractorWikiModel morpho = new SerboCroatianMorphoExtractorWikiModel(wdh, wi, new Locale("sh"), "/${Bild}", "/${Titel}");
       morpho.setPageName(getWiktionaryPageName());
       morpho.extractOtherForm(pageContent.substring(start, end));
     } else {
@@ -408,8 +402,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       m.region(start, end);
       SerboCroatianInflectionData inf = new SerboCroatianInflectionData();
       while (m.find()) {
-        wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), m.group(1), wdh.currentPagename(),
-            1, inf.toPropertyObjectMap());
+        wdh.registerInflection("hbs", wdh.currentWiktionaryPos(), m.group(1), wdh.currentPagename(), 1, inf.toPropertyObjectMap());
       }
     } else {
       log.debug("currentWiktionaryPos is null --in-- {}", this.getWiktionaryPageName());
@@ -426,8 +419,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (dwdh.alreadyRegisteredFlexion.containsKey(m.group(2))) {
         ArrayList<String> alreadyList = dwdh.alreadyRegisteredFlexion.get(m.group(2));
         if (!alreadyList.contains(getWiktionaryPageName())) {
-          SerboCroatianMorphoExtractorWikiModel morpho = new SerboCroatianMorphoExtractorWikiModel(
-              wdh, wi, new Locale("sh"), "/${Bild}", "/${Titel}");
+          SerboCroatianMorphoExtractorWikiModel morpho = new SerboCroatianMorphoExtractorWikiModel(wdh, wi, new Locale("sh"), "/${Bild}", "/${Titel}");
           morpho.add(m.group(2), getWiktionaryPageName(), m.group(1));
         }
       } else {
@@ -461,8 +453,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock,
-      String blockString) {
+  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
     switch (currentBlock) {
       case NOBLOCK:
       case IGNOREPOS:
@@ -489,8 +480,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractFlektirani(startOffset, endOffset);
         break;
       default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
   }
 

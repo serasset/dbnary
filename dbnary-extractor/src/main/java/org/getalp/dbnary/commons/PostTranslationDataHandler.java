@@ -69,8 +69,7 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
     if (null != senseNumber && null != sense) {
       Pair<Resource, Resource> pair = senses.get(senseNumber);
       if (null != pair) {
-        log.debug("Registering a new sense with an already existing sense number {}: {} ||| {} ",
-            senseNumber, def, currentPagename());
+        log.debug("Registering a new sense with an already existing sense number {}: {} ||| {} ", senseNumber, def, currentPagename());
         // In this case, should I remove all senses to avoid attaching translations to the
         // incorrect entry ?
       } else {
@@ -84,17 +83,14 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   @Override
   protected String getGlossResourceName(StructuredGloss gloss) {
     String key = gloss.getGloss() + gloss.getSenseNumber();
-    key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray())
-        .replaceAll("[/=+]", "-");
-    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_"
-        + encodedWiktionaryPageName;
+    key = DatatypeConverter.printBase64Binary(BigInteger.valueOf(key.hashCode()).toByteArray()).replaceAll("[/=+]", "-");
+    return getPrefix() + "__" + shortEditionLanguageCode + "_gloss_" + key + "_" + encodedWiktionaryPageName;
   }
 
   private int countEntries() {
     // WARN: the entries may be duplicate (as they are available under several keys,
     // we should count unique entries
-    Set<Resource> uniqueEntries =
-        lexEntries.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
+    Set<Resource> uniqueEntries = lexEntries.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
     return uniqueEntries.size();
   }
 
@@ -102,28 +98,24 @@ public abstract class PostTranslationDataHandler extends OntolexBasedRDFDataHand
   public void registerTranslation(String lang, Resource currentGloss, String usage, String word) {
     int nbEntries = countEntries();
     if (nbEntries == 0) {
-      log.debug("Registering Translation when no lexical entry is defined in {}",
-          currentPage.getName());
+      log.debug("Registering Translation when no lexical entry is defined in {}", currentPage.getName());
     } else if (nbEntries == 1) {
       super.registerTranslation(lang, currentGloss, usage, word);
     } else if (null == currentGloss) {
-      log.debug("Attaching translations to Page (Null gloss and several lexical entries) in {}",
-          currentPage.getName());
+      log.debug("Attaching translations to Page (Null gloss and several lexical entries) in {}", currentPage.getName());
       super.registerTranslationToEntity(currentMainLexEntry, lang, currentGloss, usage, word);
     } else {
       // DONE: guess which translation is to be attached to which entry/sense
       List<List<Resource>> entries = getLexicalEntriesUsingGloss(currentGloss);
       if (entries.size() != 0) {
-        log.trace("Attaching translations using part of speech/sense number in gloss : {}",
-            currentPage.getName());
+        log.trace("Attaching translations using part of speech/sense number in gloss : {}", currentPage.getName());
         if (entries.size() > 1) {
           log.trace("Attaching translations to several entries in {}", currentPage.getName());
         }
         for (List<Resource> entry : entries) {
           if (!entry.isEmpty()) {
             Resource first = entry.get(0);
-            Resource trans =
-                super.registerTranslationToEntity(first, lang, currentGloss, usage, word);
+            Resource trans = super.registerTranslationToEntity(first, lang, currentGloss, usage, word);
             for (int i = 1; i < entry.size(); i++) {
               trans.addProperty(DBnaryOnt.isTranslationOf, entry.get(i));
             }

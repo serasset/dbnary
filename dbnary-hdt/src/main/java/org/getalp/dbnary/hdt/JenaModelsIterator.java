@@ -54,8 +54,8 @@ public class JenaModelsIterator implements IteratorTripleString {
       throw new NoSuchElementException();
     Statement stm = it.nextStatement();
 
-    return new TripleString(JenaNodeFormatter.format(stm.getSubject()),
-        JenaNodeFormatter.format(stm.getPredicate()), JenaNodeFormatter.format(stm.getObject()));
+    return new TripleString(JenaNodeFormatter.format(stm.getSubject()), JenaNodeFormatter.format(stm.getPredicate()),
+        JenaNodeFormatter.format(stm.getObject()));
   }
 
   @Override

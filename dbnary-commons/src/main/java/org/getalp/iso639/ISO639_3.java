@@ -99,11 +99,9 @@ public class ISO639_3 {
 
   }
 
-  private final static String linePatternString =
-      "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)(?:\t(.*))?$";
+  private final static String linePatternString = "^(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*?)(?:\t(.*))?$";
   private final static String epolinePatternString = "^(.*?)\t(.*?)$";
-  private final static String chinesePatternString =
-      "^(?:^(.*?)(?:\\s?(?:\\(.?\\)?)?))\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*)";
+  private final static String chinesePatternString = "^(?:^(.*?)(?:\\s?(?:\\(.?\\)?)?))\t(.*?)\t(.*?)\t(.*?)\t(.*?)\t(.*)";
   private final static Pattern linePattern = Pattern.compile(linePatternString);
   private final static Pattern chinesePattern = Pattern.compile(chinesePatternString);
   private final static Pattern epolinePattern = Pattern.compile(epolinePatternString);
@@ -123,8 +121,7 @@ public class ISO639_3 {
     extractSilIsoTable("iso-639-patch.tab");
 
     try (InputStream fis = this.getClass().getResourceAsStream("iso-639-3-patchDBnary.tab");
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
       Matcher matcher = epolinePattern.matcher("");
 
       String s = br.readLine();
@@ -148,8 +145,7 @@ public class ISO639_3 {
     // Get eponym language names
     // TODO: do it lazily.
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-eponym.tab");
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
 
       Matcher matcher = epolinePattern.matcher("");
 
@@ -174,8 +170,7 @@ public class ISO639_3 {
     // Get French names
     // TODO: do this lazily
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-fr.tab");
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
       Matcher matcher = epolinePattern.matcher("");
 
       String s = br.readLine();
@@ -198,8 +193,7 @@ public class ISO639_3 {
     }
     // Get Chinese names
     try (InputStream fis = this.getClass().getResourceAsStream("ISO639-zh.tab");
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
       Matcher matcher = chinesePattern.matcher("");
 
       String s = br.readLine();
@@ -234,8 +228,7 @@ public class ISO639_3 {
 
   private void extractSilIsoTable(String fname) {
     try (InputStream fis = this.getClass().getResourceAsStream(fname);
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
 
       Matcher matcher = linePattern.matcher("");
 
@@ -286,8 +279,7 @@ public class ISO639_3 {
 
   private void extractRetirements(String fname) {
     try (InputStream fis = this.getClass().getResourceAsStream(fname);
-        BufferedReader br =
-            new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
       // Read and ignore header line
       String s = br.readLine();
       if (s.startsWith("Id\tRef"))

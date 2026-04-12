@@ -33,8 +33,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
   }
 
   /* private constructor for nested table extraction */
-  private RefactoredTableExtractor(String entryName, String language, List<String> context,
-      HashSet<Element> alreadyParsedTables) {
+  private RefactoredTableExtractor(String entryName, String language, List<String> context, HashSet<Element> alreadyParsedTables) {
     this.entryName = entryName;
     this.language = language;
     this.globalContext = context;
@@ -150,8 +149,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     return cell.tagName().equalsIgnoreCase("th");
   }
 
-  protected List<String> getRowAndColumnContext(int nrow, int ncol,
-      ArrayMatrix<Element> columnHeaders) {
+  protected List<String> getRowAndColumnContext(int nrow, int ncol, ArrayMatrix<Element> columnHeaders) {
     LinkedList<String> res = new LinkedList<>();
     for (int i = 0; i < nrow; i++) {
       addToContext(columnHeaders, i, ncol, res);
@@ -162,8 +160,7 @@ public abstract class RefactoredTableExtractor implements Cloneable {
     return res;
   }
 
-  protected boolean addToContext(ArrayMatrix<Element> columnHeaders, int i, int j,
-      List<String> res) {
+  protected boolean addToContext(ArrayMatrix<Element> columnHeaders, int i, int j, List<String> res) {
     Element cell = columnHeaders.get(i, j);
     String header;
     if (null != cell && isHeaderCell(cell) && (header = cell.text().trim()).length() != 0) {
@@ -176,16 +173,15 @@ public abstract class RefactoredTableExtractor implements Cloneable {
   /**
    * returns the set of lexical forms that correspond to current cell and context
    * <p>
-   * The context is a list of String that corresponds to all column and row headers + section
-   * headers in which the cell appears.
+   * The context is a list of String that corresponds to all column and row headers + section headers
+   * in which the cell appears.
    *
    * @param i the line number of the cell in the table
    * @param j the column number of the cell in the table
    * @param context a list of Strings that represent the celle context
    * @return The set of lexical forms corresponding to the context
    */
-  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell,
-      List<String> context) {
+  protected Set<LexicalForm> getLexicalFormsFromCell(int i, int j, Element cell, List<String> context) {
     InflectionScheme infl = getInflectionSchemeFromContext(context);
     return getInflectedForms(cell, infl);
   }

@@ -19,8 +19,7 @@ public class WiktionaryIndexMixin implements WiktionaryPageSource {
 
   protected File dumpFile;
 
-  @Parameters(index = "0", description = "The dump file of the wiki to be extracted.", arity = "1",
-      scope = ScopeType.INHERIT)
+  @Parameters(index = "0", description = "The dump file of the wiki to be extracted.", arity = "1", scope = ScopeType.INHERIT)
   protected void setDumpFile(Path dump) {
     this.dumpFile = dump.toFile();
     try {

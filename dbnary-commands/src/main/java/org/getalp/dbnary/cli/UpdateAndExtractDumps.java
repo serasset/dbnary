@@ -52,12 +52,9 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 
-@Command(name = "update", mixinStandardHelpOptions = true,
-    header = "Update dumps for all specified languages, then extract them.",
-    description = "Update/Downloads dumps from mediawiki mirrors, then process all pages and "
-        + "extract lexical data according to options that are passed "
-        + "to the program. The extracted lexical data is encoded as RDF graphs using ontolex, "
-        + "lexinfo, olia and other standard vocabularies.")
+@Command(name = "update", mixinStandardHelpOptions = true, header = "Update dumps for all specified languages, then extract them.",
+    description = "Update/Downloads dumps from mediawiki mirrors, then process all pages and " + "extract lexical data according to options that are passed "
+        + "to the program. The extracted lexical data is encoded as RDF graphs using ontolex, " + "lexinfo, olia and other standard vocabularies.")
 public class UpdateAndExtractDumps implements Callable<Integer> {
 
   @ParentCommand
@@ -70,8 +67,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   private static final String DEFAULT_SERVER_URL = "https://dumps.wikimedia.org/";
   private String server;
 
-  @CommandLine.Option(names = {"-s", "--server"}, paramLabel = "WIKTIONARY-DUMP_MIRROR URL",
-      defaultValue = DEFAULT_SERVER_URL,
+  @CommandLine.Option(names = {"-s", "--server"}, paramLabel = "WIKTIONARY-DUMP_MIRROR URL", defaultValue = DEFAULT_SERVER_URL,
       description = "Use the specify URL to download dumps (Default: ${DEFAULT-VALUE}).")
   private void setServerUrl(String url) {
     if (!url.endsWith("/")) {
@@ -84,27 +80,23 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       description = "Do not connect to network (no dump update/download) but extract available dumps.")
   private boolean networkIsOff;
 
-  @CommandLine.Option(names = {"--force"},
-      description = "Force extraction even if extract already exists.")
+  @CommandLine.Option(names = {"--force"}, description = "Force extraction even if extract already exists.")
   private boolean force;
 
   @CommandLine.Option(names = {"-k", "--keep"}, paramLabel = "N", defaultValue = "1",
       description = "Keep up to N previous dumps in the dumps folder (Default: ${DEFAULT-VALUE}).")
   private int historySize;
 
-  @CommandLine.Option(names = {"-D", "--date"}, paramLabel = "YYYYMMDD",
-      description = "Fetch/use the dump from given date instead of the latest one.")
+  @CommandLine.Option(names = {"-D", "--date"}, paramLabel = "YYYYMMDD", description = "Fetch/use the dump from given date instead of the latest one.")
   private String fetchDate = null;
 
-  @CommandLine.Option(names = {"--sample"}, paramLabel = "N", defaultValue = "-1",
-      description = "sample only the first N extracted entries.")
+  @CommandLine.Option(names = {"--sample"}, paramLabel = "N", defaultValue = "-1", description = "sample only the first N extracted entries.")
   private int sample = -1;
 
 
   private ExtractionPreferences prefs;
 
-  @Parameters(index = "0..*", description = "The languages to be updated and extracted.",
-      arity = "1..*")
+  @Parameters(index = "0..*", description = "The languages to be updated and extracted.", arity = "1..*")
   String[] languages;
 
   private static class LockReleaser extends Thread {
@@ -191,12 +183,10 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   // TODO: Handle proxy parameter
 
   public void updateAndExtract() {
-    List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential()
-        .map(this::retrieveLastDump).collect(Collectors.toList());
-    confs =
-        confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
-    confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps)
-        .map(this::releaseLock).forEach(this::linkToLatestExtractedFiles);
+    List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential().map(this::retrieveLastDump).collect(Collectors.toList());
+    confs = confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
+    confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
+        .forEach(this::linkToLatestExtractedFiles);
   }
 
   private LanguageConfiguration checkLock(LanguageConfiguration conf) {
@@ -209,9 +199,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       LockReleaser lockReleaser = new LockReleaser(lock);
       conf.setLockRemovalHook(lockReleaser);
       Runtime.getRuntime().addShutdownHook(lockReleaser);
-      try (
-          OutputStream lockStream =
-              Files.newOutputStream(lock, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+      try (OutputStream lockStream = Files.newOutputStream(lock, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
           Writer lockWriter = new OutputStreamWriter(lockStream, StandardCharsets.UTF_8)) {
         lockWriter.write(Long.toString(ProcessHandle.current().pid()));
       } catch (IOException e) {
@@ -238,8 +226,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       return null;
     }
 
-    Path extractedFile = prefs.outputFileForFeature(MAIN, lang, dir, features.getOutputFormat(),
-        batch.doCompress(), false);
+    Path extractedFile = prefs.outputFileForFeature(MAIN, lang, dir, features.getOutputFormat(), batch.doCompress(), false);
     return Paths.get(extractedFile.toString() + ".lck");
   }
 
@@ -261,17 +248,14 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   private void linkToLatestExtractedFiles(LanguageConfiguration conf) {
     if (conf.isExtracted()) {
       System.err.format("[%s] ==> Linking to latest versions.%n", conf.lang);
-      features.getEndolexFeatures()
-          .forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, false));
+      features.getEndolexFeatures().forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, false));
       if (null != features.getExolexFeatures()) {
-        features.getExolexFeatures()
-            .forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, true));
+        features.getExolexFeatures().forEach(f -> linkToLatestExtractFile(conf.lang, conf.dumpDir, f, true));
       }
     }
   }
 
-  private void linkToLatestExtractFile(String lang, String dir, ExtractionFeature feature,
-      boolean isExolex) {
+  private void linkToLatestExtractFile(String lang, String dir, ExtractionFeature feature, boolean isExolex) {
     if (null == dir || dir.equals("")) {
       return;
     }
@@ -285,17 +269,13 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       return;
     }
 
-    Path extractedFile = prefs.outputFileForFeature(feature, lang, dir, features.getOutputFormat(),
-        batch.doCompress(), isExolex);
+    Path extractedFile = prefs.outputFileForFeature(feature, lang, dir, features.getOutputFormat(), batch.doCompress(), isExolex);
     if (!Files.exists(extractedFile)) {
-      System.err.format(
-          "Extracted wiktionary file %s does not exists. " + "I will not link to this version.%n",
-          extractedFile);
+      System.err.format("Extracted wiktionary file %s does not exists. " + "I will not link to this version.%n", extractedFile);
       return;
     }
 
-    Path latestFile = latest.resolve(ExtractionPreferences.outputFilename(feature, lang,
-        features.getOutputFormat(), batch.doCompress(), isExolex));
+    Path latestFile = latest.resolve(ExtractionPreferences.outputFilename(feature, lang, features.getOutputFormat(), batch.doCompress(), isExolex));
     try {
       Files.deleteIfExists(latestFile);
     } catch (IOException e) {
@@ -305,8 +285,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     try {
       Files.createSymbolicLink(latestFile, linkTo);
     } catch (IOException e) {
-      System.err.format("Error while trying to link to latest extract: %s -> %s%n", latestFile,
-          linkTo);
+      System.err.format("Error while trying to link to latest extract: %s -> %s%n", latestFile, linkTo);
       // e.printStackTrace(System.err);
     }
   }
@@ -350,11 +329,9 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   private SortedSet<String> getAvailableDumpsVersions(String lang) {
     SortedSet<String> versions;
     try (Stream<Path> files = Files.list(prefs.getDumpDir(lang))) {
-      versions = files.filter(Files::isDirectory).map(Path::getFileName).map(Path::toString)
-          .collect(Collectors.toCollection(TreeSet::new));
+      versions = files.filter(Files::isDirectory).map(Path::getFileName).map(Path::toString).collect(Collectors.toCollection(TreeSet::new));
     } catch (IOException e) {
-      System.err
-          .println("IOException while getting available dump versions: " + e.getLocalizedMessage());
+      System.err.println("IOException while getting available dump versions: " + e.getLocalizedMessage());
       return new TreeSet<>();
     }
     return versions;
@@ -372,8 +349,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
         System.err.println("Could not delete non empty dir: " + dumpDirectory);
       }
     } catch (IOException e) {
-      System.err.println("IOException while attempting deletion of " + dumpDirectory + ": "
-          + e.getLocalizedMessage());
+      System.err.println("IOException while attempting deletion of " + dumpDirectory + ": " + e.getLocalizedMessage());
     }
   }
 
@@ -454,8 +430,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
 
         Files.createDirectories(dump.getParent());
 
-        String dumpFileUrl = languageDumpFolder + "/" + lastDir + "/"
-            + ExtractionPreferences.originalDumpFilename(lang, lastDir);
+        String dumpFileUrl = languageDumpFolder + "/" + lastDir + "/" + ExtractionPreferences.originalDumpFilename(lang, lastDir);
         if (parent.isVerbose()) {
           System.err.println("Fetching dump from " + dumpFileUrl);
         }
@@ -471,8 +446,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
               System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
               long s = System.currentTimeMillis();
               entity.writeTo(dfile);
-              System.err.println("Retrieved " + dump.getFileName() + "["
-                  + (System.currentTimeMillis() - s) + " ms]");
+              System.err.println("Retrieved " + dump.getFileName() + "[" + (System.currentTimeMillis() - s) + " ms]");
             }
           }
         }
@@ -491,8 +465,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     }
   }
 
-  private String getLatestDirFromServer(String languageDumpFolder, CloseableHttpClient client)
-      throws IOException {
+  private String getLatestDirFromServer(String languageDumpFolder, CloseableHttpClient client) throws IOException {
     SortedSet<String> dirs;
     HttpGet request = new HttpGet(languageDumpFolder);
     try (CloseableHttpResponse response = client.execute(request)) {
@@ -578,9 +551,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
 
     System.err.println("uncompressing file : " + compressedDump + " to " + expandedDump);
 
-    try (
-        BZip2CompressorInputStream bzIn =
-            new BZip2CompressorInputStream(Files.newInputStream(compressedDump));
+    try (BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(Files.newInputStream(compressedDump));
         Reader r = new BufferedReader(new InputStreamReader(bzIn, StandardCharsets.UTF_8));
 
         OutputStream out = Files.newOutputStream(expandedDump);
@@ -631,8 +602,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     System.err.format("free memory: %d M%n", freeMemory / 1048576);
     System.err.format("allocated memory: %d M%n", allocatedMemory / 1048576);
     System.err.format("max memory: %d M%n", maxMemory / 1048576);
-    System.err.format("total free memory: %d M%n",
-        (freeMemory + (maxMemory - allocatedMemory)) / 1048576);
+    System.err.format("total free memory: %d M%n", (freeMemory + (maxMemory - allocatedMemory)) / 1048576);
     System.err.println("--------------------------------");
   }
 
@@ -651,8 +621,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       return false;
     }
 
-    Path extractedFile = prefs.outputFileForFeature(MAIN, lang, dir, features.getOutputFormat(),
-        batch.doCompress(), false);
+    Path extractedFile = prefs.outputFileForFeature(MAIN, lang, dir, features.getOutputFormat(), batch.doCompress(), false);
 
     if (Files.exists(extractedFile) && !force) {
       if (parent.isVerbose()) {
@@ -693,12 +662,10 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       a.add("--no-compress");
     }
     a.add("--endolex");
-    a.add(String.join(",", features.getEndolexFeatures().stream().map(ExtractionFeature::toString)
-        .toArray(String[]::new)));
+    a.add(String.join(",", features.getEndolexFeatures().stream().map(ExtractionFeature::toString).toArray(String[]::new)));
     if (null != features.getExolexFeatures() && !features.getExolexFeatures().isEmpty()) {
       a.add("--exolex");
-      a.add(String.join(",", features.getExolexFeatures().stream().map(ExtractionFeature::toString)
-          .toArray(String[]::new)));
+      a.add(String.join(",", features.getExolexFeatures().stream().map(ExtractionFeature::toString).toArray(String[]::new)));
     }
     if (batch.useTdb()) {
       a.add("--tdb");
@@ -715,8 +682,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       System.err.println(String.join(" ", args));
     }
 
-    int extractionReturnCode = new CommandLine(new DBnary())
-        .setParameterExceptionHandler(new ShortErrorMessageHandler()).execute(args);
+    int extractionReturnCode = new CommandLine(new DBnary()).setParameterExceptionHandler(new ShortErrorMessageHandler()).execute(args);
 
     displayMemoryUsage();
     return extractionReturnCode == 0;

@@ -11,17 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
-  private static final Logger log =
-      LoggerFactory.getLogger(ItalianPronunciationExtractorWikiModel.class);
+  private static final Logger log = LoggerFactory.getLogger(ItalianPronunciationExtractorWikiModel.class);
   private IWiktionaryDataHandler delegate;
 
-  public ItalianPronunciationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public ItalianPronunciationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public ItalianPronunciationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public ItalianPronunciationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -36,8 +33,7 @@ public class ItalianPronunciationExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("IPA".equals(templateName)) {
       if (isValidPronunciation(parameterMap.get("4"))) {
         delegate.registerPronunciation(parameterMap.get("4"), "it-fonipa");

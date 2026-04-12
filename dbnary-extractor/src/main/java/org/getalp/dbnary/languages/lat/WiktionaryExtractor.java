@@ -51,8 +51,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   static {
     // =={{-la-|Rosa}} ==
     // {{lingua2|la|casa}}
-    languageSectionPatternString =
-        "(?:^==\\s*\\{\\{-([^-]*)-\\|?([^\\}]*)\\}\\}\\s*==)" + "|(?:\\{\\{lingua2\\|([^|}]+))";
+    languageSectionPatternString = "(?:^==\\s*\\{\\{-([^-]*)-\\|?([^\\}]*)\\}\\}\\s*==)" + "|(?:\\{\\{lingua2\\|([^|}]+))";
 
     // ==={{int:wikt-nomen-subst}}===
     entrySectionPatternString = "===?\\s*\\{\\{(?:int:)?([^}|]*)\\|?([^}]*)\\}\\}\\s*=?==";
@@ -184,10 +183,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("la"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    definitionExpander = new DefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("la"),
-        "/${image}", "/${title}");
+    exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("la"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    definitionExpander = new DefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("la"), "/${image}", "/${title}");
   }
 
   @Override
@@ -265,8 +262,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
       // If current block is IGNOREPOS, we should ignore everything but a new
       // DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock
-          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+      if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -353,8 +349,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = (String) context.get("nym");
         break;
       default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
   }
@@ -386,8 +381,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         currentNym = null;
         break;
       default:
-        assert false
-            : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected block while ending extraction of entry: " + getWiktionaryPageName();
     }
 
     blockStart = -1;
@@ -436,8 +430,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (macroMatcher.find()) {
       String g1 = macroMatcher.group(1);
 
-      if (g1.equals("x") || g1.equals("xlatio") || g1.equals("xlatio-d") || g1.equals("xlatio2")
-          || g1.equals("xlatio0") || g1.equals("t+") || g1.equals("t") || g1.equals("t-")) {
+      if (g1.equals("x") || g1.equals("xlatio") || g1.equals("xlatio-d") || g1.equals("xlatio2") || g1.equals("xlatio0") || g1.equals("t+") || g1.equals("t")
+          || g1.equals("t-")) {
         String g2 = macroMatcher.group(2);
         Map<String, String> args = WikiTool.parseArgs(g2);
         String lang = LatinLangtoCode.threeLettersCode(args.get("1"));
@@ -492,8 +486,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (g1.equals("=ima=") || g1.equals("trans-bottom")) {
         // Forget the current glose
         currentGloss = null;
-      } else if ((g1.length() == 2 || g1.length() == 3)
-          && LatinLangtoCode.threeLettersCode(g1) != null) {
+      } else if ((g1.length() == 2 || g1.length() == 3) && LatinLangtoCode.threeLettersCode(g1) != null) {
         // this a a language identifier, just ignore it as we get the language id from the trad
         // macro parameter.
       } else {

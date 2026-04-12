@@ -10,8 +10,7 @@ public abstract class MorphoSyntacticFeature implements Comparable<MorphoSyntact
 
   @Override
   public String toString() {
-    return new StringBuilder().append(property().toString()).append("->").append(value().toString())
-        .toString();
+    return new StringBuilder().append(property().toString()).append("->").append(value().toString()).toString();
   }
 
   @Override

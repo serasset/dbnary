@@ -27,8 +27,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   // A entry -> pos -> set of lexical forms hashmap used to store the inflected form which have
   // to be registered chen the main lexical entry is processed.
-  private final HashMap<String, HashMap<String, Set<LexicalForm>>> heldBackOtherForms =
-      new HashMap<>();
+  private final HashMap<String, HashMap<String, Set<LexicalForm>>> heldBackOtherForms = new HashMap<>();
 
   static {
 
@@ -39,14 +38,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
-    posAndTypeValueMap.put("-loc-adv-",
-        new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("-loc-adj-",
-        new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("-loc-nom-",
-        new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("-loc-verb-",
-        new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
   }
 
   public WiktionaryDataHandler(String lang, String tdbDir) {
@@ -71,8 +66,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
       String heldBackKey = computeLanguageSectionKey();
-      HashMap<String, Set<LexicalForm>> pos2forms =
-          heldBackOtherForms.getOrDefault(heldBackKey, new HashMap<>());
+      HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms.getOrDefault(heldBackKey, new HashMap<>());
       Set<LexicalForm> forms = pos2forms.getOrDefault(pos, new HashSet<>());
       forms.forEach(f -> f.attachTo(currentLexEntry.inModel(morphoBox)));
     }
@@ -106,8 +100,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     return pagename + "___/___" + language;
   }
 
-  public void registerInflection(LexicalForm form, String onLexicalEntry, String languageCode,
-      String pos) {
+  public void registerInflection(LexicalForm form, String onLexicalEntry, String languageCode, String pos) {
 
     Resource posResource = posResource(pos);
 
@@ -116,8 +109,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
-      page.listProperties(DBnaryOnt.describes).toList().stream().map(Statement::getResource)
-          .filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
+      page.listProperties(DBnaryOnt.describes).toList().stream().map(Statement::getResource).filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
           .map(r -> r.inModel(morphoBox)).forEach(form::attachTo);
     }
 
@@ -125,8 +117,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     Pair<String, String> key = new ImmutablePair<>(onLexicalEntry, pos);
 
     String heldBackKey = computeLanguageSectionKey(onLexicalEntry, languageCode);
-    HashMap<String, Set<LexicalForm>> pos2forms =
-        heldBackOtherForms.computeIfAbsent(heldBackKey, k -> new HashMap<>());
+    HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms.computeIfAbsent(heldBackKey, k -> new HashMap<>());
     Set<LexicalForm> otherForms = pos2forms.computeIfAbsent(pos, k -> new HashSet<>());
 
     otherForms.add(form);

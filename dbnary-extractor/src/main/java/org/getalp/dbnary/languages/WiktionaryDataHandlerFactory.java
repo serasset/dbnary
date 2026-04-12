@@ -19,8 +19,7 @@ public class WiktionaryDataHandlerFactory {
     String pack = cname.substring(0, dpos);
     try {
       Class<?> wdhc = Class.forName(pack + "." + language + "." + DATA_HANDLER_CLASSNAME);
-      wdh = (IWiktionaryDataHandler) wdhc.getConstructor(String.class, String.class)
-          .newInstance(language, tdbDir);
+      wdh = (IWiktionaryDataHandler) wdhc.getConstructor(String.class, String.class).newInstance(language, tdbDir);
     } catch (ClassNotFoundException e) {
       log.warn("No wiktionary data handler found for {}", language);
     } catch (InstantiationException e) {
@@ -32,13 +31,10 @@ public class WiktionaryDataHandlerFactory {
     } catch (SecurityException e) {
       log.error("Security exception while instanciating wiktionary data handler for {}", language);
     } catch (InvocationTargetException e) {
-      log.warn(
-          "InvocationTargetException exception while instanciating wiktionary data handler for {}",
-          language);
+      log.warn("InvocationTargetException exception while instanciating wiktionary data handler for {}", language);
       e.printStackTrace(System.err);
     } catch (NoSuchMethodException e) {
-      log.warn("No appropriate constructor when instanciating wiktionary data handler for {}",
-          language);
+      log.warn("No appropriate constructor when instanciating wiktionary data handler for {}", language);
     }
 
     if (null == wdh) {

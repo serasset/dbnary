@@ -1,9 +1,6 @@
 package org.getalp.dbnary.cli.utils;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.getalp.dbnary.cli.DBnary;
@@ -29,8 +26,7 @@ public class VersionProvider implements IVersionProvider {
     return DBnary.class.getPackage().getImplementationVersion();
   }
 
-  private static final Pattern DUMP_VERSION_PATTERN =
-      Pattern.compile("(20\\d\\d\\d{4}|20\\d\\d_\\d{2}_\\d{2})");
+  private static final Pattern DUMP_VERSION_PATTERN = Pattern.compile("(20\\d\\d\\d{4}|20\\d\\d_\\d{2}_\\d{2})");
 
   public static String getDumpVersion(String dumpFileName) {
     Matcher m = DUMP_VERSION_PATTERN.matcher(dumpFileName);

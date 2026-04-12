@@ -20,7 +20,7 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
 
   private final WikiEventFilter filter;
   private final WikiText.WikiContent content;
-  private final Stack<Iterator<Token>> iterators = new Stack<>();
+  private final Stack<Iterator<? extends Token>> iterators = new Stack<>();
   private WikiText.Token nextToken = null;
 
   public WikiEventIterator(WikiText.WikiContent content, WikiEventFilter filter) {
@@ -37,7 +37,7 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
   private Token nextTokenToReturn() {
     if (iterators.empty())
       return null;
-    Iterator<Token> currentIterator = iterators.peek();
+    Iterator<? extends Token> currentIterator = iterators.peek();
     if (!currentIterator.hasNext()) {
       iterators.pop();
       return nextTokenToReturn();
@@ -67,7 +67,8 @@ public class WikiEventIterator implements Iterator<WikiText.Token> {
           iterators.push(Collections.singletonList((Token) s.getHeading()).iterator());
           return nextTokenToReturn();
         } else if (t instanceof NoWiki) {
-          List.of(t.asText()).iterator();
+          iterators.push(List.of(t.asText()).iterator());
+          return nextTokenToReturn();
         } else {
           // treat an incorrect ENTER action as a VOID
           return nextTokenToReturn();

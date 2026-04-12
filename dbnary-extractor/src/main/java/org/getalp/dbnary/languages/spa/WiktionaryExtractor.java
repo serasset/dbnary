@@ -84,8 +84,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     sectionPattern = Pattern.compile(sectionPatternString);
 
-    spanishDefinitionPatternString = "(?:" + "^;([^:]*):([^\n\r]*)$" + ")|(?:"
-        + WikiPatterns.macroPatternString + ")|(?:" + "^:([^\n\r]*)$" + ")";
+    spanishDefinitionPatternString = "(?:" + "^;([^:]*):([^\n\r]*)$" + ")|(?:" + WikiPatterns.macroPatternString + ")|(?:" + "^:([^\n\r]*)$" + ")";
     spanishDefinitionPattern = Pattern.compile(spanishDefinitionPatternString, Pattern.MULTILINE);
 
     posMarkersPrefixes = new HashSet<>(20);
@@ -237,12 +236,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    definitionExpander = new SpanishDefinitionExtractorWikiModel(this.wdh, this.wi,
-        new Locale("es"), "/${image}", "/${title}");
-    headerExtractor = new SpanishHeaderExtractorWikiModel(this.wdh, this.wi, new Locale("es"),
-        "/${image}", "/${title}");
-    translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi,
-        new Locale("es"), "/${image}", "/${title}");
+    definitionExpander = new SpanishDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
+    headerExtractor = new SpanishHeaderExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
+    translationExtractor = new SpanishTranslationExtractorWikiModel(this.wdh, this.wi, new Locale("es"), "/${image}", "/${title}");
     exampleExpander = new ExpandAllWikiModel(wi, new Locale("es"), "/${image}", "/${title}");
   }
 
@@ -256,8 +252,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   public void extractData(WikiText page) {
-    WikiEventsSequence tokens =
-        page.filteredTokens(new ClassBasedFilter().allowHeading().allowTemplates());
+    WikiEventsSequence tokens = page.filteredTokens(new ClassBasedFilter().allowHeading().allowTemplates());
     int startOfLgSection = -1;
     String sectionLanguage = null;
     for (Token t : tokens) {
@@ -275,13 +270,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  private static final Pattern obsoleteLanguageTmplPattern =
-      Pattern.compile("(\\p{Upper}{2,3})-ES");
+  private static final Pattern obsoleteLanguageTmplPattern = Pattern.compile("(\\p{Upper}{2,3})-ES");
   private static final Matcher obsoleteLanguage = obsoleteLanguageTmplPattern.matcher("");
 
   /**
-   * return the language code iff the token represent a header for a language section. return null
-   * in all other cases. returns "" if the language code is unknown but a language section is found.
+   * return the language code iff the token represent a header for a language section. return null in
+   * all other cases. returns "" if the language code is unknown but a language section is found.
    *
    * @param t : the token to be checked and from which the language should be extracted
    * @return the language code or null
@@ -295,16 +289,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       obsoleteLanguage.reset(t.asTemplate().getName());
       if (obsoleteLanguage.matches()) {
         String lg = obsoleteLanguage.group(1);
-        log.trace("LANGUAGE_HEADING: Obsolete language template {} found in {}", lg,
-            getWiktionaryPageName());
+        log.trace("LANGUAGE_HEADING: Obsolete language template {} found in {}", lg, getWiktionaryPageName());
         return lg.toLowerCase();
       }
     } else if (t instanceof Heading) {
       Heading h = t.asHeading();
       // Look for the language template
-      Optional<Template> lt =
-          h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template)
-              .map(Token::asTemplate).filter(tok -> "lengua".equals(tok.getName())).findFirst();
+      Optional<Template> lt = h.getContent().wikiTokens().stream().filter(tok -> tok instanceof Template).map(Token::asTemplate)
+          .filter(tok -> "lengua".equals(tok.getName())).findFirst();
       if (lt.isPresent()) {
         String lg = lt.get().getParsedArg("1");
         if (null != lg) {
@@ -395,11 +387,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     if (head.contains("{{")) {
       WikiText complexHeading = new WikiText(head);
-      Optional<Template> posTmpl =
-          complexHeading.wikiTokens().stream().filter(tok -> tok instanceof Template)
-              .map(Token::asTemplate).filter(tok -> posMarkersPrefixes.stream()
-                  .anyMatch(prefix -> tok.getName().startsWith(prefix)))
-              .findFirst();
+      Optional<Template> posTmpl = complexHeading.wikiTokens().stream().filter(tok -> tok instanceof Template).map(Token::asTemplate)
+          .filter(tok -> posMarkersPrefixes.stream().anyMatch(prefix -> tok.getName().startsWith(prefix))).findFirst();
       if (posTmpl.isPresent()) {
         return posTmpl.get().getName();
       }
@@ -443,8 +432,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   void leaveTradBlock(Matcher m) {
-    extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m),
-        translationLevel);
+    extractTranslations(translationBlockStart, computeRegionEnd(translationBlockStart, m), translationLevel);
     translationBlockStart = -1;
     translationLevel = -1;
   }
@@ -639,8 +627,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }
@@ -657,11 +644,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private static final Pattern senseNumPattern = Pattern.compile("(\\d+)");
-  private static final Pattern nonMacroRelationPattern =
-      Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
+  private static final Pattern nonMacroRelationPattern = Pattern.compile("\\*\\s*'''([^']*)'''(.*)$");
   private static final Pattern exampleTraductionPattern =
-      Pattern.compile("(?:traducción|trad)=(([^\r\n\\[{|}]|("
-          + WikiPatterns.macroOrLinkPatternString + ")|\\[[^\r\n\\[])*)");
+      Pattern.compile("(?:traducción|trad)=(([^\r\n\\[{|}]|(" + WikiPatterns.macroOrLinkPatternString + ")|\\[[^\r\n\\[])*)");
 
   @Override
   protected void extractDefinitions(int startOffset, int endOffset) {
@@ -675,15 +660,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         String senseNumber = "";
         String term = definitionMatcher.group(1);
         if (null == term || term.isEmpty()) {
-          log.debug("Null sense number in definition\"{}\" for entry {}", def,
-              this.getWiktionaryPageName());
+          log.debug("Null sense number in definition\"{}\" for entry {}", def, this.getWiktionaryPageName());
         } else {
           term = term.trim();
           Matcher s = senseNumPattern.matcher(term);
           if (s.find()) {
             if (s.start() != 0) {
-              log.debug("Sense number match after beginning of region \"{}\" for entry {}", term,
-                  this.getWiktionaryPageName());
+              log.debug("Sense number match after beginning of region \"{}\" for entry {}", term, this.getWiktionaryPageName());
               def = term + "| " + def;
             } else {
               senseNumber = s.group(1);
@@ -694,8 +677,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
               }
             }
           } else {
-            log.debug("No sense number in region \"{}\" for entry {}", term,
-                this.getWiktionaryPageName());
+            log.debug("No sense number in region \"{}\" for entry {}", term, this.getWiktionaryPageName());
             def = term + "| " + def;
           }
 
@@ -716,15 +698,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (val != null) {
               wdh.registerNymRelationOnCurrentSense(val, nym);
               if (null != nota || null != alt) {
-                log.debug("Non null alternate/nota \"{}/{}\"on nym relation for entry {}", nota,
-                    alt, this.getWiktionaryPageName());
+                log.debug("Non null alternate/nota \"{}/{}\"on nym relation for entry {}", nota, alt, this.getWiktionaryPageName());
               }
             }
           }
           // TODO: several other nyms may be found on the line, after the macro...
           int offset = definitionMatcher.end();
-          while (offset != endOffset && this.pageContent.charAt(offset) != '\n'
-              && this.pageContent.charAt(offset) != '\r') {
+          while (offset != endOffset && this.pageContent.charAt(offset) != '\n' && this.pageContent.charAt(offset) != '\r') {
             offset++;
           }
           String vals = this.pageContent.substring(definitionMatcher.end(), offset);
@@ -742,14 +722,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             String exampleLangTrad = null;
 
             if (example.contains(" – ")) {
-              log.trace("Example: traduction possible ;{}; found in {}", example,
-                  getWiktionaryPageName());
+              log.trace("Example: traduction possible ;{}; found in {}", example, getWiktionaryPageName());
             }
 
             if (exTradMatch.find()) {
               ref = definitionMatcher.group().replace("|" + exTradMatch.group(), "");
-              exampleLangTrad =
-                  exampleExpander.expandAll(exTradMatch.group(1).replaceAll("(→|\\\")", ""), null);
+              exampleLangTrad = exampleExpander.expandAll(exTradMatch.group(1).replaceAll("(→|\\\")", ""), null);
             } else {
               ref = definitionMatcher.group();
             }
@@ -758,12 +736,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             ref = ref.replace("Ejemplo:", "");
             ref = ref.replace(example, "").trim();
             if (ref != null && !ref.isEmpty()) {
-              context.add(Pair.of(DCTerms.bibliographicCitation,
-                  ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
+              context.add(Pair.of(DCTerms.bibliographicCitation, ResourceFactory.createLangLiteral(ref, wdh.getCurrentEntryLanguage())));
             }
             if (exampleLangTrad != null && !exampleLangTrad.isEmpty()) {
-              context.add(
-                  Pair.of(RDF.value, ResourceFactory.createLangLiteral(exampleLangTrad, "es")));
+              context.add(Pair.of(RDF.value, ResourceFactory.createLangLiteral(exampleLangTrad, "es")));
             }
             wdh.registerExample(example, context);
           }
@@ -789,8 +765,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     definitionExpander.parseDefinition(definition, senseNumber);
   }
 
-  Pattern nymValuesPattern = Pattern
-      .compile("(?:" + WikiPatterns.linkPatternString + ")|(?:" + "(\\([^\\)]*\\))" + ")|(,)");
+  Pattern nymValuesPattern = Pattern.compile("(?:" + WikiPatterns.linkPatternString + ")|(?:" + "(\\([^\\)]*\\))" + ")|(,)");
 
   private void extractNyms(String nym, String vals) {
     Matcher m = nymValuesPattern.matcher(vals);

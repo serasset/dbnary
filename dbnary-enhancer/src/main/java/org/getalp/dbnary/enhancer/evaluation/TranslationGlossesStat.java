@@ -60,7 +60,6 @@ public class TranslationGlossesStat {
   }
 
   public void displayStats(PrintWriter w) {
-    w.format("%d,%d,%d,%d,%d", nbTranslations, translationsWithoutGlosses, nbGlossesWithTextOnly,
-        nbGlossesWithSenseNumberOnly, nbGlossesWithSensNumberAndText);
+    w.format("%d,%d,%d,%d,%d", nbTranslations, translationsWithoutGlosses, nbGlossesWithTextOnly, nbGlossesWithSenseNumberOnly, nbGlossesWithSensNumberAndText);
   }
 }

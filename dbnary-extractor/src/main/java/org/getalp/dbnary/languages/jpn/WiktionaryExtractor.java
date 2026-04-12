@@ -79,8 +79,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    definitionExtractor = new JapaneseDefinitionExtractorWikiModel(wdh, wi, new Locale("ja"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    definitionExtractor = new JapaneseDefinitionExtractorWikiModel(wdh, wi, new Locale("ja"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
   }
 
   public boolean isCurrentlyExtracting() {
@@ -89,7 +88,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
    * org.getalp.blexisma.semnet.SemanticNetwork)
    */
@@ -224,8 +223,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private boolean isNymHeader(Matcher m) {
     Matcher nym = WikiPatterns.macroPattern.matcher(m.group(1).trim());
 
-    return nym.matches()
-        && JapaneseRelatedWordsExtractorWikiModel.relMarkerToRelName.containsKey(nym.group(1));
+    return nym.matches() && JapaneseRelatedWordsExtractorWikiModel.relMarkerToRelName.containsKey(nym.group(1));
   }
 
   private void gotoNymBlock(Matcher m) {
@@ -566,8 +564,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }
@@ -583,8 +580,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractRelatedWords(int startOffset, int endOffset) {
     String relCode = pageContent.substring(startOffset, endOffset);
-    JapaneseRelatedWordsExtractorWikiModel dbnmodel =
-        new JapaneseRelatedWordsExtractorWikiModel(this.wdh, this.wi);
+    JapaneseRelatedWordsExtractorWikiModel dbnmodel = new JapaneseRelatedWordsExtractorWikiModel(this.wdh, this.wi);
     dbnmodel.parseRelatedWords(relCode);
   }
 

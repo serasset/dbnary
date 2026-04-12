@@ -54,14 +54,10 @@ public class GermanMorphologyExtractor {
   public GermanMorphologyExtractor(IWiktionaryDataHandler wdh, WiktionaryPageSource wi) {
     this.wdh = wdh;
     this.wi = wi;
-    deklinationExtractor = new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"),
-        "/${image}", "/${title}");
-    konjugationExtractor = new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"),
-        "/${image}", "/${title}");
-    inPageKonjugationExtractor = new GermanInPageKonjugationExtractorWikiModel(wdh, wi,
-        new Locale("de"), "/${image}", "/${title}");
-    substantivDeklinationExtractor = new GermanSubstantiveDeklinationExtractorWikiModel(wdh, wi,
-        new Locale("de"), "/${image}", "/${title}");
+    deklinationExtractor = new GermanDeklinationExtractorWikiModel(wdh, wi, new Locale("de"), "/${image}", "/${title}");
+    konjugationExtractor = new GermanKonjugationExtractorWikiModel(wdh, wi, new Locale("de"), "/${image}", "/${title}");
+    inPageKonjugationExtractor = new GermanInPageKonjugationExtractorWikiModel(wdh, wi, new Locale("de"), "/${image}", "/${title}");
+    substantivDeklinationExtractor = new GermanSubstantiveDeklinationExtractorWikiModel(wdh, wi, new Locale("de"), "/${image}", "/${title}");
   }
 
   public void extractMorphologicalData(String wikiSourceText, String pageName) {
@@ -77,10 +73,8 @@ public class GermanMorphologyExtractor {
         continue;
       }
 
-      if ("Deutsch Substantiv Übersicht".equals(templateName)
-          || "Deutsch Toponym Übersicht".equals(templateName)
-          || "Deutsch Nachname Übersicht".equals(templateName)
-          || "Deutsch Vorname Übersicht m".equals(templateName)) {
+      if ("Deutsch Substantiv Übersicht".equals(templateName) || "Deutsch Toponym Übersicht".equals(templateName)
+          || "Deutsch Nachname Übersicht".equals(templateName) || "Deutsch Vorname Übersicht m".equals(templateName)) {
         // extractMorphologicalSignature(wt);
         extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else if ("Deutsch Adjektiv Übersicht".equals(templateName)) {
@@ -102,21 +96,18 @@ public class GermanMorphologyExtractor {
       if ("Deutsch Verb Übersicht".equals(templateName) || ("Verb-Tabelle".equals(templateName))) {
         // DONE get the link to the Konjugationnen page and extract data from the expanded tables
         String hasFlexion = wt.getParsedArg("Flexion");
-        if (null != hasFlexion && ("nein".equalsIgnoreCase(hasFlexion = hasFlexion.trim())
-            || "hist".equalsIgnoreCase(hasFlexion) || "historisch".equalsIgnoreCase(hasFlexion)
-            || "keine".equalsIgnoreCase(hasFlexion))) {
+        if (null != hasFlexion && ("nein".equalsIgnoreCase(hasFlexion = hasFlexion.trim()) || "hist".equalsIgnoreCase(hasFlexion)
+            || "historisch".equalsIgnoreCase(hasFlexion) || "keine".equalsIgnoreCase(hasFlexion))) {
           extractFormsWithModel(wt, pageName, inPageKonjugationExtractor);
         } else {
           String conjugationPage = "Flexion:" + pageName;
           extractFormsPageWithModel(conjugationPage, pageName, konjugationExtractor);
         }
-      } else if (templateName.equals("Deutsch adjektivische Deklination")
-          || templateName.startsWith("Deutsch adjektivische Deklination ")
+      } else if (templateName.equals("Deutsch adjektivische Deklination") || templateName.startsWith("Deutsch adjektivische Deklination ")
           || templateName.equals("Deutsch adjektivisch Übersicht")) {
         extractFormsWithModel(wt, pageName, substantivDeklinationExtractor);
       } else {
-        log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName,
-            pageName);
+        log.debug("Morphology Extraction: Caught template call: {} --in-- {}", templateName, pageName);
         // Should I expand every other templates ?
       }
     }
@@ -194,8 +185,8 @@ public class GermanMorphologyExtractor {
   }
 
   /**
-   * Extracts the deklinations from the small table available in the entry page, then returns true
-   * if a more extended Flexion page is available
+   * Extracts the deklinations from the small table available in the entry page, then returns true if
+   * a more extended Flexion page is available
    *
    * @param parameterMap the parameters passed to the adjectival template
    * @return true if other forms are described in a Flexion Page
@@ -223,8 +214,7 @@ public class GermanMorphologyExtractor {
       } else if (key.contains("Superlativ")) {
         inflection.degree = Degree.SUPERLATIVE;
       } else {
-        log.debug("no known degree, neither singular in Substantiv Ubersicht: {} | {}", key,
-            wdh.currentPagename());
+        log.debug("no known degree, neither singular in Substantiv Ubersicht: {} | {}", key, wdh.currentPagename());
       }
 
       value = value.replaceAll("</?small>", "");
@@ -242,33 +232,28 @@ public class GermanMorphologyExtractor {
     wdh.registerInflection("deu", wdh.currentWiktionaryPos(), s, wdh.currentPagename(), 1, infl);
   }
 
-  private void extractFormsPageWithModel(String formsPageName, String pageName,
-      GermanTableExtractorWikiModel model) {
+  private void extractFormsPageWithModel(String formsPageName, String pageName, GermanTableExtractorWikiModel model) {
     String subPageContent = wi.getTextOfPageWithRedirects(formsPageName);
     if (null == subPageContent) {
-      log.debug("extractFormsPageWithModel: subPageContent is null : {} / {}", formsPageName,
-          pageName);
+      log.debug("extractFormsPageWithModel: subPageContent is null : {} / {}", formsPageName, pageName);
       return;
     }
     if (!subPageContent.contains("Deutsch")) {
-      log.debug("extractFormsPageWithModel: page does not contain \"Deutsch\": {} / {}",
-          formsPageName, pageName);
+      log.debug("extractFormsPageWithModel: page does not contain \"Deutsch\": {} / {}", formsPageName, pageName);
       return;
     }
 
     extractFormsWithModel(subPageContent, pageName, model);
   }
 
-  private void extractFormsWithModel(Template template, String pageName,
-      GermanTableExtractorWikiModel model) {
+  private void extractFormsWithModel(Template template, String pageName, GermanTableExtractorWikiModel model) {
     model.setPageName(pageName);
     InflectedFormSet forms = model.parseTables(template);
     model.postProcessForms(template, forms);
     registerAllForms(forms);
   }
 
-  private void extractFormsWithModel(String wikiCode, String pageName,
-      GermanTableExtractorWikiModel model) {
+  private void extractFormsWithModel(String wikiCode, String pageName, GermanTableExtractorWikiModel model) {
     model.setPageName(pageName);
     InflectedFormSet forms = model.parseTables(wikiCode);
     registerAllForms(forms);

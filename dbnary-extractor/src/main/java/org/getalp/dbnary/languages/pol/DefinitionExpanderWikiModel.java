@@ -25,8 +25,7 @@ public class DefinitionExpanderWikiModel extends DbnaryWikiModel {
     ignoredTemplates.add("wikipedia");
   }
 
-  public DefinitionExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public DefinitionExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -43,8 +42,7 @@ public class DefinitionExpanderWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       // nop
     } else if ("skrót".equals(templateName)) {
@@ -52,8 +50,7 @@ public class DefinitionExpanderWikiModel extends DbnaryWikiModel {
     } else if ("reg-pl".equals(templateName) || "gw-pl".equals(templateName)) {
       // This template shows that there is a regionalism or dialectal word sense
       // This template leads to a systematic Lua error when called in definitions.
-      logger.trace("{} called with {}", templateName, parameterMap.entrySet().stream()
-          .map(e -> e.getKey() + ":" + e.getValue()).collect(Collectors.joining()));
+      logger.trace("{} called with {}", templateName, parameterMap.entrySet().stream().map(e -> e.getKey() + ":" + e.getValue()).collect(Collectors.joining()));
       writer.append("(").append(parameterMap.get("1")).append(")");
       if (null != parameterMap.get("2"))
         writer.append(" ").append(parameterMap.get("2"));
@@ -73,15 +70,13 @@ public class DefinitionExpanderWikiModel extends DbnaryWikiModel {
 
   protected String patcheVarAgrsIn(String content) {
     for (String varargFunction : varargFunctions) {
-      content = content.replace(varargFunction,
-          varargFunction + "\n\tlocal arg = { n = select('#', ...); ... }\n");
+      content = content.replace(varargFunction, varargFunction + "\n\tlocal arg = { n = select('#', ...); ... }\n");
     }
     return content;
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
       if (parsedPagename.pagename.equals("NKJP") || parsedPagename.pagename.equals("odmiana")) {
         return getAndPatchModule(parsedPagename, map, this::patcheVarAgrsIn);

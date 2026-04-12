@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.getalp.dbnary.wiki.WikiText.Token;
 
 public class TokenListSplitter {
@@ -37,5 +38,22 @@ public class TokenListSplitter {
     }
     return splits;
   }
+
+  public static <R> List<Triple<Token, R, List<Token>>> splitProcessAndKeepToken(List<Token> tokens, Function<Token, R> predicate) {
+    List<Triple<Token, R, List<Token>>> splits = new ArrayList<>();
+    List<Token> currentSplit = new ArrayList<>();
+    for (Token t : tokens) {
+      R r = predicate.apply(t);
+      if (r != null) {
+        currentSplit = new ArrayList<>();
+        splits.add(Triple.of(t, r, currentSplit));
+      } else {
+        currentSplit.add(t);
+      }
+    }
+    return splits;
+  }
+
+
 
 }

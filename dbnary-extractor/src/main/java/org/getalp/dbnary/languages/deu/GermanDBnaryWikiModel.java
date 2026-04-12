@@ -16,16 +16,14 @@ public class GermanDBnaryWikiModel extends DbnaryWikiModel {
     super(locale, imageBaseURL, linkBaseURL);
   }
 
-  public GermanDBnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public GermanDBnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
   // Hack: German wiktionary uses #WEITERLEITUNG instead of #REDIRECT,
   // fix it in the raw wiki text as bliki expects #redirect
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     String result = super.getRawWikiContent(parsedPagename, map);
     if (result != null) {
       if (result.startsWith("#WEITERLEITUNG")) {

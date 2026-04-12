@@ -1055,15 +1055,22 @@ public class WikiText {
     }
   }
 
+  /**
+   * Represents an abstract base for list items or elements that are indented, such as numbered
+   * or bulleted list items in a MediaWiki content structure. Each indented item is associated
+   * with a content body and a prefix that determines the level of indentation.
+   *
+   */
   public abstract class IndentedItem extends Token {
 
     protected WikiContent content;
     protected String listPrefix;
-    // int level;
+    protected int level;
 
     protected IndentedItem(int position, String listPrefix) {
       super();
       this.listPrefix = listPrefix;
+      this.level = listPrefix.length();
       this.offset = new Segment(position);
       this.content = new WikiContent(position + listPrefix.length());
     }
@@ -1090,12 +1097,12 @@ public class WikiText {
     }
 
     /**
-     * returns the level of indentation of the item. The level is the number of characters in the
-     * list prefix.
+     * returns the level of indentation of the item. The level corresponds to the level of the main list kind.
+     * e.g.: a list starting with '**#::' is a ListItem with level 2.
      * @return the level of indentation
      */
     public int getLevel() {
-      return this.listPrefix.length();
+      return this.level;
     }
 
     /**
@@ -1109,8 +1116,29 @@ public class WikiText {
     public IndentedItem asIndentedItem() {
       return this;
     }
+
+    /**
+     * As prefixes may be stacked (e.g. '#::*'), we extend the prefix to encompass all different kind
+     * of indentation and separate it from the content.
+     */
+    protected void normalizePrefix() {
+      int textPrefixStartOffset = this.content.offset.start;
+      int textPrefixEndOffset = this.content.tokens.isEmpty() ? this.content.offset.end : this.content.tokens.get(0).offset.start;
+      String textPrefix = this.getFullContent().substring(textPrefixStartOffset, textPrefixEndOffset);
+      // get the longest prefix of textPrefix that contains *:# chars
+      int i = 0, l = textPrefix.length();
+      char c;
+      while (i != l && ((c = textPrefix.charAt(i)) == '*' || c == ':' || c == '#')) i++;
+      this.listPrefix = this.listPrefix + textPrefix.substring(0, i);
+      this.content.offset.start = textPrefixStartOffset + i;
+    }
   }
 
+  /**
+   * Represents a bulleted list item in a MediaWiki content structure (introduced by a '*').
+   * Inherits behavior and properties from the
+   * {@code IndentedItem} class, including indentation level and list prefix handling.
+   */
   public final class ListItem extends IndentedItem {
 
     public ListItem(int position, String listPrefix) {
@@ -1128,6 +1156,11 @@ public class WikiText {
     }
   }
 
+  /**
+   * Represents a numbered list item in a MediaWiki content structure (introduced by a '#').
+   * Inherits behavior and properties from the
+   * {@code IndentedItem} class, including indentation level and list prefix handling.
+   */
   public final class NumberedListItem extends IndentedItem {
 
     private NumberedListItem(int position, String listPrefix) {
@@ -1145,7 +1178,12 @@ public class WikiText {
     }
   }
 
-
+  /**
+   * Represents an indentation list item in a MediaWiki content structure (introduced by a ':').
+   * It is usually considered a continuation of an Indented Item
+   * Inherits behavior and properties from the
+   * {@code IndentedItem} class, including indentation level and list prefix handling.
+   */
   public final class Indentation extends IndentedItem {
 
     private Indentation(int position, String listPrefix) {
@@ -1163,6 +1201,11 @@ public class WikiText {
     }
   }
 
+  /**
+   * Represents a definition list item in a MediaWiki content structure (introduced by a '; term ').
+   * Inherits behavior and properties from the
+   * {@code IndentedItem} class, including indentation level and list prefix handling.
+   */
   public final class Item extends IndentedItem {
 
     private Item(int position, String listPrefix) {
@@ -1898,6 +1941,7 @@ public class WikiText {
   private void closeIndentedItem(int pos, Stack<Token> stack) {
     IndentedItem li = (IndentedItem) stack.pop();
     li.setEndOffset(pos);
+    li.normalizePrefix();
     stack.peek().addToken(li);
   }
 
@@ -2077,7 +2121,7 @@ public class WikiText {
     return wikiTextString;
   }
 
-  public static class LevelBasedWikiSectionsIterator implements Iterator<WikiSection> {
+  public static final class LevelBasedWikiSectionsIterator implements Iterator<WikiSection> {
 
     int level;
     WikiContent content;
@@ -2100,17 +2144,17 @@ public class WikiText {
 
 
     // My model 1 primitives...
-    public void init() {
+    private void init() {
       if (baseIterator.hasNext()) {
         currentToken = baseIterator.next();
       }
     }
 
-    public boolean eof() {
+    private boolean eof() {
       return currentToken == null;
     }
 
-    public void advance() {
+    private void advance() {
       if (!baseIterator.hasNext()) {
         currentToken = null;
       } else {

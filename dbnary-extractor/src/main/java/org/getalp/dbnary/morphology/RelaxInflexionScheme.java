@@ -6,8 +6,7 @@ public class RelaxInflexionScheme extends InflectionScheme {
   /**
    * Adding a feature to the inflection scheme.
    *
-   * In a RelaxInflexionScheme, the feature is added, even if this leads to a non functional
-   * property.
+   * In a RelaxInflexionScheme, the feature is added, even if this leads to a non functional property.
    *
    * @param morphoSyntacticFeature
    * @return

@@ -25,8 +25,7 @@ public class SwedishTableExtractor extends TableExtractor {
   }
 
   @Override
-  protected List<String> getRowAndColumnContext(int nrow, int ncol,
-      ArrayMatrix<Element> columnHeaders) {
+  protected List<String> getRowAndColumnContext(int nrow, int ncol, ArrayMatrix<Element> columnHeaders) {
     List<String> rowAndColumnContext = super.getRowAndColumnContext(nrow, ncol, columnHeaders);
     for (int i = 0; i < ncol; i++) {
       addToContext(columnHeaders, nrow, i, rowAndColumnContext);
@@ -45,14 +44,12 @@ public class SwedishTableExtractor extends TableExtractor {
         }
       }
     }
-    rowAndColumnContext =
-        rowAndColumnContext.stream().map(c -> c.startsWith("|") ? c.substring(1) : c)
-            .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
-            .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
-            .map(c -> c.toLowerCase().endsWith("pronomen") ? c.replaceAll(" ", "_") : c)
-            .map(c -> c.toLowerCase().startsWith("ackusativ /") ? c.replaceAll(" ", "_") : c)
-            .flatMap(c -> Arrays.stream(c.split(" "))).filter(c -> c.trim().length() > 0)
-            .collect(Collectors.toList());
+    rowAndColumnContext = rowAndColumnContext.stream().map(c -> c.startsWith("|") ? c.substring(1) : c)
+        .map(c -> c.toLowerCase().startsWith("böjningar av") ? c.replaceAll(" ", "_") : c)
+        .map(c -> c.toLowerCase().startsWith("kompareras inte") ? c.replaceAll(" ", "_") : c)
+        .map(c -> c.toLowerCase().endsWith("pronomen") ? c.replaceAll(" ", "_") : c)
+        .map(c -> c.toLowerCase().startsWith("ackusativ /") ? c.replaceAll(" ", "_") : c).flatMap(c -> Arrays.stream(c.split(" ")))
+        .filter(c -> c.trim().length() > 0).collect(Collectors.toList());
     return rowAndColumnContext;
   }
 
@@ -100,8 +97,7 @@ public class SwedishTableExtractor extends TableExtractor {
     actions.put("personliga_pronomen", SwedishInflectionData::personnal);
     actions.put("reflexiva_possessiva_pronomen", SwedishInflectionData::possessive);
 
-    assert actions.keySet().stream().filter(s -> !s.toLowerCase().equals(s)).findFirst()
-        .equals(Optional.empty());
+    assert actions.keySet().stream().filter(s -> !s.toLowerCase().equals(s)).findFirst().equals(Optional.empty());
   }
 
   @Override
@@ -124,8 +120,7 @@ public class SwedishTableExtractor extends TableExtractor {
       context.removeIf("ackusativ_/_dativ"::equals);
     }
 
-    context.stream().filter(s -> s.startsWith("böjningar_av"))
-        .forEach(s -> inflections.forEach(i -> i.addNote(s.replaceAll("_", " "))));
+    context.stream().filter(s -> s.startsWith("böjningar_av")).forEach(s -> inflections.forEach(i -> i.addNote(s.replaceAll("_", " "))));
     context.removeIf(s -> s.startsWith("böjningar_av"));
     if (context.contains("particip")) {
       if (context.contains("presens")) {
@@ -140,9 +135,7 @@ public class SwedishTableExtractor extends TableExtractor {
     }
 
     context.stream().map(String::toLowerCase)
-        .map(s -> actions.getOrDefault(s,
-            infl -> log.debug("Unused context value {} while extracting Swedish morphology in {}",
-                s, currentEntry)))
+        .map(s -> actions.getOrDefault(s, infl -> log.debug("Unused context value {} while extracting Swedish morphology in {}", s, currentEntry)))
         .forEach(a -> inflections.forEach(a::accept));
 
     return inflections;

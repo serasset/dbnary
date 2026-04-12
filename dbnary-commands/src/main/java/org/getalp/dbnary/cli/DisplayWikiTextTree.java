@@ -9,17 +9,14 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "tree", mixinStandardHelpOptions = true,
-    header = "Parse the specified entries wikitext and display the parse tree to stdout.",
-    description = "The wikitext of specified entries is retrieved from the dump and parsed"
-        + "using WikiText parser, then the tree is written to stdout.")
+@Command(name = "tree", mixinStandardHelpOptions = true, header = "Parse the specified entries wikitext and display the parse tree to stdout.",
+    description = "The wikitext of specified entries is retrieved from the dump and parsed" + "using WikiText parser, then the tree is written to stdout.")
 public class DisplayWikiTextTree implements Callable<Integer> {
 
   @Mixin
   protected WiktionaryIndexMixin wi;
 
-  @Option(names = {"--document"},
-      description = "Convert the tree as a document tree (hierarchy " + "of sections).")
+  @Option(names = {"--document"}, description = "Convert the tree as a document tree (hierarchy " + "of sections).")
   private boolean asDocument;
 
   @Parameters(index = "1..*", description = "The entries to be extracted.", arity = "1..*")

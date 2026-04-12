@@ -21,8 +21,7 @@ public class StrictInflexionScheme extends InflectionScheme {
       super(cause);
     }
 
-    public INCOHERENT_INFLECTION_SCHEME(String message, Throwable cause, boolean enableSuppression,
-        boolean writableStackTrace) {
+    public INCOHERENT_INFLECTION_SCHEME(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
       super(message, cause, enableSuppression, writableStackTrace);
     }
   }
@@ -40,12 +39,10 @@ public class StrictInflexionScheme extends InflectionScheme {
    */
   @Override
   public boolean add(MorphoSyntacticFeature morphoSyntacticFeature) {
-    super.stream().filter(f -> f.property() == morphoSyntacticFeature.property()).findFirst()
-        .ifPresent(f -> {
-          throw new INCOHERENT_INFLECTION_SCHEME(
-              "feature " + f.toString() + " already present in the scheme while trying to insert "
-                  + morphoSyntacticFeature.toString());
-        });
+    super.stream().filter(f -> f.property() == morphoSyntacticFeature.property()).findFirst().ifPresent(f -> {
+      throw new INCOHERENT_INFLECTION_SCHEME(
+          "feature " + f.toString() + " already present in the scheme while trying to insert " + morphoSyntacticFeature.toString());
+    });
     return super.add(morphoSyntacticFeature);
   }
 

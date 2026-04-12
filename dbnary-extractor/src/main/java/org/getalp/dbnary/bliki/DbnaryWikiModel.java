@@ -9,10 +9,13 @@ import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import info.bliki.wiki.tags.HTMLTag;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.WordUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.tools.CounterSet;
@@ -29,8 +32,7 @@ public class DbnaryWikiModel extends WikiModel {
     this(null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public DbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public DbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(new Configuration(), locale, imageBaseURL, linkBaseURL);
     this.wi = wi;
     // This tag is used at least in French Morphology templates.
@@ -55,13 +57,11 @@ public class DbnaryWikiModel extends WikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     return getContentPlain(parsedPagename, map);
   }
 
-  private String getContentPlain(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  private String getContentPlain(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     log.trace("resolving {} in {}", parsedPagename.fullPagename(), this.getPageName());
     String result = super.getRawWikiContent(parsedPagename, map);
     if (result != null) {
@@ -72,10 +72,8 @@ public class DbnaryWikiModel extends WikiModel {
     // Fix a bug in some wiktionary where a lua script import "Module:page" by specifying
     // the namepace, while the wiktionary edition uses a localized namespace.
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && (parsedPagename.pagename.startsWith("Module:")
-            || parsedPagename.pagename.startsWith("module:"))) {
-      parsedPagename = new ParsedPageName(parsedPagename.namespace,
-          parsedPagename.pagename.substring(7), parsedPagename.valid);
+        && (parsedPagename.pagename.startsWith("Module:") || parsedPagename.pagename.startsWith("module:"))) {
+      parsedPagename = new ParsedPageName(parsedPagename.namespace, parsedPagename.pagename.substring(7), parsedPagename.valid);
     }
 
     if (log.isTraceEnabled())
@@ -84,26 +82,22 @@ public class DbnaryWikiModel extends WikiModel {
     if (null != wi) {
       String rawText = wi.getTextOfPageWithRedirects(parsedPagename.fullPagename());
       String name;
-      if (null == rawText
-          && !(name = parsedPagename.pagename.trim()).equals(parsedPagename.pagename)) {
+      if (null == rawText && !(name = parsedPagename.pagename.trim()).equals(parsedPagename.pagename)) {
         rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":" + name);
       }
       if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)) {
         rawText = prepareForTransclusion(rawText);
       }
-      if (null == rawText
-          && parsedPagename.namespace.isType(NamespaceCode.MEDIAWIKI_NAMESPACE_KEY)) {
+      if (null == rawText && parsedPagename.namespace.isType(NamespaceCode.MEDIAWIKI_NAMESPACE_KEY)) {
         // In MediaWiki, try to capitalize the pagename
-        rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":"
-            + WordUtils.capitalize(parsedPagename.pagename, new char[] {}));
+        rawText = wi.getTextOfPageWithRedirects(parsedPagename.namespace + ":" + WordUtils.capitalize(parsedPagename.pagename, new char[] {}));
       }
       // TODO: should I try with: name = encodeTitleToUrl(articleName, true);
 
       return rawText;
     }
 
-    log.debug("getRawWikiContent return null for {} in {}", parsedPagename.fullPagename(),
-        this.getPageName());
+    log.debug("getRawWikiContent return null for {} in {}", parsedPagename.fullPagename(), this.getPageName());
     return null;
   }
 
@@ -118,8 +112,8 @@ public class DbnaryWikiModel extends WikiModel {
    * @throws WikiModelContentException if there's an error retrieving the content
    */
   @SafeVarargs
-  protected final String getAndPatchModule(ParsedPageName parsedPagename, Map<String, String> map,
-      Function<String, String>... patchers) throws WikiModelContentException {
+  protected final String getAndPatchModule(ParsedPageName parsedPagename, Map<String, String> map, Function<String, String>... patchers)
+      throws WikiModelContentException {
     String content = getContentPlain(parsedPagename, map);
     if (content == null) {
       return null;
@@ -129,8 +123,8 @@ public class DbnaryWikiModel extends WikiModel {
   }
 
   /**
-   * Applies a series of patching functions to module content. Logs debug information about
-   * successful and failed patches.
+   * Applies a series of patching functions to module content. Logs debug information about successful
+   * and failed patches.
    *
    * @param pagename the name of the page being patched
    * @param content the original content
@@ -138,8 +132,7 @@ public class DbnaryWikiModel extends WikiModel {
    * @return the patched content
    */
   @SafeVarargs
-  protected final String patchModule(String pagename, String content,
-      Function<String, String>... patchers) {
+  protected final String patchModule(String pagename, String content, Function<String, String>... patchers) {
     int patchnum = 0;
     for (Function<String, String> patcher : patchers) {
       ++patchnum;
@@ -149,8 +142,7 @@ public class DbnaryWikiModel extends WikiModel {
         if (patched) {
           log.debug("Module:{} has been patched ({}).", pagename, patchnum);
         } else {
-          log.warn("Module:{} could not be patched! ({}) Check current implementation.", pagename,
-              patchnum);
+          log.warn("Module:{} could not be patched! ({}) Check current implementation.", pagename, patchnum);
         }
       }
       if (patchedContent != null) {
@@ -169,26 +161,23 @@ public class DbnaryWikiModel extends WikiModel {
     if (-1 != noIncludeOffset) {
       int noIncludeEndOffset = rawWikiText.indexOf("</noinclude>", noIncludeOffset);
       if (-1 != noIncludeEndOffset) {
-        return prepareForTransclusion(rawWikiText.substring(0, noIncludeOffset)
-            + rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length()));
+        return prepareForTransclusion(rawWikiText.substring(0, noIncludeOffset) + rawWikiText.substring(noIncludeEndOffset + "</noinclude>".length()));
       }
     }
     int onlyIncludeOffset = rawWikiText.indexOf("<onlyinclude>");
     if (-1 != onlyIncludeOffset) {
       int onlyIncludeEndOffset = rawWikiText.indexOf("</onlyinclude>", onlyIncludeOffset);
       if (-1 != onlyIncludeEndOffset) {
-        return rawWikiText.substring(onlyIncludeOffset + "<onlyinclude>".length(),
-            onlyIncludeEndOffset);
+        return rawWikiText.substring(onlyIncludeOffset + "<onlyinclude>".length(), onlyIncludeEndOffset);
       }
     }
     int includeOnlyOffset = rawWikiText.indexOf("<includeonly>");
     if (-1 != includeOnlyOffset) {
       int includeOnlyEndOffset = rawWikiText.indexOf("</includeonly>", noIncludeOffset);
       if (-1 != includeOnlyEndOffset) {
-        String removeTags = rawWikiText.substring(0, includeOnlyOffset)
-            + rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(),
-                includeOnlyEndOffset)
-            + rawWikiText.substring(includeOnlyEndOffset + "</includeonly>".length());
+        String removeTags =
+            rawWikiText.substring(0, includeOnlyOffset) + rawWikiText.substring(includeOnlyOffset + "<includeonly>".length(), includeOnlyEndOffset)
+                + rawWikiText.substring(includeOnlyEndOffset + "</includeonly>".length());
         return prepareForTransclusion(removeTags);
       }
     }
@@ -208,5 +197,28 @@ public class DbnaryWikiModel extends WikiModel {
     } else {
       return rawWikiText;
     }
+  }
+
+  protected String loadModuleResource(String name) {
+    return loadResource(resourceNameFromModuleName(name));
+  }
+
+  private String loadResource(String name) {
+    if (name == null) {
+      return null;
+    }
+    if (log.isDebugEnabled()) {
+      log.error("loading {}", name);
+    }
+    try (InputStream is = getClass().getResourceAsStream(name)) {
+      return is == null ? null : IOUtils.toString(is, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      log.error("error loading {}", name, e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  private String resourceNameFromModuleName(String name) {
+    return name + ".lua";
   }
 }

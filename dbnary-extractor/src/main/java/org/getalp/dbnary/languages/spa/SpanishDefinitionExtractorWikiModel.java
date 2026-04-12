@@ -22,13 +22,11 @@ public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
   private final IWiktionaryDataHandler delegate;
 
 
-  public SpanishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public SpanishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public SpanishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public SpanishDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -51,8 +49,7 @@ public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
 
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }
@@ -60,8 +57,7 @@ public class SpanishDefinitionExtractorWikiModel extends DbnaryWikiModel {
   // Hack: Spanish wiktionary uses #REDIRECCIÓN instead of #REDIRECT, fix it in the raw wiki text as
   // bliki expects #redirect
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     String result = super.getRawWikiContent(parsedPagename, map);
     if (result != null) {
       if (result.startsWith("#REDIRECCIÓN")) {

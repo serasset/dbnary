@@ -52,13 +52,11 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   private final Set<Example> currentExamples = new HashSet<>();
   private final Logger log = LoggerFactory.getLogger(RussianDefinitionExtractorWikiModel.class);
 
-  public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public RussianDefinitionExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     expander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
@@ -90,8 +88,7 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("пример".equals(templateName)) {
       // This is an example of usage of the definition.
       // DONE: add this example in the extracted data.
@@ -146,13 +143,10 @@ public class RussianDefinitionExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     ParsedPageName fixedPageName = parsedPagename;
-    if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.startsWith("Module:")) {
-      fixedPageName = new ParsedPageName(parsedPagename.namespace,
-          parsedPagename.pagename.substring(7), parsedPagename.valid);
+    if (parsedPagename.namespace.isType(INamespace.NamespaceCode.MODULE_NAMESPACE_KEY) && parsedPagename.pagename.startsWith("Module:")) {
+      fixedPageName = new ParsedPageName(parsedPagename.namespace, parsedPagename.pagename.substring(7), parsedPagename.valid);
     }
     return super.getRawWikiContent(fixedPageName, map);
   }

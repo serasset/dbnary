@@ -19,13 +19,11 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
   private IWiktionaryDataHandler delegate;
   private int rank;
 
-  public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public PortugueseTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
   }
@@ -52,8 +50,7 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
   private Resource currentGloss = null;
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("trad".equals(templateName)) {
       // Trad macro contains a set of translations with no usage note.
       String lang = LangTools.normalize(parameterMap.get("1"));
@@ -68,8 +65,7 @@ public class PortugueseTranslationExtractorWikiModel extends DbnaryWikiModel {
       String lang = LangTools.normalize(parameterMap.get("1"));
       // if (null != parameterMap.get("4")) System.err.println("map has 4 params in " +
       // this.getImageBaseURL() +": " + parameterMap);
-      delegate.registerTranslation(lang, currentGloss, parameterMap.get("3"),
-          parameterMap.get("2"));
+      delegate.registerTranslation(lang, currentGloss, parameterMap.get("3"), parameterMap.get("2"));
     } else if ("t".equals(templateName) || "t+".equals(templateName)) {
       // t macro contains a translation, a transcription and an usage note.
       String lang = LangTools.normalize(parameterMap.get("1"));

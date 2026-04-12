@@ -184,18 +184,16 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     }
 
     // TODO handle extra information (genre, ...) from pos
-    log.debug("Handling POS String: {} --> {} || in {}", pos, posResource(pat),
-        currentPage.getName());
+    log.debug("Handling POS String: {} --> {} || in {}", pos, posResource(pat), currentPage.getName());
     // PosAndType pat = posAndTypeValueMap.get(pos);
     Resource typeR = typeResource(pat);
     initializeLexicalEntry(spos, posResource(pat), typeR);
   }
 
   private final static String posPatternString = "(?:verbo|sustantivo|adjetivo|adverbio)";
-  private final static String glossWithPosValue =
-      "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" //
-          + "^.*\\((" + posPatternString + ")\\)\\s*$|" //
-          + "^\\s*(" + posPatternString + "):.*$)";
+  private final static String glossWithPosValue = "(?:^\\s*(?:como\\s+)?(" + posPatternString + ")\\s*$|" //
+      + "^.*\\((" + posPatternString + ")\\)\\s*$|" //
+      + "^\\s*(" + posPatternString + "):.*$)";
   private final Pattern glossWithPossPattern = Pattern.compile(glossWithPosValue);
   private final Matcher glossWithPos = glossWithPossPattern.matcher("");
 
@@ -237,8 +235,7 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     }
     glossWithPos.reset(gloss.toLowerCase().trim());
     if (glossWithPos.matches()) {
-      String pos = Stream.of(glossWithPos.group(1), glossWithPos.group(2), glossWithPos.group(3))
-          .filter(Objects::nonNull).findFirst().orElse(null);
+      String pos = Stream.of(glossWithPos.group(1), glossWithPos.group(2), glossWithPos.group(3)).filter(Objects::nonNull).findFirst().orElse(null);
       addAllResourceOfPoS(res, getPosResource(pos));
     }
     return res;

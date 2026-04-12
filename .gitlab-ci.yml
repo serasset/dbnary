@@ -12,7 +12,7 @@ variables:
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
   VALIDATION_LANGUAGES:
-    value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca"
+    value: "fr en de pt it fi ru el tr ja es bg pl nl sh sv lt no mg id la ku zh ga ca et"
     description: "Space separated list of languages for which the sampling will be performed"
   VALIDATION_SAMPLE_SIZE:
     value: "10000"
@@ -21,7 +21,7 @@ variables:
 
 
 # DBnary requires jdk11 for compiling
-image: maven:3-amazoncorretto-11
+image: maven:3-amazoncorretto-25
 
 # Cache downloaded dependencies and plugins between builds.
 # To keep cache across branches add 'key: "$CI_JOB_NAME"'

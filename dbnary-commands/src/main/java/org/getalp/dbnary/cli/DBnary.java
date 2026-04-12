@@ -13,9 +13,8 @@ import picocli.CommandLine.ScopeType;
 import picocli.CommandLine.Spec;
 
 @Command(name = "dbnary",
-    subcommands = {CheckWiktionaryQuality.class, ExtractWiktionary.class, HelpCommand.class,
-        UpdateAndExtractDumps.class, GetExtractedSemnet.class, DisplayWikiTextTree.class,
-        GetRawEntry.class, CompareExtracts.class, GrepInWiktionary.class},
+    subcommands = {CheckWiktionaryQuality.class, ExtractWiktionary.class, HelpCommand.class, UpdateAndExtractDumps.class, GetExtractedSemnet.class,
+        DisplayWikiTextTree.class, GetRawEntry.class, CompareExtracts.class, GrepInWiktionary.class},
     mixinStandardHelpOptions = true, versionProvider = VersionProvider.class,
     description = "DBnary is a set of tools used to extract lexical data from several "
         + "editions of wiktionaries. All extracted data is made available as Linked Open Data, "
@@ -27,8 +26,7 @@ public class DBnary {
   private CommandSpec spec;
 
   @Option(names = "--dir", scope = ScopeType.INHERIT, defaultValue = ".",
-      description = "The directory to be used for dumps and extracts. "
-          + "The default value is the current directory")
+      description = "The directory to be used for dumps and extracts. " + "The default value is the current directory")
   public Path dbnaryDir;
 
   @Option(names = {"-v"}, scope = ScopeType.INHERIT, description = "Print extra information.")
@@ -49,8 +47,8 @@ public class DBnary {
     // Configure the slf4j-simple logger level for the specified parameters
     for (String clazz : classes) {
       spec.commandLine().getErr().println("Enabling debug for " + clazz);
-      System.setProperty(SimpleLogger.LOG_FILE_KEY + "org.getalp.dbnary." + clazz, "debug");
-      System.setProperty(SimpleLogger.LOG_FILE_KEY + clazz, "debug");
+      System.setProperty(SimpleLogger.LOG_KEY_PREFIX + "org.getalp.dbnary." + clazz, "debug");
+      System.setProperty(SimpleLogger.LOG_KEY_PREFIX + clazz, "debug");
     }
   }
 
@@ -63,8 +61,7 @@ public class DBnary {
   }
 
   public static void main(String[] args) {
-    CommandLine cmd =
-        new CommandLine(new DBnary()).setParameterExceptionHandler(new ShortErrorMessageHandler());
+    CommandLine cmd = new CommandLine(new DBnary()).setParameterExceptionHandler(new ShortErrorMessageHandler());
     int exitCode = cmd.execute(args);
     System.exit(exitCode);
   }

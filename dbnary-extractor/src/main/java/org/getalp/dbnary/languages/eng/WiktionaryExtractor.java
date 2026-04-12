@@ -87,10 +87,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    wikiExpander =
-        new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    combinedExpander =
-        new CombinedWikiModel(this.ewdh, this.wi, new Locale("en"), "/${image}", "/${title}");
+    wikiExpander = new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    combinedExpander = new CombinedWikiModel(this.ewdh, this.wi, new Locale("en"), "/${image}", "/${title}");
 
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
   }
@@ -106,8 +104,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public boolean filterOutPage(String pagename) {
     // Extract Wikisaurus and Reconstructed pages...
-    return isTranslationPage(pagename)
-        || (!isWikisaurus(pagename) && !isReconstructed(pagename) && super.filterOutPage(pagename));
+    return isTranslationPage(pagename) || (!isWikisaurus(pagename) && !isReconstructed(pagename) && super.filterOutPage(pagename));
   }
 
   private boolean isTranslationPage(String pagename) {
@@ -159,8 +156,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       WikiContent sectionContent = heading.getSection().getContent();
       wikisaurusExtractor.extractWikisaurusSection(lg, sectionContent);
     } else {
-      log.debug("Wikisaurus: Ignoring language section {} || {}", languageName,
-          getWiktionaryPageName());
+      log.debug("Wikisaurus: Ignoring language section {} || {}", languageName, getWiktionaryPageName());
     }
   }
 
@@ -174,8 +170,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == l2 || l2.trim().isEmpty()) {
       l2 = lg.getId();
     }
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-        && !wdh.getExtractedLanguage().equals(l2)) {
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !wdh.getExtractedLanguage().equals(l2)) {
       return;
     }
     wdh.initializeLanguageSection(l2);
@@ -242,8 +237,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static List<Token> getMyTemplateContent(WikiText.Token t) {
     if (t instanceof WikiText.Template) {
       WikiText.Template tt = (WikiText.Template) t;
-      if (tt.getName().equals("vern") || tt.getName().equals("w") || tt.getName().equals("pedlink")
-          || tt.getName().equals("what someone said")) {
+      if (tt.getName().equals("vern") || tt.getName().equals("w") || tt.getName().equals("pedlink") || tt.getName().equals("what someone said")) {
         return tt.getArgs().get("1").tokens();
       } else if (tt.getName().equals("l")) {
         WikiText.WikiContent a3 = tt.getArgs().get("3");
@@ -261,8 +255,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   static {
-    linkResolver.clearAction().keepContentOfInternalLink().sourceText().keepContentOfNoWiki()
-        .keepContentOfTemplates(WiktionaryExtractor::getMyTemplateContent);
+    linkResolver.clearAction().keepContentOfInternalLink().sourceText().keepContentOfNoWiki().keepContentOfTemplates(WiktionaryExtractor::getMyTemplateContent);
   }
 
   private void extractHeadInformation(WikiContent text) {
@@ -282,8 +275,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             WikiCharSequence s = new WikiCharSequence(head, linkResolver);
             String headword = s.toString();
             if (isSignificantlyDifferent(headword, getWiktionaryPageName())) {
-              log.debug("Found {} template with head {} // '{}' in '{}'", tmpl.getName(), head,
-                  headword, getWiktionaryPageName());
+              log.debug("Found {} template with head {} // '{}' in '{}'", tmpl.getName(), head, headword, getWiktionaryPageName());
               wdh.registerAlternateSpelling(headword);
             }
           }
@@ -293,17 +285,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private boolean isSignificantlyDifferent(String headword, String pageName) {
-    return !(headword.equals(pageName)
-        || (headword.startsWith("the ") && pageName.equals(headword.substring(4)))
-        || (headword.startsWith("The ") && pageName.equals(headword.substring(4)))
-        || (headword.startsWith("(the) ") && pageName.equals(headword.substring(6)))
-        || (headword.startsWith("(The) ") && pageName.equals(headword.substring(6)))
-        || (headword.startsWith("to ") && pageName.equals(headword.substring(3)))
+    return !(headword.equals(pageName) || (headword.startsWith("the ") && pageName.equals(headword.substring(4)))
+        || (headword.startsWith("The ") && pageName.equals(headword.substring(4))) || (headword.startsWith("(the) ") && pageName.equals(headword.substring(6)))
+        || (headword.startsWith("(The) ") && pageName.equals(headword.substring(6))) || (headword.startsWith("to ") && pageName.equals(headword.substring(3)))
         || (headword.startsWith("To ") && pageName.equals(headword.substring(3)))
         || (headword.endsWith("!") && pageName.equals(headword.substring(0, headword.length() - 1)))
         || (headword.endsWith(".") && pageName.equals(headword.substring(0, headword.length() - 1)))
-        || (headword.endsWith("?")
-            && pageName.equals(headword.substring(0, headword.length() - 1))));
+        || (headword.endsWith("?") && pageName.equals(headword.substring(0, headword.length() - 1))));
   }
 
   private void extractDefinitions(WikiContent text) {
@@ -315,17 +303,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (definitionsListItems.hasNext()) {
       IndentedItem listItem = definitionsListItems.next().asIndentedItem();
       String liContent = listItem.getContent().getText();
+      String liAdditionalPrefix = listItem.getListPrefix().substring(listItem.getLevel());
       if (listItem instanceof NumberedListItem) {
-        if (liContent.startsWith("*::")) {
+        if (liAdditionalPrefix.startsWith("*::")) {
           log.debug("Ignoring quotation meta [{}] — {}", liContent, getWiktionaryPageName());
-        } else if (liContent.startsWith("*:")) {
+        } else if (liAdditionalPrefix.startsWith("*:")) {
           // It's a quotation content
-          Set<Pair<Property, RDFNode>> citation = expandExample(liContent.substring(2).trim());
-          Optional<Pair<Property, RDFNode>> value =
-              citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          Set<Pair<Property, RDFNode>> citation = expandExample(liContent.trim());
+          Optional<Pair<Property, RDFNode>> value = citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
           if (null == referenceContext) {
-            log.debug("A citation is given without reference [{}] — {}", liContent,
-                getWiktionaryPageName());
+            log.debug("A citation is given without reference [{}] — {}", liContent, getWiktionaryPageName());
             registerExampleIfNotNull(citation);
           } else if (value.isEmpty()) {
             log.debug("Unexpected empty example in [{}] — {}", liContent, getWiktionaryPageName());
@@ -333,28 +320,26 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             citation.addAll(referenceContext);
             registerExampleIfNotNull(citation);
           }
-        } else if (liContent.startsWith("*")) {
+        } else if (liAdditionalPrefix.startsWith("*")) {
           // It's a quotation reference (that starts a new quotation)
-          Set<Pair<Property, RDFNode>> citation = expandCitation(liContent.substring(1).trim());
-          Optional<Pair<Property, RDFNode>> value =
-              citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+          Set<Pair<Property, RDFNode>> citation = expandCitation(liContent.trim());
+          Optional<Pair<Property, RDFNode>> value = citation.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
           if (value.isEmpty()) {
             // It's only a reference and the citation itself is to be found later
             referenceContext = citation;
           } else {
             registerExampleIfNotNull(citation);
           }
-        } else if (liContent.startsWith(":")) {
+        } else if (liAdditionalPrefix.startsWith(":")) {
           // This is a simple example or a nym
-          extractExample(liContent.substring(1).trim());
+          extractExample(liContent.trim());
         } else {
           // This is a definition that starts a new word sense
           extractDefinition(liContent.trim(), listItem.asNumberedListItem().getLevel());
           referenceContext = null;
         }
       } else {
-        log.trace("Unexpected IndentedItem in definition block [{}] : {}", getWiktionaryPageName(),
-            listItem.getText());
+        log.trace("Unexpected IndentedItem in definition block [{}] : {}", getWiktionaryPageName(), listItem.getText());
       }
     }
   }
@@ -372,8 +357,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void registerExampleIfNotNull(Set<Pair<Property, RDFNode>> context) {
-    Optional<Pair<Property, RDFNode>> value =
-        context.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
+    Optional<Pair<Property, RDFNode>> value = context.stream().filter(p -> p.getLeft().equals(RDF.value)).findFirst();
     if (value.isEmpty() && !context.isEmpty()) {
       // There is no example, it is a note that should be attached to the definition
       wdh.addToCurrentWordSense(context);
@@ -408,12 +392,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
 
     if (log.isTraceEnabled()) {
-      log.trace("ETYM {}: {}", ewdh.getCurrentEntryLanguage(),
-          pageContent.substring(blockStart, end));
+      log.trace("ETYM {}: {}", ewdh.getCurrentEntryLanguage(), pageContent.substring(blockStart, end));
     }
     try {
-      Etymology etymology =
-          new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
+      Etymology etymology = new Etymology(pageContent.substring(blockStart, end), ewdh.getCurrentEntryLanguage());
 
       etymology.fromDefinitionToSymbols();
 
@@ -483,8 +465,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           etymology.fromTableToSymbols();
 
           if (etymology.symbols.size() == 0) {
-            if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size()
-                + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
+            if (WikiTool.locateEnclosedString(etymology.string, "{{", "}}").size() + WikiTool.locateEnclosedString(etymology.string, "[[", "]]").size() == 0) {
               for (String lemma : split(etymology.string)) {
                 etymology.symbols.add(new Symbols("_m|" + lang + "|" + lemma, lang, "TEMPLATE"));
               }
@@ -693,9 +674,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // link in the extracted dataset.
     templates(txt).sequential().forEach(t -> {
       String tName = t.getName();
-      if (tName.equals("t+") || tName.equals("t-") || tName.equals("tø") || tName.equals("t")
-          || tName.equals("t-check") || tName.equals("t+check") || tName.equals("t-simple")
-          || tName.equals("tt") || tName.equals("tt+")) {
+      if (tName.equals("t+") || tName.equals("t-") || tName.equals("tø") || tName.equals("t") || tName.equals("t-check") || tName.equals("t+check")
+          || tName.equals("t-simple") || tName.equals("tt") || tName.equals("tt+")) {
         WikiContent l = t.getArgs().get("1");
         WikiContent word = t.getArgs().get("2");
         WikiContent usageContent = t.getArgs().get("3");
@@ -739,8 +719,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // Ignore gloss if it is a macro
         if (g2 != null) {
           String glossText = g2.tokens().stream().filter(tok -> !(tok instanceof WikiText.Template))
-              .map(tok -> (tok instanceof WikiText.NoWiki) ? tok.asText() : tok)
-              .map(WikiText.Token::getText).collect(Collectors.joining(""));
+              .map(tok -> (tok instanceof WikiText.NoWiki) ? tok.asText() : tok).map(WikiText.Token::getText).collect(Collectors.joining(""));
           if (glossText.trim().isEmpty()) {
             currentGloss.set(null);
           } else {
@@ -774,8 +753,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           }
         }
       } else if (log.isDebugEnabled()) {
-        log.debug("Ignored template: {} in translation section for entry {}", t,
-            getWiktionaryPageName());
+        log.debug("Ignored template: {} in translation section for entry {}", t, getWiktionaryPageName());
       }
     });
   }
@@ -801,8 +779,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     String translationPageContent = wi.getTextOfPageWithRedirects(translationPage);
     if (null == translationPageContent) {
-      log.debug("Translation link: Could not retrieve page {} in {}", translationPage,
-          getWiktionaryPageName());
+      log.debug("Translation link: Could not retrieve page {} in {}", translationPage, getWiktionaryPageName());
       return null;
     }
     // TODO : extract the correct section from the full page.
@@ -814,8 +791,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return s.getContent();
       }
     }
-    log.debug("Could not find appropriate section {} in translation section link target for {}",
-        translationSection, getWiktionaryPageName());
+    log.debug("Could not find appropriate section {} in translation section link target for {}", translationSection, getWiktionaryPageName());
     return text.content();
   }
 
@@ -870,8 +846,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             args.remove("2");
             args.remove("1");
             if (!args.isEmpty()) {
-              log.debug("Unhandled remaining args {} in {}", args.entrySet(),
-                  this.getWiktionaryPageName());
+              log.debug("Unhandled remaining args {} in {}", args.entrySet(), this.getWiktionaryPageName());
             }
             wdh.registerNymRelation(target, synRelation, currentGloss, null);
           } else {
@@ -910,16 +885,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (tname.equals("a") || tname.equals("accent")) {
         log.trace("Pronunciation Accent: {} ||| {}", template, wdh.currentPagename());
       } else {
-        log.debug("Pronunciation {}: ignored template {} \\ {}", wdh.getCurrentEntryLanguage(),
-            template, wdh.currentPagename());
+        log.debug("Pronunciation {}: ignored template {} \\ {}", wdh.getCurrentEntryLanguage(), template, wdh.currentPagename());
       }
     });
   }
 
   private void extractPronFromTemplateArgs(String lg, Map<String, String> args) {
     if (null != lg && !wdh.getCurrentEntryLanguage().equals(lg)) {
-      log.debug("Non Matching Languages (actual: {} / expected: {}) pronunciation in page {}.",
-          args.get("1"), wdh.getCurrentEntryLanguage(), this.getWiktionaryPageName());
+      log.debug("Non Matching Languages (actual: {} / expected: {}) pronunciation in page {}.", args.get("1"), wdh.getCurrentEntryLanguage(),
+          this.getWiktionaryPageName());
     }
     if (args.containsKey("10")) {
       log.debug("More than 10 pronunciations in {}", getWiktionaryPageName());
@@ -952,8 +926,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private boolean shoudlExpandPronTemplate(Template template) {
-    return languagePronTemplate.reset(template.getName()).matches()
-        || pronTemplateToExpand.contains(template.getName());
+    return languagePronTemplate.reset(template.getName()).matches() || pronTemplateToExpand.contains(template.getName());
   }
 
   private static boolean isPositiveInt(String str) {
@@ -974,32 +947,29 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractOrthoAlt(WikiContent blockContent) {
-    blockContent.wikiTokens().stream().filter(t -> t instanceof ListItem).map(Token::asListItem)
-        .forEach(li -> {
-          li.getContent().templates().stream().map(Token::asTemplate).forEach(t -> {
-            if ("alter".equals(t.getName()) || "alt".equals(t.getName())) {
-              for (String k : t.getParsedArgs().keySet()) {
-                if (isPositiveInt(k)) {
-                  if ("1".equals(k)) {
-                    continue;
-                  }
-                  String alt = t.getParsedArgs().get(k);
-                  if (alt != null && !alt.equals("")) {
-                    wdh.registerAlternateSpelling(alt);
-                  } else {
-                    break;
-                  }
-                } else {
-                  log.debug("Alternate Forms: unexpected named arg {} in {}", k,
-                      getWiktionaryPageName());
-                }
+    blockContent.wikiTokens().stream().filter(t -> t instanceof ListItem).map(Token::asListItem).forEach(li -> {
+      li.getContent().templates().stream().map(Token::asTemplate).forEach(t -> {
+        if ("alter".equals(t.getName()) || "alt".equals(t.getName())) {
+          for (String k : t.getParsedArgs().keySet()) {
+            if (isPositiveInt(k)) {
+              if ("1".equals(k)) {
+                continue;
+              }
+              String alt = t.getParsedArgs().get(k);
+              if (alt != null && !alt.equals("")) {
+                wdh.registerAlternateSpelling(alt);
+              } else {
+                break;
               }
             } else {
-              log.debug("Alternate Forms: Unhandled template {} in {}", t.getName(),
-                  getWiktionaryPageName());
+              log.debug("Alternate Forms: unexpected named arg {} in {}", k, getWiktionaryPageName());
             }
-          });
-        });
+          }
+        } else {
+          log.debug("Alternate Forms: Unhandled template {} in {}", t.getName(), getWiktionaryPageName());
+        }
+      });
+    });
   }
 
   @Override

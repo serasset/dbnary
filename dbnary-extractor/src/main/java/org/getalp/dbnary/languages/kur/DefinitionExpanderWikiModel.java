@@ -11,14 +11,12 @@ import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 
 public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
 
-  public DefinitionExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public DefinitionExpanderWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("nexşe".equals(templateName)) {
       // This template call leads to LuaError, catch it and simply output '(Bajar)'
       writer.append(parameterMap.getOrDefault("text", ""));
@@ -27,8 +25,7 @@ public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     String wikiContent = super.getRawWikiContent(parsedPagename, map);
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
       String pagename = parsedPagename.pagename.toLowerCase();
@@ -38,11 +35,10 @@ public class DefinitionExpanderWikiModel extends ExpandAllWikiModel {
         // mode avoid an error while compiling the module as debug is not available in our execution
         // environment and when English community does a stupid thing, it always percolate to
         // Chinese language edition... — patch it
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
-                "local function traceback() \n" //
-                    + " return \"\"\n" //
-                    + "end\n"));
+        return getAndPatchModule(parsedPagename, map, t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
+            "local function traceback() \n" //
+                + " return \"\"\n" //
+                + "end\n"));
       }
     }
     return wikiContent;

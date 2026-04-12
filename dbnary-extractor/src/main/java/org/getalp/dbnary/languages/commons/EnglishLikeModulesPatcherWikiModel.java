@@ -11,14 +11,12 @@ import org.getalp.dbnary.bliki.DbnaryWikiModel;
 
 public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
 
-  public EnglishLikeModulesPatcherWikiModel(WiktionaryPageSource wi, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public EnglishLikeModulesPatcherWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     // This allow the handling of the Chinese wikimodel that uses capitalized module names
     String pagename = parsedPagename.pagename.toLowerCase();
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
@@ -38,29 +36,38 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
               // + "\t\tif test then return 0 end"),
               t -> t.replaceAll("return export",
                   "-- This function is redefined to avoid too much time taken in calculus we do not need.\n"
-                      + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n"
-                      + "return \"\"\n" + "end\n" + "\n" + "return export"));
+                      + "function export.format_categories(categories, lang, sort_key, sort_base, force_output, sc)\n" + "return \"\"\n" + "end\n" + "\n"
+                      + "return export"));
         case "hrkt-translit/data/ja":
           // Hrkt-translit/data/ja does not exists, and Lua takes care of this, but will generate
           // an annoying error message. So we just return an empty table
           return "return {}";
         case "ko-pron":
-          return getAndPatchModule(parsedPagename, map, t -> t.replace(
-              "return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-              "return tostring(html_ul)").replace(
-                  "return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
-                  "return tostring(html_ul)"));
+          return getAndPatchModule(parsedPagename, map,
+              t -> t
+                  .replace("return tostring(html_ul) .. tostring(html_table) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")",
+                      "return tostring(html_ul)")
+                  .replace("return tostring(html_ul) .. require(\"Module:TemplateStyles\")(\"Template:ko-IPA/style.css\")", "return tostring(html_ul)"));
         case "audio":
-          return getAndPatchModule(parsedPagename, map, t -> t
-              .replace("return stylesheet .. text .. categories", "return text .. categories"));
+          return getAndPatchModule(parsedPagename, map, t -> t.replace("return stylesheet .. text .. categories", "return text .. categories"));
         case "quote":
           // The quote module contains too many locals and hits the 200 local per chunk limit of
           // Lua.
           // This is problematic here as we compile lua code (hence the limit, while interpreted lua
           // seems not to bear the same issue)
           // we fix it by a hack that replace the local functions with global functions
-          return getAndPatchModule(parsedPagename, map,
-              t -> t.replace("\nlocal function ", "\nfunction "));
+          return getAndPatchModule(parsedPagename, map, t -> t.replace("\nlocal function ", "\nfunction "));
+        case "parameters":
+        case "table/compare":
+          return getAndPatchModule(parsedPagename, map, t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
+              "local function traceback() \n" //
+                  + " return \"\"\n" //
+                  + "end\n"));
+        case "table/getunprotectedmetatable":
+          return getAndPatchModule(parsedPagename, map, t -> t.replaceAll("local\\s+_getmetatable\\s*=\\s*debug.getmetatable\\s*\n", //
+              "local _getmetatable = nil\n"));
+        case "parameters/track":
+          return "return function(page, param_name)\n" + "  return\n" + "end";
       }
       // These patches are not useful anymore as the code to functions with var args is now correct
       // for our Lua version.

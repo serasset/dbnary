@@ -4,11 +4,8 @@ import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.model.WikiModelContentException;
 import info.bliki.wiki.namespaces.INamespace.NamespaceCode;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.morphology.InflectedFormSet;
 import org.getalp.dbnary.wiki.WikiText;
@@ -21,8 +18,7 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
 
   private Logger log = LoggerFactory.getLogger(SwedishTableExtractorWikiModel.class);
 
-  public SwedishTableExtractorWikiModel(WiktionaryPageSource wi, String imageBaseURL,
-      String linkBaseURL) {
+  public SwedishTableExtractorWikiModel(WiktionaryPageSource wi, String imageBaseURL, String linkBaseURL) {
     super(wi, new Locale("sv"), imageBaseURL, linkBaseURL);
   }
 
@@ -48,8 +44,7 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     String result;
     // There modules uses the obsolete arg magik variable which is not supported anymore by lua >
     // 5.1
@@ -67,41 +62,15 @@ public class SwedishTableExtractorWikiModel extends SwedishWikiModel {
     }
     if (log.isDebugEnabled()) {
       if (null == result) {
-        log.debug("null result when getting raw wiki content for {}",
-            parsedPagename.fullPagename());
+        log.debug("null result when getting raw wiki content for {}", parsedPagename.fullPagename());
       } else if (result.contains("(...)"))
-        log.debug("{} contains a vararg. Check if its use is correct.",
-            parsedPagename.fullPagename());
+        log.debug("{} contains a vararg. Check if its use is correct.", parsedPagename.fullPagename());
     }
     return result;
   }
 
-  private String loadModuleResource(String name) {
-    return loadResource(resourceNameFromModuleName(name));
-  }
-
-  private String loadResource(String name) {
-    if (name == null) {
-      return null;
-    }
-    if (log.isDebugEnabled()) {
-      log.error("loading " + name);
-    }
-    try (InputStream is = getClass().getResourceAsStream(name)) {
-      return is == null ? null : IOUtils.toString(is, StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      logger.error("error loading " + name, e);
-      throw new RuntimeException(e);
-    }
-  }
-
-  private String resourceNameFromModuleName(String name) {
-    return name + ".lua";
-  }
-
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
 
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }

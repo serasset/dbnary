@@ -12,8 +12,7 @@ public class GermanInvoke extends Invoke {
   private Logger log = LoggerFactory.getLogger(GermanTableExtractorWikiModel.class);
 
   @Override
-  public String parseFunction(List<String> parts, IWikiModel model, char[] src, int beginIndex,
-      int endIndex, boolean isSubst) throws IOException {
+  public String parseFunction(List<String> parts, IWikiModel model, char[] src, int beginIndex, int endIndex, boolean isSubst) throws IOException {
     log.trace("#invoke:{}|{}", parts.get(0), parts.get(1));
     return super.parseFunction(parts, model, src, beginIndex, endIndex, isSubst);
   }

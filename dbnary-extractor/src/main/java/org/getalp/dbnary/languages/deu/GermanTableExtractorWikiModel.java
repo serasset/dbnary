@@ -27,16 +27,15 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
   private final Logger log = LoggerFactory.getLogger(GermanTableExtractorWikiModel.class);
   protected IWiktionaryDataHandler wdh;
 
-  public GermanTableExtractorWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL, IWiktionaryDataHandler wdh, GermanTableExtractor germanTableExtractor) {
+  public GermanTableExtractorWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL, IWiktionaryDataHandler wdh,
+      GermanTableExtractor germanTableExtractor) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.germanTableExtractor = germanTableExtractor;
     this.wdh = wdh;
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("Flexlink".equals(templateName)) {
       // Just display the link name and drop the link...
       writer.append(parameterMap.get("1"));
@@ -121,16 +120,14 @@ public abstract class GermanTableExtractorWikiModel extends GermanDBnaryWikiMode
       log.warn("Number Format Exception in `Str sub` template || {}", getPageName());
       return "";
     } catch (IndexOutOfBoundsException e) {
-      log.warn("Index Out Of Bound Exception in `Str sub|{}|{}|{}` template  || {}", text, from,
-          length, getPageName());
+      log.warn("Index Out Of Bound Exception in `Str sub|{}|{}|{}` template  || {}", text, from, length, getPageName());
       return "";
     }
   }
 
 
-  Set<String> ignoredTemplates =
-      Stream.of("Adjektivdeklination", "Verbkonjugation", "Adverbdeklination")
-          .collect(collectingAndThen(toCollection(HashSet::new), Collections::unmodifiableSet));
+  Set<String> ignoredTemplates = Stream.of("Adjektivdeklination", "Verbkonjugation", "Adverbdeklination")
+      .collect(collectingAndThen(toCollection(HashSet::new), Collections::unmodifiableSet));
 
   protected InflectedFormSet parseTables(String declinationTemplateCall) {
 

@@ -34,8 +34,7 @@ public class RDFDiff extends VerboseCommand {
 
   private final TreeMap<String, String> anodes2id = new TreeMap<>();
   public static final Resource me = ResourceFactory.createResource("#me");
-  public static final Property diffRate =
-      ResourceFactory.createProperty("http://kaiko.getalp.org/dbnary/diffs/", "diffRate");
+  public static final Property diffRate = ResourceFactory.createProperty("http://kaiko.getalp.org/dbnary/diffs/", "diffRate");
 
   public RDFDiff(String[] args) {
     this.loadArgs(args);
@@ -53,14 +52,11 @@ public class RDFDiff extends VerboseCommand {
   protected void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
     PrintWriter pw = new PrintWriter(System.err);
-    formatter
-        .printHelp(pw, formatter.getWidth(),
-            "java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName()
-                + " [OPTIONS] from.ttl to.ttl",
-            "With OPTIONS in:", options, formatter.getLeftPadding(), formatter.getDescPadding(),
-            "Computes the difference between from.ttl and to.ttl. The command will output the "
-                + "model resulting from the removal of to.ttl to the model from.ttl in stdout.",
-            false);
+    formatter.printHelp(pw, formatter.getWidth(), "java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName() + " [OPTIONS] from.ttl to.ttl",
+        "With OPTIONS in:", options, formatter.getLeftPadding(), formatter.getDescPadding(),
+        "Computes the difference between from.ttl and to.ttl. The command will output the "
+            + "model resulting from the removal of to.ttl to the model from.ttl in stdout.",
+        false);
     pw.flush();
   }
 
@@ -78,8 +74,7 @@ public class RDFDiff extends VerboseCommand {
     diff(fromFile, toFile, outFile, this.verbose);
   }
 
-  public void diff(String fromFile, String toFile, String outFile, boolean verbose)
-      throws FileNotFoundException {
+  public void diff(String fromFile, String toFile, String outFile, boolean verbose) throws FileNotFoundException {
     Model fromModel;
     Model toModel;
     Model diffModel;
@@ -141,8 +136,7 @@ public class RDFDiff extends VerboseCommand {
           try {
             FileUtils.deleteDirectory(temp.toFile());
           } catch (IOException e) {
-            System.err.println("Caught " + e.getClass()
-                + " when attempting to delete the temporary TDB directory " + temp);
+            System.err.println("Caught " + e.getClass() + " when attempting to delete the temporary TDB directory " + temp);
             System.err.println(e.getLocalizedMessage());
           }
         }));
@@ -331,8 +325,7 @@ public class RDFDiff extends VerboseCommand {
     }
 
     // Add statistics about the diff
-    diff.add(diff.createStatement(me, diffRate,
-        diff.createTypedLiteral(nbdiffs / (double) nbprocessed)));
+    diff.add(diff.createStatement(me, diffRate, diff.createTypedLiteral(nbdiffs / (double) nbprocessed)));
 
     return diff;
   }

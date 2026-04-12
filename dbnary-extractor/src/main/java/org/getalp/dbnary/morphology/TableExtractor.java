@@ -29,8 +29,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
    * @param context a list of Strings that represent the celle context
    * @return The InflexionData corresponding to the context
    */
-  protected abstract List<? extends InflectionData> getInflectionDataFromCellContext(
-      List<String> context);
+  protected abstract List<? extends InflectionData> getInflectionDataFromCellContext(List<String> context);
 
   /**
    * returns true if the current H2 element should be ignore while extracting morphological tables
@@ -174,8 +173,7 @@ public abstract class TableExtractor extends HtmlTableHandler {
     return cell.tagName().equalsIgnoreCase("th");
   }
 
-  protected List<String> getRowAndColumnContext(int nrow, int ncol,
-      ArrayMatrix<Element> columnHeaders) {
+  protected List<String> getRowAndColumnContext(int nrow, int ncol, ArrayMatrix<Element> columnHeaders) {
     LinkedList<String> res = new LinkedList<>();
     for (int i = 0; i < nrow; i++) {
       addToContext(columnHeaders, i, ncol, res);

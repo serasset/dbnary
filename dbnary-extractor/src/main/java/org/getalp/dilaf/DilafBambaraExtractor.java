@@ -64,16 +64,14 @@ public class DilafBambaraExtractor extends DilafExtractor {
     }
   }
 
-  private void extractMeaning(XMLStreamReader2 xmlr, Resource lexicalEntry)
-      throws XMLStreamException {
+  private void extractMeaning(XMLStreamReader2 xmlr, Resource lexicalEntry) throws XMLStreamException {
     String senseId = xmlr.getAttributeValue(null, "id");
     String terme = xmlr.getAttributeValue(null, "terme");
     String usage = xmlr.getAttributeValue(null, "usage");
     String nonUsage = xmlr.getAttributeValue(null, "non_usage");
     String status = xmlr.getAttributeValue(null, "status");
     String emploi = xmlr.getAttributeValue(null, "emploi");
-    Resource sense =
-        wdh.registerLexicalSense(lexicalEntry, senseId, terme, usage, nonUsage, status, emploi);
+    Resource sense = wdh.registerLexicalSense(lexicalEntry, senseId, terme, usage, nonUsage, status, emploi);
     while (xmlr.hasNext()) {
       xmlr.next();
       if (xmlr.isStartElement()) {
@@ -117,8 +115,7 @@ public class DilafBambaraExtractor extends DilafExtractor {
         } else if (xmlr.getLocalName().equals("exemple")) {
           // Create the new lexical entry + its sense and attach the example to the sense
           Resource lexicalEntry = wdh.registerLexicalEntry(expId, elementType);
-          Resource expSense =
-              wdh.registerLexicalSense(lexicalEntry, expId + "__ws", forme, null, null, null, null);
+          Resource expSense = wdh.registerLexicalSense(lexicalEntry, expId + "__ws", forme, null, null, null, null);
           processExample(xmlr, expSense);
         }
       } else if (xmlr.isEndElement() && elementType.equals(xmlr.getLocalName())) {

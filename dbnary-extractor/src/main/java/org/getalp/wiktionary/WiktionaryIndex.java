@@ -51,7 +51,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
 
   /**
    * returns Path of the index file corresponding to passed dump.
-   * 
+   *
    * @param dump Path refering to the dump file.
    * @return the Path refering to the index file.
    */
@@ -160,15 +160,14 @@ public class WiktionaryIndex implements WiktionaryPageSource {
       buf.flip();
       fc.write(buf);
     } catch (IOException e) {
-      throw new WiktionaryIndexerException(
-          "IOException when writing map to index file (" + index + ")", e);
+      throw new WiktionaryIndexerException("IOException when writing map to index file (" + index + ")", e);
     }
   }
 
   /**
-   * Load the index from the VALID index file (validity and readability should be checked before
-   * call to this method)
-   * 
+   * Load the index from the VALID index file (validity and readability should be checked before call
+   * to this method)
+   *
    * @throws WiktionaryIndexerException if any exception arise during index load
    */
   private void loadIndex() throws WiktionaryIndexerException {
@@ -254,8 +253,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
     return res;
   }
 
-  private static final List<String> redirects =
-      Arrays.asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");
+  private static final List<String> redirects = Arrays.asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");
 
   @Override
   public String getTextOfPageWithRedirects(String key) {

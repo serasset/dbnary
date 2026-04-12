@@ -14,13 +14,11 @@ import org.slf4j.LoggerFactory;
 
 public class GermanSubstantiveDeklinationExtractorWikiModel extends GermanTableExtractorWikiModel {
 
-  private final Logger log =
-      LoggerFactory.getLogger(GermanSubstantiveDeklinationExtractorWikiModel.class);
+  private final Logger log = LoggerFactory.getLogger(GermanSubstantiveDeklinationExtractorWikiModel.class);
 
-  public GermanSubstantiveDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh,
-      WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
-    super(wi, locale, imageBaseURL, linkBaseURL, wdh,
-        new GermanSubstantiveDeklinationTableExtractor());
+  public GermanSubstantiveDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale, String imageBaseURL,
+      String linkBaseURL) {
+    super(wi, locale, imageBaseURL, linkBaseURL, wdh, new GermanSubstantiveDeklinationTableExtractor());
   }
 
   private static void setGenus(GermanInflectionData infl, Genre g, String argnum) {
@@ -30,8 +28,7 @@ public class GermanSubstantiveDeklinationExtractorWikiModel extends GermanTableE
   }
 
   private static final List<Pair<String, String>> genusArgs =
-      List.of(Pair.of("Genus", null), Pair.of("Genus 1", "1"), Pair.of("Genus 2", "2"),
-          Pair.of("Genus 3", "3"), Pair.of("Genus 4", "4"));
+      List.of(Pair.of("Genus", null), Pair.of("Genus 1", "1"), Pair.of("Genus 2", "2"), Pair.of("Genus 3", "3"), Pair.of("Genus 4", "4"));
 
   @Override
   public void postProcessForms(Template template, InflectedFormSet forms) {
@@ -44,16 +41,13 @@ public class GermanSubstantiveDeklinationExtractorWikiModel extends GermanTableE
           genus = genus.trim();
           switch (genus) {
             case "m":
-              forms.forEach(
-                  e -> setGenus((GermanInflectionData) e.getKey(), Genre.MASCULIN, arg.getRight()));
+              forms.forEach(e -> setGenus((GermanInflectionData) e.getKey(), Genre.MASCULIN, arg.getRight()));
               break;
             case "f":
-              forms.forEach(
-                  e -> setGenus((GermanInflectionData) e.getKey(), Genre.FEMININ, arg.getRight()));
+              forms.forEach(e -> setGenus((GermanInflectionData) e.getKey(), Genre.FEMININ, arg.getRight()));
               break;
             case "n":
-              forms.forEach(
-                  e -> setGenus((GermanInflectionData) e.getKey(), Genre.NEUTRUM, arg.getRight()));
+              forms.forEach(e -> setGenus((GermanInflectionData) e.getKey(), Genre.NEUTRUM, arg.getRight()));
               break;
             default:
               log.debug("MORPH: unknown Genus {} in {}", genus, getPageName());

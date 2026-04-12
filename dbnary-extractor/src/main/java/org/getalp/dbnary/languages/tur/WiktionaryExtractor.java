@@ -157,8 +157,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     // languageFilter.start()) != 2) {
     languageFilter.find();
     // languageFilter.find();
-    int turkishSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+    int turkishSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
     extractTurkishData(turkishSectionStartOffset, turkishSectionEndOffset);
     wdh.finalizePageExtraction();
@@ -168,8 +167,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   // TODO: section {{Kısaltmalar}} gives abbreviations
   // TODO: section Yan Kavramlar gives related concepts (apparently not synonyms).
   private void extractTurkishData(int startOffset, int endOffset) {
-    WikiText txt =
-        new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
+    WikiText txt = new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
     wdh.initializeLanguageSection("tr");
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
@@ -276,20 +274,18 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private final static Pattern CONTROL_CHAR = Pattern.compile("\\p{Cntrl}");
 
   protected void extractDefinitions(WikiContent wk) {
-    WikiEventsSequence indentationsOrTemplates =
-        wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
+    WikiEventsSequence indentationsOrTemplates = wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
     for (Token indent : indentationsOrTemplates) {
       if (indent instanceof NumberedListItem) {
         // Do not extract numbered list items that begin with ":" as they are indeed examples.
-        if (indent.asNumberedListItem().getContent().getText().startsWith(":")
-            || indent.asNumberedListItem().getContent().getText().startsWith("*")) {
-          String expandedExample = expander
-              .expandAll(indent.asNumberedListItem().getContent().toString().substring(1), null);
+        NumberedListItem numberedListItem = indent.asNumberedListItem();
+        String additionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
+        if (additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*")) {
+          String expandedExample = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
           expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
           wdh.registerExample(expandedExample, null);
         } else {
-          String expandedDefinition =
-              expander.expandAll(indent.asNumberedListItem().getContent().toString(), null);
+          String expandedDefinition = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
           expandedDefinition = CONTROL_CHAR.matcher(expandedDefinition).replaceAll("");
           wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
         }
@@ -300,8 +296,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           wdh.registerNewDefinition(def.substring(m.end()), m.group(1));
         } else {
           // TODO: it's usually an example given after a definition.
-          String expandedExample =
-              expander.expandAll(indent.asIndentation().getContent().toString(), null);
+          String expandedExample = expander.expandAll(indent.asIndentation().getContent().getText().trim(), null);
           expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
           wdh.registerExample(expandedExample, null);
         }
@@ -314,8 +309,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       } else {
         // TODO: test and handle these !
-        log.debug("Unhandled indented item in def[{}]: {}", getWiktionaryPageName(),
-            indent.toString());
+        log.debug("Unhandled indented item in def[{}]: {}", getWiktionaryPageName(), indent.toString());
       }
     }
   }

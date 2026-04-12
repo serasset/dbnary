@@ -16,8 +16,7 @@ public class GlossFilter extends AbstractGlossFilter {
   private static Matcher simpleSenseNumberingMatcher = simpleSenseNumberingPattern.matcher("");
 
   private static String glossNumSenseNumberingRegExp = "^(.*)\\s*\\((\\d+)\\)(?:[\\p{Punct}\\s])*$";
-  private static Pattern glossNumSenseNumberingPattern =
-      Pattern.compile(glossNumSenseNumberingRegExp);
+  private static Pattern glossNumSenseNumberingPattern = Pattern.compile(glossNumSenseNumberingRegExp);
   private static Matcher glossNumSenseNumberingMatcher = glossNumSenseNumberingPattern.matcher("");
 
   private static String senseDashGlossRegExp = "^\\s*(\\d+)(?:[\\.])\\s*(.*)\\s*$";
@@ -41,8 +40,7 @@ public class GlossFilter extends AbstractGlossFilter {
 
     simpleSenseNumberingMatcher.reset(rawGloss);
     if (simpleSenseNumberingMatcher.matches()) {
-      return new StructuredGloss(simpleSenseNumberingMatcher.group(2),
-          simpleSenseNumberingMatcher.group(1));
+      return new StructuredGloss(simpleSenseNumberingMatcher.group(2), simpleSenseNumberingMatcher.group(1));
     }
     glossNumSenseNumberingMatcher.reset(rawGloss);
     if (glossNumSenseNumberingMatcher.matches()) {

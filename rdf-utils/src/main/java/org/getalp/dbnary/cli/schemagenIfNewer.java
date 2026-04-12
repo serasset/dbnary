@@ -28,8 +28,7 @@ public class schemagenIfNewer {
     // System.err.format("Ontology Date: %s / output date %s%n", ontologyModificationDate,
     // outputModificationDate);
 
-    if (null != ontologyModificationDate && null != outputModificationDate
-        && ontologyModificationDate.compareTo(outputModificationDate) < 0) {
+    if (null != ontologyModificationDate && null != outputModificationDate && ontologyModificationDate.compareTo(outputModificationDate) < 0) {
       return;
     }
     jena.schemagen.main(args);

@@ -33,8 +33,8 @@ public class TranslationSourcesDisambiguator {
 
   private Logger log = LoggerFactory.getLogger(TranslationSourcesDisambiguator.class);
 
-  public TranslationSourcesDisambiguator(double alpha, double beta, double delta,
-      boolean useGlosses, TranslationGlossesStatsModule stats, EvaluationStats evaluator) {
+  public TranslationSourcesDisambiguator(double alpha, double beta, double delta, boolean useGlosses, TranslationGlossesStatsModule stats,
+      EvaluationStats evaluator) {
     this.alpha = alpha;
     this.beta = beta;
     this.delta = delta;
@@ -52,13 +52,10 @@ public class TranslationSourcesDisambiguator {
       stats.reset(lang);
     }
 
-    SenseNumberBasedTranslationDisambiguationMethod snumDisamb =
-        new SenseNumberBasedTranslationDisambiguationMethod();
-    TverskyBasedTranslationDisambiguationMethod tverskyDisamb =
-        new TverskyBasedTranslationDisambiguationMethod(alpha, beta, delta);
+    SenseNumberBasedTranslationDisambiguationMethod snumDisamb = new SenseNumberBasedTranslationDisambiguationMethod();
+    TverskyBasedTranslationDisambiguationMethod tverskyDisamb = new TverskyBasedTranslationDisambiguationMethod(alpha, beta, delta);
 
-    StmtIterator translations =
-        inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
+    StmtIterator translations = inputModel.listStatements(null, DBnaryOnt.isTranslationOf, (RDFNode) null);
 
     HashMap<Resource, Set<Resource>> translationToWSMap = new HashMap<>();
     while (translations.hasNext()) {
@@ -67,13 +64,10 @@ public class TranslationSourcesDisambiguator {
       Resource trans = next.getSubject();
 
       Resource lexicalEntry = next.getResource();
-      if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
-          || lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-          || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)
-          || lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
+      if (lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) || lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
+          || lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression) || lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
         try {
-          log.trace("Enhancing translation resource {} for entry {}", trans.getLocalName(),
-              lexicalEntry.getLocalName());
+          log.trace("Enhancing translation resource {} for entry {}", trans.getLocalName(), lexicalEntry.getLocalName());
 
           if (null != stats) {
             stats.registerTranslation(trans);
@@ -125,9 +119,7 @@ public class TranslationSourcesDisambiguator {
       while (lexentries.hasNext()) {
         Resource le = lexentries.next();
         if (!t.hasProperty(DBnaryOnt.isTranslationOf, le)) {
-          log.debug(
-              "Adding LexEntry {} to Page related translation {} while registering WordSense {}",
-              le.getLocalName(), t.getLocalName(), ws.getLocalName());
+          log.debug("Adding LexEntry {} to Page related translation {} while registering WordSense {}", le.getLocalName(), t.getLocalName(), ws.getLocalName());
           outputModel.add(outputModel.createStatement(t, DBnaryOnt.isTranslationOf, le));
         }
       }

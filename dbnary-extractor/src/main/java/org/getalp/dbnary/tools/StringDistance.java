@@ -6,11 +6,11 @@ public class StringDistance {
 
   /**
    * return the suffixal change from s to t
-   * 
+   *
    * @param s the source String to be changed
    * @param t the target String result of the change
-   * @return the change as a String of form -xxx+yyy where t = s where suffix xxx is stripped out
-   *         and suffix yyy is appended to the resulting base
+   * @return the change as a String of form -xxx+yyy where t = s where suffix xxx is stripped out and
+   *         suffix yyy is appended to the resulting base
    */
   public static String suffixChange(String s, String t) {
     int i = 0;
@@ -36,8 +36,7 @@ public class StringDistance {
   // Compute Levenshtein distance
   // *****************************
 
-  public static int[][] distanceMatrix(String s, String t,
-      BiFunction<Character, Character, Integer> cost) {
+  public static int[][] distanceMatrix(String s, String t, BiFunction<Character, Character, Integer> cost) {
 
     int n = s.length();
     int m = t.length();
@@ -61,8 +60,7 @@ public class StringDistance {
       for (int j = 1; j <= m; j++) {
         char ct = t.charAt(j - 1);
         atomicCost = cost.apply(cs, ct);
-        d[i][j] = min(d[i - 1][j] + cost.apply('\0', ct), d[i][j - 1] + cost.apply(cs, '\0'),
-            d[i - 1][j - 1] + atomicCost);
+        d[i][j] = min(d[i - 1][j] + cost.apply('\0', ct), d[i][j - 1] + cost.apply(cs, '\0'), d[i - 1][j - 1] + atomicCost);
 
       }
     }
@@ -72,7 +70,7 @@ public class StringDistance {
 
   /**
    * Compute the cost for an edition.
-   * 
+   *
    * @param c1 the first char
    * @param c2 the second char
    * @return the levenstein distance between chars
@@ -107,11 +105,10 @@ public class StringDistance {
         break;
       if (y > 0 && x > 0 && d[x - 1][y - 1] < d[x][y]) {
         if (debug)
-          System.out.println("min d[x-1][y-1] " + d[x - 1][y - 1] + " d[x][y] " + d[x][y] + " rep "
-              + s.charAt(x - 1) + " with " + t.charAt(y - 1) + " at " + (x - 1));
+          System.out.println(
+              "min d[x-1][y-1] " + d[x - 1][y - 1] + " d[x][y] " + d[x][y] + " rep " + s.charAt(x - 1) + " with " + t.charAt(y - 1) + " at " + (x - 1));
 
-        operations.append('R').append(Character.toString((char) ((int) x - 1)))
-            .append(s.charAt(x - 1)).append(t.charAt(y - 1));
+        operations.append('R').append(Character.toString((char) ((int) x - 1))).append(s.charAt(x - 1)).append(t.charAt(y - 1));
         if (debug)
           result.setCharAt(x - 1, t.charAt(y - 1));
         y--;
@@ -121,8 +118,7 @@ public class StringDistance {
       }
       if (y > 0 && d[x][y - 1] < d[x][y]) {
         if (debug)
-          System.out.println("min d[x][y-1] " + d[x][y - 1] + "  d[x][y] " + d[x][y] + " ins "
-              + t.charAt(y - 1) + " at " + (x));
+          System.out.println("min d[x][y-1] " + d[x][y - 1] + "  d[x][y] " + d[x][y] + " ins " + t.charAt(y - 1) + " at " + (x));
         operations.append('I').append(Character.toString((char) ((int) x))).append(t.charAt(y - 1));
         if (debug)
           result.insert(x, t.charAt(y - 1));
@@ -132,10 +128,8 @@ public class StringDistance {
       }
       if (x > 0 && d[x - 1][y] < d[x][y]) {
         if (debug)
-          System.out.println("min d[x-1][y] " + d[x - 1][y] + " d[x][y] " + d[x][y] + " del "
-              + s.charAt(x - 1) + " at " + (x - 1));
-        operations.append('D').append(Character.toString((char) ((int) x - 1)))
-            .append(s.charAt(x - 1));
+          System.out.println("min d[x-1][y] " + d[x - 1][y] + " d[x][y] " + d[x][y] + " del " + s.charAt(x - 1) + " at " + (x - 1));
+        operations.append('D').append(Character.toString((char) ((int) x - 1))).append(s.charAt(x - 1));
         if (debug)
           result.deleteCharAt(x - 1);
         x--;

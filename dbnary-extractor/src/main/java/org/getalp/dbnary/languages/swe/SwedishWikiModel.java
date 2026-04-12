@@ -13,14 +13,12 @@ public class SwedishWikiModel extends DbnaryWikiModel {
     super(locale, imageBaseURL, linkBaseURL);
   }
 
-  public SwedishWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public SwedishWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     String content = super.getRawWikiContent(parsedPagename, map);
     if (content != null) {
       content = content.replaceAll("\\{\\{\\{!}}", "{ {{!}}");

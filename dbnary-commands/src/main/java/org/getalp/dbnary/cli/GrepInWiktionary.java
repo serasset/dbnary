@@ -22,10 +22,8 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 import picocli.CommandLine.Spec;
 
-@Command(name = "grep", mixinStandardHelpOptions = true,
-    header = "grep a given pattern in all pages of a dump.",
-    description = "This command looks for a given pattern in all pages of a dump and output "
-        + "the matching pages.")
+@Command(name = "grep", mixinStandardHelpOptions = true, header = "grep a given pattern in all pages of a dump.",
+    description = "This command looks for a given pattern in all pages of a dump and output " + "the matching pages.")
 public class GrepInWiktionary implements Callable<Integer> {
 
   private final Logger log = LoggerFactory.getLogger(GrepInWiktionary.class);
@@ -88,8 +86,7 @@ public class GrepInWiktionary implements Callable<Integer> {
         xmlr.next();
         if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
           title = "";
-        } else if (xmlr.isStartElement()
-            && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
+        } else if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
           title = xmlr.getElementText();
         } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
           String text = xmlr.getElementText();

@@ -82,8 +82,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
         aBox.add(aBox.createStatement(lexEntry, LexinfoOnt.partOfSpeech, OliaOnt.Adjective));
         break;
       case "adjpréd":
-        aBox.add(
-            aBox.createStatement(lexEntry, LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
+        aBox.add(aBox.createStatement(lexEntry, LexinfoOnt.partOfSpeech, OliaOnt.PredicativeAdjective));
         break;
       case "v":
       case "vt":
@@ -106,8 +105,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
     }
   }
 
-  public Resource registerNewLexicalSense(String lemma, String pos, String pron,
-      String senseNumber) {
+  public Resource registerNewLexicalSense(String lemma, String pos, String pron, String senseNumber) {
     pos = normalizePartOfSpeech(pos);
     String encodedLemma = uriEncode(lemma + "__" + pos);
     Resource lexEntry = lexicalEntries.get(encodedLemma + "__" + pron);
@@ -128,14 +126,11 @@ public class DilafLemonDataHandler extends DbnaryModel {
     Statement alreadyRegisteredCanonicalForm = aBox.getProperty(lexEntry, OntolexOnt.canonicalForm);
     if (null != alreadyRegisteredCanonicalForm) {
       // Check that it is the same form/pronounciation
-      Statement oldWrittenRep =
-          aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), OntolexOnt.writtenRep);
+      Statement oldWrittenRep = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), OntolexOnt.writtenRep);
       if (oldWrittenRep == null || !oldWrittenRep.getString().equals(lemma)) {
-        System.err.println(
-            "Old written representation is null or different from current representation.");
+        System.err.println("Old written representation is null or different from current representation.");
       }
-      Statement oldPronunciation =
-          aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), OntolexOnt.phoneticRep);
+      Statement oldPronunciation = aBox.getProperty(alreadyRegisteredCanonicalForm.getResource(), OntolexOnt.phoneticRep);
       if (oldPronunciation == null || !oldPronunciation.getString().equals(pron)) {
         System.err.println("Old pronunciation is null or different from current representation.");
       }
@@ -150,8 +145,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
     Resource lexicalSense = aBox.createResource(createSenseId(lexEntryId, senseNumber));
     aBox.add(aBox.createStatement(lexEntry, RDF.type, OntolexOnt.LexicalSense));
     aBox.add(aBox.createStatement(lexEntry, OntolexOnt.sense, lexicalSense));
-    aBox.add(aBox.createLiteralStatement(lexicalSense, DBnaryOnt.senseNumber,
-        aBox.createTypedLiteral(Integer.parseInt(senseNumber))));
+    aBox.add(aBox.createLiteralStatement(lexicalSense, DBnaryOnt.senseNumber, aBox.createTypedLiteral(Integer.parseInt(senseNumber))));
 
     return lexicalSense;
   }
@@ -190,13 +184,11 @@ public class DilafLemonDataHandler extends DbnaryModel {
 
   public void setCanonicalForm(Resource lexicalEntry, String lemma) {
     Resource canonicalForm = aBox.createResource(lexicalEntry.getURI() + "__cf", OntolexOnt.Form);
-    aBox.add(
-        aBox.createStatement(canonicalForm, OntolexOnt.writtenRep, lemma, twoLetterLanguageCode));
+    aBox.add(aBox.createStatement(canonicalForm, OntolexOnt.writtenRep, lemma, twoLetterLanguageCode));
     aBox.add(aBox.createStatement(lexicalEntry, OntolexOnt.canonicalForm, canonicalForm));
   }
 
-  public Resource registerLexicalSense(Resource lexicalEntry, String senseId, String terme,
-      String usage, String nonUsage, String status, String emploi) {
+  public Resource registerLexicalSense(Resource lexicalEntry, String senseId, String terme, String usage, String nonUsage, String status, String emploi) {
     Resource lexicalSense = aBox.createResource(NS + senseId, OntolexOnt.LexicalSense);
     aBox.add(aBox.createStatement(lexicalSense, RDF.type, OntolexOnt.LexicalSense));
     aBox.add(aBox.createStatement(lexicalEntry, OntolexOnt.sense, lexicalSense));
@@ -208,8 +200,7 @@ public class DilafLemonDataHandler extends DbnaryModel {
     aBox.add(aBox.createStatement(sense, SkosOnt.definition, text, lang));
   }
 
-  public Resource registerExample(Resource sense, String ba, String baTons, String fr,
-      String usage) {
+  public Resource registerExample(Resource sense, String ba, String baTons, String fr, String usage) {
     // Create new word sense + a definition element
     Resource example = aBox.createResource();
     if (null != ba) {

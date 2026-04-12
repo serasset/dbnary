@@ -15,20 +15,16 @@ import org.slf4j.LoggerFactory;
 public class SenseNumberBasedTranslationDisambiguationMethod implements DisambiguationMethod {
 
   public static int NUMSN = 0;
-  private static final Logger log =
-      LoggerFactory.getLogger(SenseNumberBasedTranslationDisambiguationMethod.class);
+  private static final Logger log = LoggerFactory.getLogger(SenseNumberBasedTranslationDisambiguationMethod.class);
 
   public SenseNumberBasedTranslationDisambiguationMethod() {
     // TODO Auto-generated constructor stub
   }
 
   @Override
-  public Set<Resource> selectWordSenses(Resource lexicalEntry, Object context)
-      throws InvalidContextException, InvalidEntryException {
-    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
-        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression)
-        && !lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
+  public Set<Resource> selectWordSenses(Resource lexicalEntry, Object context) throws InvalidContextException, InvalidEntryException {
+    if (!lexicalEntry.hasProperty(RDF.type, OntolexOnt.LexicalEntry) && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.Word)
+        && !lexicalEntry.hasProperty(RDF.type, OntolexOnt.MultiWordExpression) && !lexicalEntry.hasProperty(RDF.type, DBnaryOnt.Page)) {
       throw new InvalidEntryException("Expecting an ontolex Lexical Entry or DBnary page.");
     }
     if (context instanceof Resource) {
@@ -75,8 +71,7 @@ public class SenseNumberBasedTranslationDisambiguationMethod implements Disambig
         addNumberedWordSenseToResult(res, entries.next().getResource(), n);
       }
       if (res.size() - previousSize > 1)
-        log.debug("ENHANCER: more than 1 word sense for number {} while enhancing {}", n,
-            lexicalEntry);
+        log.debug("ENHANCER: more than 1 word sense for number {} while enhancing {}", n, lexicalEntry);
     } else {
       StmtIterator senses = lexicalEntry.listProperties(OntolexOnt.sense);
       while (senses.hasNext()) {

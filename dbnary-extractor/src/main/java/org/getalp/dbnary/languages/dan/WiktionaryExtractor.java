@@ -81,8 +81,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializePageExtraction(getWiktionaryPageName());
     WikiText doc = new WikiText(getWiktionaryPageName(), pageContent);
     // Iterate over tokens and separate by languages
-    List<Pair<Token, List<Token>>> languageData =
-        split(doc.tokens(), t -> getLanguageCode(t) != null);
+    List<Pair<Token, List<Token>>> languageData = split(doc.tokens(), t -> getLanguageCode(t) != null);
 
     for (Pair<Token, List<Token>> languageSection : languageData) {
       extractLanguageData(languageSection.getLeft(), languageSection.getRight());
@@ -122,8 +121,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == lang)
       return;
 
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN)
-        && !wdh.getExtractedLanguage().equals(lang))
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !wdh.getExtractedLanguage().equals(lang))
       return;
 
     wdh.initializeLanguageSection(lang);
@@ -161,8 +159,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // TODO: extract derivations/related terms
         } else if (name.equals("expr")) {
           // TODO: extract proverbs and expressions
-        } else if (name.equals("ref") || name.equals("srce") || name.equals("also")
-            || name.equals("anag")) {
+        } else if (name.equals("ref") || name.equals("srce") || name.equals("also") || name.equals("anag")) {
           // TODO: ignore references/sources
         } else if (daWdh.isNym(name)) {
           extractNyms(name, section.getRight());
@@ -224,9 +221,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token t : tokens) {
       if (t instanceof NumberedListItem) {
         NumberedListItem li = t.asNumberedListItem();
-        if (((NumberedListItem) t).getContent().getText().startsWith(":")) {
+        if (li.getListPrefix().substring(li.getLevel()).startsWith(":")) {
           // It is an example of the latest word sense.
-          String example = li.getContent().getText().substring(1).trim();
+          String example = li.getContent().getText().trim();
           super.extractExample(example);
         } else {
           String definition = li.getContent().getText().trim();
@@ -271,8 +268,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (!args.isEmpty()) {
             log.debug("Unexpected arguments in trad template: {}", args);
           }
-        } else if (template.getName().equals("t") || template.getName().equals("O")
-            || template.getName().equals("t+")) {
+        } else if (template.getName().equals("t") || template.getName().equals("O") || template.getName().equals("t+")) {
           Map<String, String> args = template.cloneParsedArgs();
           String lang = args.get("1");
           String translation = args.get("2");
@@ -288,8 +284,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           if (null != g) {
             currentGloss = wdh.createGlossResource(new StructuredGloss(null, g));
           }
-        } else if (template.getName().equals("trans-bottom") || template.getName().equals(")")
-            || template.getName().equals("bottom")) {
+        } else if (template.getName().equals("trans-bottom") || template.getName().equals(")") || template.getName().equals("bottom")) {
           currentGloss = null;
         } else if (ignoredTemplates.contains(template.getName())) {
           // ignore

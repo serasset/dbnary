@@ -21,22 +21,19 @@ public class BatchExtractorMixin {
   @ParentCommand
   private DBnary parent;
 
-  @Option(names = {"--no-compress"}, negatable = true,
-      description = "Compress the resulting extracted files using BZip2. set by default.",
+  @Option(names = {"--no-compress"}, negatable = true, description = "Compress the resulting extracted files using BZip2. set by default.",
       scope = ScopeType.INHERIT)
   private boolean compress = true;
 
-  @Option(names = {"-F", "--frompage"}, paramLabel = "NUMBER", defaultValue = "-1",
-      description = "Begin the extraction at the specified page number.", scope = ScopeType.INHERIT)
+  @Option(names = {"-F", "--frompage"}, paramLabel = "NUMBER", defaultValue = "-1", description = "Begin the extraction at the specified page number.",
+      scope = ScopeType.INHERIT)
   private int fromPage = 0;
 
-  @Option(names = {"-T", "--topage"}, paramLabel = "NUMBER",
-      description = "Stop the extraction at the specified page number.", scope = ScopeType.INHERIT)
+  @Option(names = {"-T", "--topage"}, paramLabel = "NUMBER", description = "Stop the extraction at the specified page number.", scope = ScopeType.INHERIT)
   private int toPage = Integer.MAX_VALUE;
 
   @Option(names = {"--no-tdb"}, negatable = true,
-      description = "Use TDB2 (temporary file storage for extracted models, usefull/necessary for big dumps. set by default.",
-      scope = ScopeType.INHERIT)
+      description = "Use TDB2 (temporary file storage for extracted models, usefull/necessary for big dumps. set by default.", scope = ScopeType.INHERIT)
   private boolean useTdb = true;
 
   // non parameters
@@ -55,8 +52,7 @@ public class BatchExtractorMixin {
         try {
           FileUtils.deleteDirectory(temp.toFile());
         } catch (IOException e) {
-          mixee.commandLine().getErr().println("Caught " + e.getClass()
-              + " when attempting to delete the temporary TDB directory " + tdbDir);
+          mixee.commandLine().getErr().println("Caught " + e.getClass() + " when attempting to delete the temporary TDB directory " + tdbDir);
           mixee.commandLine().getErr().println(e.getLocalizedMessage());
         }
       }));

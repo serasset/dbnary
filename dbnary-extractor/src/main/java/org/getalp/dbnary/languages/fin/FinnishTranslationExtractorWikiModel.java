@@ -26,13 +26,12 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
   private final Logger log = LoggerFactory.getLogger(FinnishTranslationExtractorWikiModel.class);
   private int rank;
 
-  public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL, AbstractGlossFilter glossFilter) {
+  public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL,
+      AbstractGlossFilter glossFilter) {
     this(we, null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public FinnishTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
     this.rank = 1;
@@ -62,8 +61,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("kohta".equals(templateName)) {
       // kohta macro contains a set of translations with no usage note.
       // Either: (1) arg 1 is the sens number and arg2 is the gloss, arg3 are translations and arg 4
@@ -74,21 +72,18 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
       String gloss = computeGlossValue(parameterMap, translationPositionalArg);
       extractTranslations(xans, gloss, rank++);
 
-    } else if ("käännökset/korjattava".equalsIgnoreCase(templateName)
-        || "kään/korj".equals(templateName) || "korjattava/käännökset".equals(templateName)) {
+    } else if ("käännökset/korjattava".equalsIgnoreCase(templateName) || "kään/korj".equals(templateName) || "korjattava/käännökset".equals(templateName)) {
       // Missing translation message, just ignore it
     } else if (knownTranslationTemplates.contains(templateName)) {
       // Language name, resubstitute it with its own value
-      writer.append("{-").append(templateName).append("|")
-          .append(WikiTool.toParameterString(parameterMap)).append("-}");
+      writer.append("{-").append(templateName).append("|").append(WikiTool.toParameterString(parameterMap)).append("-}");
     } else if (isALanguageName(templateName)) {
       // Language name, resubstitute it with its own value
       writer.append(templateName);
     } else if ("yhteys".equals(templateName) || "kuva".equals(templateName)) {
       super.substituteTemplateCall(templateName, parameterMap, writer);
     } else {
-      log.debug("Called template: {} while parsing translations of: {}", templateName,
-          delegate.currentPagename());
+      log.debug("Called template: {} while parsing translations of: {}", templateName, delegate.currentPagename());
       // Just ignore the other template calls (uncomment to expand the template calls).
       // super.substituteTemplateCall(templateName, parameterMap, writer);
     }
@@ -145,9 +140,8 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
     // line.
     macroOrLinkOrcarPatternString = "(?:"
         // Macro-modified for translation extractions
-        + "\\{\\-" + "([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?" + "\\-\\}" + ")|(?:"
-        + WikiPatterns.macroPatternString + ")|(?:" + WikiPatterns.linkPatternString + ")|(?:"
-        + "(:*\\*)" + ")|(?:" + "(\\*:)" + ")|(?:" + carPatternString + ")";
+        + "\\{\\-" + "([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?" + "\\-\\}" + ")|(?:" + WikiPatterns.macroPatternString + ")|(?:" + WikiPatterns.linkPatternString
+        + ")|(?:" + "(:*\\*)" + ")|(?:" + "(\\*:)" + ")|(?:" + carPatternString + ")";
 
 
   }
@@ -158,8 +152,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern =
-        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.MULTILINE | Pattern.DOTALL);
+    macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.MULTILINE | Pattern.DOTALL);
 
   }
 
@@ -362,13 +355,11 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
             } else if (macro.equalsIgnoreCase("käännös") || macro.equalsIgnoreCase("l")) {
               Map<String, String> argmap = WikiTool.parseArgs(macroOrLinkOrcarMatcher.group(2));
               if (null != word && word.length() != 0) {
-                log.debug("Word is not null ({}) when handling käännös macro in {}", word,
-                    this.delegate.currentPagename());
+                log.debug("Word is not null ({}) when handling käännös macro in {}", word, this.delegate.currentPagename());
               }
               String l = argmap.get("1");
               if (null != l && (null != lang) && !lang.equals(LangTools.getCode(l))) {
-                log.debug("Language in käännös macro does not map language in list in {}",
-                    this.delegate.currentPagename());
+                log.debug("Language in käännös macro does not map language in list in {}", this.delegate.currentPagename());
               }
               word = argmap.get("2");
               argmap.remove("1");
@@ -395,8 +386,7 @@ public class FinnishTranslationExtractorWikiModel extends DbnaryWikiModel {
                   delegate.registerTranslation(lang, currentGlose, usage, word);
                 }
               } else if (usage.length() != 0) {
-                log.debug("Non empty usage ({}) while word is null in: {}", usage,
-                    delegate.currentPagename());
+                log.debug("Non empty usage ({}) while word is null in: {}", usage, delegate.currentPagename());
               }
               previousLang = lang;
               lang = null;

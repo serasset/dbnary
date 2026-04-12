@@ -91,8 +91,7 @@ public abstract class DilafExtractor {
     }
 
     long endtime = System.currentTimeMillis();
-    System.err
-        .println(" Parsing Time = " + (endtime - starttime) + "; " + nbArticles + " pages parsed.");
+    System.err.println(" Parsing Time = " + (endtime - starttime) + "; " + nbArticles + " pages parsed.");
   }
 
   protected abstract void importArticle(XMLStreamReader2 xmlr) throws XMLStreamException;

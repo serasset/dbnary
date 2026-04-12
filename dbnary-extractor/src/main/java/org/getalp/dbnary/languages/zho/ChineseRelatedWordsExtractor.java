@@ -44,8 +44,7 @@ public class ChineseRelatedWordsExtractor {
     carPatternString = "(.)";
 
     // We should suppress multiline xml comments even if macros or line are to be on a single line.
-    macroOrLinkOrcarPatternString = "(?:" + WikiPatterns.macroPatternString + ")|(?:"
-        + WikiPatterns.linkPatternString + ")|(?:" + "(:*\\*)" // sub list
+    macroOrLinkOrcarPatternString = "(?:" + WikiPatterns.macroPatternString + ")|(?:" + WikiPatterns.linkPatternString + ")|(?:" + "(:*\\*)" // sub list
         + ")|(?:" + "^;([^:\\n\\r]*)" // Term definition
         + ")|(?:" + carPatternString + ")";
   }
@@ -56,8 +55,7 @@ public class ChineseRelatedWordsExtractor {
 
   static {
     carPattern = Pattern.compile(carPatternString);
-    macroOrLinkOrcarPattern =
-        Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
+    macroOrLinkOrcarPattern = Pattern.compile(macroOrLinkOrcarPatternString, Pattern.DOTALL + Pattern.MULTILINE);
   }
 
 
@@ -104,11 +102,9 @@ public class ChineseRelatedWordsExtractor {
 
         case INIT:
           if (macro != null) {
-            log.debug("RELWORDS: Got {} macro while in INIT state. for page: {}", macro,
-                this.delegate.currentPagename());
+            log.debug("RELWORDS: Got {} macro while in INIT state. for page: {}", macro, this.delegate.currentPagename());
           } else if (link != null) {
-            log.debug("RELWORDS: Unexpected link {} while in INIT state. for page: {}", link,
-                this.delegate.currentPagename());
+            log.debug("RELWORDS: Unexpected link {} while in INIT state. for page: {}", link, this.delegate.currentPagename());
           } else if (star != null) {
             ETAT = RELATION;
           } else if (term != null) {
@@ -155,8 +151,7 @@ public class ChineseRelatedWordsExtractor {
               currentNym = AbstractWiktionaryExtractor.stripParentheses(currentNym);
               currentNym = relMarkerToRelName.get(currentNym);
               if (null == currentNym) {
-                log.debug("RELWORDS: Unknown relation: {} in page {}", currentRelation,
-                    this.delegate.currentPagename());
+                log.debug("RELWORDS: Unknown relation: {} in page {}", currentRelation, this.delegate.currentPagename());
               }
               currentRelation = "";
               ETAT = VALUES;
@@ -180,13 +175,11 @@ public class ChineseRelatedWordsExtractor {
               usage = argmap.toString();
               registerRelation(word, currentNym);
             } else {
-              log.debug("RELWORDS: Got macro {} while in VALUE state in page {}", macro,
-                  this.delegate.currentPagename());
+              log.debug("RELWORDS: Got macro {} while in VALUE state in page {}", macro, this.delegate.currentPagename());
             }
           } else if (link != null) {
             if (!isAnExternalLink(link)) {
-              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link
-                  : macroOrLinkOrcarMatcher.group(4));
+              word = word + " " + ((macroOrLinkOrcarMatcher.group(4) == null) ? link : macroOrLinkOrcarMatcher.group(4));
             }
           } else if (star != null) {
 

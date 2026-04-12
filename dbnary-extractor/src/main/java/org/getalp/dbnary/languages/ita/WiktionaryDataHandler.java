@@ -20,30 +20,23 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
 
     posAndTypeValueMap.put("noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
     posAndTypeValueMap.put("sost", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
-    posAndTypeValueMap.put("loc noun",
-        new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("loc nom",
-        new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc noun", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc nom", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("nome", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("name", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("adj", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("adjc", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("agg", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
-    posAndTypeValueMap.put("loc adjc",
-        new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("loc agg",
-        new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc adjc", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc agg", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("avv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
     posAndTypeValueMap.put("adv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
-    posAndTypeValueMap.put("loc avv",
-        new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc avv", new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
-    posAndTypeValueMap.put("loc verb",
-        new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc verb", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
 
     posAndTypeValueMap.put("agg num", new PosAndType(LexinfoOnt.numeral, OntolexOnt.Word));
-    posAndTypeValueMap.put("agg poss",
-        new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
+    posAndTypeValueMap.put("agg poss", new PosAndType(LexinfoOnt.possessiveAdjective, OntolexOnt.Word));
     // card/ord is not a Part of speech, but an information added to aggetivi numerali
     // posAndTypeValueMap.put("card", new PosAndType(LexinfoOnt.cardinalNumeral, OntolexOnt.Word));
     // posAndTypeValueMap.put("ord", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.Word));
@@ -54,25 +47,17 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
     posAndTypeValueMap.put("conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.Word));
     posAndTypeValueMap.put("inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
     posAndTypeValueMap.put("interj", new PosAndType(LexinfoOnt.interjection, OntolexOnt.Word));
-    posAndTypeValueMap.put("loc cong",
-        new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("loc conj",
-        new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("loc inter",
-        new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("loc interj",
-        new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("loc prep",
-        new PosAndType(LexinfoOnt.preposition, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc cong", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc conj", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc inter", new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc interj", new PosAndType(LexinfoOnt.interjection, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("loc prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("posp", new PosAndType(LexinfoOnt.postposition, OntolexOnt.Word));
     posAndTypeValueMap.put("prep", new PosAndType(LexinfoOnt.preposition, OntolexOnt.Word));
-    posAndTypeValueMap.put("pron poss",
-        new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
-    posAndTypeValueMap.put("pronome poss",
-        new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("pron poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("pronome poss", new PosAndType(LexinfoOnt.possessivePronoun, OntolexOnt.Word));
     posAndTypeValueMap.put("pronome", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.Word));
-    posAndTypeValueMap.put("pron dim",
-        new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.Word));
+    posAndTypeValueMap.put("pron dim", new PosAndType(LexinfoOnt.demonstrativePronoun, OntolexOnt.Word));
 
     // TODO: -acron-, -acronim-, -acronym-, -espr-, -espress- mark locution as phrases
 
@@ -141,8 +126,7 @@ public class WiktionaryDataHandler extends PostTranslationDataHandler {
       addAllResourceOfPoS(res, LexinfoOnt.adjective);
       addAllResourceOfPoS(res, LexinfoOnt.noun);
     } else {
-      log.debug("Could not decode gloss '{}' to chose lexical entry in '{}'", gloss,
-          currentPagename());
+      log.debug("Could not decode gloss '{}' to chose lexical entry in '{}'", gloss, currentPagename());
     }
     return res;
   }

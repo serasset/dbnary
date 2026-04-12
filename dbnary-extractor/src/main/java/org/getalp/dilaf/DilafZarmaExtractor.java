@@ -24,8 +24,7 @@ public class DilafZarmaExtractor extends DilafExtractor {
         pronounciation = xmlr.getElementText();
       } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("kanandi")) { // part of speech
         partOfSpeech = xmlr.getElementText();
-        lexicalSense =
-            wdh.registerNewLexicalSense(lemma, partOfSpeech, pronounciation, senseNumber);
+        lexicalSense = wdh.registerNewLexicalSense(lemma, partOfSpeech, pronounciation, senseNumber);
       } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("bareyaŋ")) { // French
         // translation
         String translations = xmlr.getElementText();

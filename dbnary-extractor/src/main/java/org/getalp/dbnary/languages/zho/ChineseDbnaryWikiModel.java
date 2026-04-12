@@ -14,24 +14,18 @@ public class ChineseDbnaryWikiModel extends EnglishLikeModulesPatcherWikiModel {
 
   private final Stack<String> linkCallStack = new Stack<>();
 
-  public ChineseDbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public ChineseDbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
     // Chinese edition systematically capitalize modules and templates names
     ParsedPageName originalPagename = parsedPagename;
-    if ((parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
-        || parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY))
-        && !parsedPagename.pagename.isEmpty()
-        && Character.isLowerCase(parsedPagename.pagename.charAt(0))) {
+    if ((parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY) || parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY))
+        && !parsedPagename.pagename.isEmpty() && Character.isLowerCase(parsedPagename.pagename.charAt(0))) {
       parsedPagename = new ParsedPageName(parsedPagename.namespace,
-          Character.toUpperCase(originalPagename.pagename.charAt(0))
-              + originalPagename.pagename.substring(1),
-          parsedPagename.valid);
+          Character.toUpperCase(originalPagename.pagename.charAt(0)) + originalPagename.pagename.substring(1), parsedPagename.valid);
     }
     String wikiContent = super.getRawWikiContent(parsedPagename, map);
     if (null == wikiContent) {
@@ -43,31 +37,14 @@ public class ChineseDbnaryWikiModel extends EnglishLikeModulesPatcherWikiModel {
       String pagename = parsedPagename.pagename.toLowerCase();
       if (pagename.equals("debug/track")) {
         wikiContent = patchModule(parsedPagename.pagename, wikiContent,
-            t -> t.replace("return function(input)",
-                "return function(input)\n" + "\tif 1 == 1 then return true end\n"));
-      } else if (parsedPagename.pagename.equalsIgnoreCase("parameters")) {
-        // December 2024: English Module:parameters now uses the traceback that is only available in
-        // debug
-        // mode avoid an error while compiling the module as debug is not available in our execution
-        // environment and when English community does a stupid thing, it always percolate to
-        // Chinese language edition... — patch it
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
-                "local function traceback() \n" //
-                    + " return \"\"\n" //
-                    + "end\n"));
-      } else if (parsedPagename.pagename.equalsIgnoreCase("Table/getUnprotectedMetatable")) {
-        return getAndPatchModule(parsedPagename, map,
-            t -> t.replaceAll("local\\s+_getmetatable\\s*=\\s*debug.getmetatable\\s*\n", //
-                "local _getmetatable = nil\n"));
+            t -> t.replace("return function(input)", "return function(input)\n" + "\tif 1 == 1 then return true end\n"));
       }
     }
     return wikiContent;
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     if (templateName.equals("check deprecated lang param usage")) {
       writer.append(parameterMap.getOrDefault("1", ""));

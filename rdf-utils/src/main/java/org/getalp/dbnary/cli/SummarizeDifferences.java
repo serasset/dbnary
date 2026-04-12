@@ -45,20 +45,13 @@ public class SummarizeDifferences extends VerboseCommand {
 
 
   static {
-    options.addOption(Option.builder().longOpt(SLACK_OPTION).desc(
-        "Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
-        .build())
-        .addOption(Option.builder().longOpt(DISCORD_OPTION)
-            .desc(
-                "Display summary on Discord (using DISCORD_CHANNEL_WEBHOOK environment variable).")
+    options
+        .addOption(Option.builder().longOpt(SLACK_OPTION).desc("Display summary on Slack (using $SLACK_BOT_TOKEN and $SLACK_CHANNEL_ID environment variables).")
             .build())
-        .addOption(Option.builder().longOpt(STDOUT_OPTION)
-            .desc("Display summary on stdout (default if neither slack nor discord specified).")
-            .build())
-        .addOption(Option.builder().longOpt("next").hasArg()
-            .desc("set the name of the branch that is evaluated.").build())
-        .addOption(Option.builder().longOpt("previous").hasArg()
-            .desc("set the name of the branch on which the comparison is based.").build());
+        .addOption(Option.builder().longOpt(DISCORD_OPTION).desc("Display summary on Discord (using DISCORD_CHANNEL_WEBHOOK environment variable).").build())
+        .addOption(Option.builder().longOpt(STDOUT_OPTION).desc("Display summary on stdout (default if neither slack nor discord specified).").build())
+        .addOption(Option.builder().longOpt("next").hasArg().desc("set the name of the branch that is evaluated.").build())
+        .addOption(Option.builder().longOpt("previous").hasArg().desc("set the name of the branch on which the comparison is based.").build());
   }
 
   boolean useSlack = false;
@@ -90,14 +83,9 @@ public class SummarizeDifferences extends VerboseCommand {
   @Override
   protected void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar "
-            + this.getClass().getCanonicalName() + " [OPTIONS] diffFolder",
-        "With OPTIONS in:", options,
-        "diffFolder should contains turtle files describing the differences computed. "
-            + "Each file should be named <lg>_{gain,lost}_<model>.ttl "
-            + "  - where <lg> is the 2 letter language code"
-            + "  - and model is one of: ontolex, morphology, etymology, etc.",
+    formatter.printHelp("java -cp /path/to/dbnary.jar " + this.getClass().getCanonicalName() + " [OPTIONS] diffFolder", "With OPTIONS in:", options,
+        "diffFolder should contains turtle files describing the differences computed. " + "Each file should be named <lg>_{gain,lost}_<model>.ttl "
+            + "  - where <lg> is the 2 letter language code" + "  - and model is one of: ontolex, morphology, etymology, etc.",
         false);
   }
 
@@ -124,28 +112,22 @@ public class SummarizeDifferences extends VerboseCommand {
       // Send and forget
 
       WebhookMessage message = createDiscordMessage();
-      client.send(message).thenAccept(
-          (msg) -> System.err.printf("Message with embed has been sent [%s]%n", msg.getId()));
+      client.send(message).thenAccept((msg) -> System.err.printf("Message with embed has been sent [%s]%n", msg.getId()));
     }
   }
 
   private WebhookMessage createDiscordMessage() {
     WebhookMessageBuilder builder = new WebhookMessageBuilder();
-    builder.setContent(
-        String.format("**Extraction sample comparison between branch:%s and branch:%s**",
-            originalBranch, destinationBranch));
+    builder.setContent(String.format("**Extraction sample comparison between branch:%s and branch:%s**", originalBranch, destinationBranch));
 
-    WebhookEmbedBuilder endolexEmbedBuilder = new WebhookEmbedBuilder().setColor(0x58b9ff)
-        .setTitle(new EmbedTitle("Endolex (editions' languages) datasets", ""));
-    WebhookEmbedBuilder exolexEmbedBuilder = new WebhookEmbedBuilder().setColor(0x8f07b1)
-        .setTitle(new EmbedTitle("Exolex (foreign languages) datasets", ""));
+    WebhookEmbedBuilder endolexEmbedBuilder =
+        new WebhookEmbedBuilder().setColor(0x58b9ff).setTitle(new EmbedTitle("Endolex (editions' languages) datasets", ""));
+    WebhookEmbedBuilder exolexEmbedBuilder = new WebhookEmbedBuilder().setColor(0x8f07b1).setTitle(new EmbedTitle("Exolex (foreign languages) datasets", ""));
     data.forEach((model, modelData) -> {
       if (model.startsWith("exolex")) {
-        exolexEmbedBuilder
-            .addField(new EmbedField(true, capitalize(model), modelData.toDiscordMarkdownString()));
+        exolexEmbedBuilder.addField(new EmbedField(true, capitalize(model), modelData.toDiscordMarkdownString()));
       } else {
-        endolexEmbedBuilder
-            .addField(new EmbedField(true, capitalize(model), modelData.toDiscordMarkdownString()));
+        endolexEmbedBuilder.addField(new EmbedField(true, capitalize(model), modelData.toDiscordMarkdownString()));
       }
     });
     return builder.addEmbeds(endolexEmbedBuilder.build(), exolexEmbedBuilder.build()).build();
@@ -165,8 +147,7 @@ public class SummarizeDifferences extends VerboseCommand {
 
       // Build a request object
       ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channelID)
-          .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch)
-          .blocks(createSlackMessage(originalBranch, destinationBranch)).build();
+          .text("I evaluated dbnary " + destinationBranch + " vs " + originalBranch).blocks(createSlackMessage(originalBranch, destinationBranch)).build();
 
       // Get a response as a Java object
       System.err.println("Posting message : " + request);
@@ -189,11 +170,9 @@ public class SummarizeDifferences extends VerboseCommand {
 
   private List<LayoutBlock> createSlackMessage(String source, String target) {
     List<LayoutBlock> blocks = new ArrayList<>();
-    SectionBlock mainBlock = section(section -> section.text(markdownText(
-        "*Results of extraction sample evaluation*\n" + "Branches: " + target + " vs " + source))
-        .fields(new ArrayList<>()));
-    data.forEach((model, modelData) -> mainBlock.getFields()
-        .add(markdownText(modelData.toSlackMarkdownString())));
+    SectionBlock mainBlock = section(section -> section
+        .text(markdownText("*Results of extraction sample evaluation*\n" + "Branches: " + target + " vs " + source)).fields(new ArrayList<>()));
+    data.forEach((model, modelData) -> mainBlock.getFields().add(markdownText(modelData.toSlackMarkdownString())));
     blocks.add(mainBlock);
     return blocks;
   }
@@ -281,8 +260,7 @@ public class SummarizeDifferences extends VerboseCommand {
         } else {
           s.append(":small_red_triangle_down: ");
         }
-        s.append("\t +").append(gainCount).append("(").append(v.getGain()).append(") / -")
-            .append(lossCount).append("(").append(v.getLoss()).append(")\n");
+        s.append("\t +").append(gainCount).append("(").append(v.getGain()).append(") / -").append(lossCount).append("(").append(v.getLoss()).append(")\n");
       });
       return s.toString();
     }

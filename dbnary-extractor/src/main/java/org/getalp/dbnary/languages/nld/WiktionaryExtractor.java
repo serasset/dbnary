@@ -45,8 +45,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    defOrExampleExpander =
-        new ExpandAllWikiModel(wi, new Locale("nl"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    defOrExampleExpander = new ExpandAllWikiModel(wi, new Locale("nl"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
   }
 
   protected final static Pattern languageSectionPattern;
@@ -57,15 +56,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   static {
 
-    String examplePatternString = new StringBuilder().append("\\{\\{\\s*")
-        .append("([^\\}\\|\n\r]*)\\s*\\|([^\n\r]*)").append("(?:\\}\\})$").toString();
+    String examplePatternString = new StringBuilder().append("\\{\\{\\s*").append("([^\\}\\|\n\r]*)\\s*\\|([^\n\r]*)").append("(?:\\}\\})$").toString();
 
     String defOrExamplePatternString =
-        new StringBuilder().append("(?:").append(WikiPatterns.definitionPatternString)
-            .append(")|(?:").append(examplePatternString).append(")").toString();
+        new StringBuilder().append("(?:").append(WikiPatterns.definitionPatternString).append(")|(?:").append(examplePatternString).append(")").toString();
 
-    sectionPatternString = new StringBuilder().append("\\{\\{\\s*-")
-        .append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?").append("\\}\\}").toString();
+    sectionPatternString = new StringBuilder().append("\\{\\{\\s*-").append("([^\\}\\|\n\r]*)-\\s*(?:\\|([^\\}\n\r]*))?").append("\\}\\}").toString();
 
     defOrExamplePattern = Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
     // defOrExamplePattern = Pattern.compile(examplePatternString);
@@ -99,7 +95,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
    * org.getalp.blexisma.semnet.SemanticNetwork)
    */
@@ -151,8 +147,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
       // If current block is IGNOREPOS, we should ignore everything but a new
       // DEFBLOCK/INFLECTIONBLOCK
-      if (Block.IGNOREPOS != currentBlock
-          || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
+      if (Block.IGNOREPOS != currentBlock || (Block.DEFBLOCK == nextBlock || Block.INFLECTIONBLOCK == nextBlock)) {
         leaveCurrentBlock(m);
         gotoNextBlock(nextBlock, context);
       }
@@ -184,11 +179,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     } else if (null != (nym = nymMarkerToNymName.get(title))) {
       context.put("nym", nym);
       return Block.NYMBLOCK;
-    } else if (title.equals("l")
-        || (title.length() > 2 && title.substring(0, 2).equals(wdh.getCurrentEntryLanguage()))) {
+    } else if (title.equals("l") || (title.length() > 2 && title.substring(0, 2).equals(wdh.getCurrentEntryLanguage()))) {
       // The special -l- template is not a new block, but a continuation of the previous block
-      log.trace("Template -{}- in {} is not a section template", title,
-          this.getWiktionaryPageName());
+      log.trace("Template -{}- in {} is not a section template", title, this.getWiktionaryPageName());
       return null;
     } else {
       log.debug("Ignoring content of section {} in {}", title, this.getWiktionaryPageName());
@@ -324,8 +317,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (defOrExampleMatcher.find()) {
       if (null != defOrExampleMatcher.group(1)) {
         extractDefinition(defOrExampleMatcher);
-      } else if ((null != defOrExampleMatcher.group(3))
-          && (defOrExampleMatcher.group(2).equals("bijv-1"))) { // Les exemples commencent toujours
+      } else if ((null != defOrExampleMatcher.group(3)) && (defOrExampleMatcher.group(2).equals("bijv-1"))) { // Les exemples commencent toujours
         // par bijv-1
         extractExample(defOrExampleMatcher);
       }

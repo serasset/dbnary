@@ -18,24 +18,17 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     // DONE: Kurdish
     posAndTypeValueMap.put("Navdêr", new PosAndType(LexinfoOnt.noun, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Serenav",
-        new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Rengdêr",
-        new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Serenav", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Rengdêr", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Lêker", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Hoker", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Cînav", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Baneşan",
-        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Baneşan", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Daçek", new PosAndType(LexinfoOnt.adposition, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Pêşdaçek",
-        new PosAndType(LexinfoOnt.preposition, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Paşdaçek",
-        new PosAndType(LexinfoOnt.postposition, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Bazinedaçek",
-        new PosAndType(LexinfoOnt.circumposition, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Girêdek",
-        new PosAndType(LexinfoOnt.conjunction, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Pêşdaçek", new PosAndType(LexinfoOnt.preposition, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Paşdaçek", new PosAndType(LexinfoOnt.postposition, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Bazinedaçek", new PosAndType(LexinfoOnt.circumposition, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Girêdek", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Artîkel", new PosAndType(LexinfoOnt.article, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Navgir", new PosAndType(LexinfoOnt.infix, OntolexOnt.Affix));
     posAndTypeValueMap.put("Paşgir", new PosAndType(LexinfoOnt.suffix, OntolexOnt.Affix));
@@ -43,17 +36,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // These two means a root form but seems to correspond to a inflected form.
     // posAndTypeValueMap.put("Reh", new PosAndType(LexinfoOnt.???, OntolexOnt.LexicalEntry));
     // posAndTypeValueMap.put("Rehekî lêkerê", new PosAndType(LexinfoOnt.???, OntolexOnt.Affix));
-    posAndTypeValueMap.put("Biwêj",
-        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("Hevok",
-        new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("Gotineke pêşiyan",
-        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Biwêj", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Hevok", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("Gotineke pêşiyan", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Hejmar", new PosAndType(LexinfoOnt.numeral, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Tîp", new PosAndType(LexinfoOnt.letter, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Sembol", new PosAndType(LexinfoOnt.symbol, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Kurtenav",
-        new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Kurtenav", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
   }
 
   public static final HashMap<String, String> nymMap = new HashMap<>();

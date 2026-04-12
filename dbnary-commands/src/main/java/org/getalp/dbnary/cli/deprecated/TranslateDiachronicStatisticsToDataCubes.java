@@ -66,8 +66,7 @@ public class TranslateDiachronicStatisticsToDataCubes {
   static {
     options = new Options();
     options.addOption("h", false, "Prints usage and exits. ");
-    options.addOption(PREFIX_DIR_OPTION, true,
-        "directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");
+    options.addOption(PREFIX_DIR_OPTION, true, "directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");
   }
 
   String[] remainingArgs;
@@ -113,8 +112,7 @@ public class TranslateDiachronicStatisticsToDataCubes {
   }
 
   public static void main(String args[]) throws Exception {
-    TranslateDiachronicStatisticsToDataCubes cliProg =
-        new TranslateDiachronicStatisticsToDataCubes();
+    TranslateDiachronicStatisticsToDataCubes cliProg = new TranslateDiachronicStatisticsToDataCubes();
     cliProg.loadArgs(args);
     cliProg.translateStats();
 
@@ -146,12 +144,10 @@ public class TranslateDiachronicStatisticsToDataCubes {
     ArrayList<Map<String, String>> tstats = readAndParseStats(tstatFile);
 
     Map<String, List<Map<String, String>>> statsByDate =
-        Stream.of(gstats.stream(), nstats.stream(), tstats.stream()).flatMap(m -> m)
-            .collect(Collectors.groupingBy(m -> m.get("Date")));
+        Stream.of(gstats.stream(), nstats.stream(), tstats.stream()).flatMap(m -> m).collect(Collectors.groupingBy(m -> m.get("Date")));
 
     for (Entry<String, List<Map<String, String>>> e : statsByDate.entrySet()) {
-      File statsRDF = new File(
-          extractsDir + File.separator + lg2 + "_dbnary_statistics_" + e.getKey() + ".ttl.bz2");
+      File statsRDF = new File(extractsDir + File.separator + lg2 + "_dbnary_statistics_" + e.getKey() + ".ttl.bz2");
       if (statsRDF.exists()) {
         System.err.println(statsRDF.getAbsolutePath() + " already exists. Ignoring.");
         continue;
@@ -186,25 +182,20 @@ public class TranslateDiachronicStatisticsToDataCubes {
   private void handleStatsLine(Map<String, String> map, Model model, String dumpVersion) {
     if (map.containsKey("# of lang")) {
       // It's a translation stats cvs
-      createTranslationObservation(model, dumpVersion, NS, lg3, "number_of_languages",
-          Long.valueOf(map.get("# of lang")));
+      createTranslationObservation(model, dumpVersion, NS, lg3, "number_of_languages", Long.valueOf(map.get("# of lang")));
       map.remove("# of lang");
       map.remove("Date");
-      createTranslationObservation(model, dumpVersion, NS, lg3, "mul",
-          Long.valueOf(map.get("Total")));
+      createTranslationObservation(model, dumpVersion, NS, lg3, "mul", Long.valueOf(map.get("Total")));
       map.remove("Total");
-      map.forEach(
-          (k, v) -> createTranslationObservation(model, dumpVersion, NS, lg3, k, Long.valueOf(v)));
+      map.forEach((k, v) -> createTranslationObservation(model, dumpVersion, NS, lg3, k, Long.valueOf(v)));
     } else if (map.containsKey("Entries")) {
       // It's the general statistics
-      createGeneralStatisticsObservation(model, dumpVersion, NS, lg3,
-          Long.parseLong(map.get("Translations")), Long.parseLong(map.get("Vocables")),
+      createGeneralStatisticsObservation(model, dumpVersion, NS, lg3, Long.parseLong(map.get("Translations")), Long.parseLong(map.get("Vocables")),
           Long.parseLong(map.get("Entries")), Long.parseLong(map.get("Senses")));
     } else if (map.containsKey("qsyn")) {
       // It's the nym statistics
       map.remove("Date");
-      map.forEach((k, v) -> createNymRelationObservation(model, dumpVersion, NS, lg3,
-          NymRelation.of(k), Long.parseLong(v)));
+      map.forEach((k, v) -> createNymRelationObservation(model, dumpVersion, NS, lg3, NymRelation.of(k), Long.parseLong(v)));
     }
   }
 
@@ -214,8 +205,7 @@ public class TranslateDiachronicStatisticsToDataCubes {
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      BufferedReader br =
-          new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
+      BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(gs), "UTF-8"));
       String h = br.readLine(); // reading header
       // TODO : parse header to know the columns sequence
       List<String> columns = Stream.of(h.split(",")).sequential().collect(Collectors.toList());
@@ -247,8 +237,7 @@ public class TranslateDiachronicStatisticsToDataCubes {
       box.write(out, "TURTLE");
       out.flush();
     } catch (IOException e) {
-      System.err.println(
-          "Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
+      System.err.println("Caught IOException while printing extracted data: \n" + e.getLocalizedMessage());
       e.printStackTrace(System.err);
       throw e;
     }
@@ -256,12 +245,8 @@ public class TranslateDiachronicStatisticsToDataCubes {
 
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
-    String help =
-        "Translate diachronic statistics that are available in csv file in the prefix folder "
-            + "to stats file using datacube properties.";
-    formatter.printHelp(
-        "java -cp /path/to/dbnary.jar "
-            + TranslateDiachronicStatisticsToDataCubes.class.getCanonicalName() + "[OPTIONS] lang",
+    String help = "Translate diachronic statistics that are available in csv file in the prefix folder " + "to stats file using datacube properties.";
+    formatter.printHelp("java -cp /path/to/dbnary.jar " + TranslateDiachronicStatisticsToDataCubes.class.getCanonicalName() + "[OPTIONS] lang",
         "With OPTIONS in:", options, help, false);
   }
 

@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.getalp.dbnary.languages.bul;
 
 import java.util.Locale;
@@ -57,7 +54,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.getalp.dbnary.WiktionaryExtractor#extractData(java.lang.String,
    * org.getalp.blexisma.semnet.SemanticNetwork)
    */
@@ -76,8 +73,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int bulgarianSectionStartOffset = languageFilter.end();
     // Advance till end of sequence or new language section
     languageFilter.find();
-    int bulgarianSectionEndOffset =
-        languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
+    int bulgarianSectionEndOffset = languageFilter.hitEnd() ? pageContent.length() : languageFilter.start();
 
     extractBulgarianData(bulgarianSectionStartOffset, bulgarianSectionEndOffset);
     wdh.finalizePageExtraction();
@@ -120,8 +116,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (m.find()) {
       switch (state) {
         case NODATA:
-          if (m.group(1).startsWith("{{") && !m.group(1).contains("{{Словоформи")
-              && !m.group(1).contains("{{Уикипедия}}")) {
+          if (m.group(1).startsWith("{{") && !m.group(1).contains("{{Словоформи") && !m.group(1).contains("{{Уикипедия}}")) {
             gotoBulgarianBlock(m);
           }
           break;
@@ -147,8 +142,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         leaveBulgarianBlock(m);
         break;
       default:
-        assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }
@@ -158,8 +152,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    dbnmodel =
-        new BulgarianWikiModel(this.wdh, this.wi, new Locale("bg"), "/${image}", "/${title}");
+    dbnmodel = new BulgarianWikiModel(this.wdh, this.wi, new Locale("bg"), "/${image}", "/${title}");
   }
 
   @Override

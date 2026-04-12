@@ -63,8 +63,7 @@ public class RDF2HDT {
       }
 
 
-      try (OutputStream hdtOutputStream =
-          new BZip2CompressorOutputStream(new FileOutputStream(hdtOutput.toString()))) {
+      try (OutputStream hdtOutputStream = new BZip2CompressorOutputStream(new FileOutputStream(hdtOutput.toString()))) {
         // Dump to HDT file
         hdt.saveToHDT(hdtOutputStream, null);
       } catch (IOException e) {

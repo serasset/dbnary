@@ -31,11 +31,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "extract", mixinStandardHelpOptions = true,
-    header = "extract all pages from a dump and write resulting RDF files.",
+@Command(name = "extract", mixinStandardHelpOptions = true, header = "extract all pages from a dump and write resulting RDF files.",
     description = "Process all pages and extract lexical data according to options that are passed "
-        + "to the program. The extracted lexical data is encoded as RDF graphs using ontolex, "
-        + "lexinfo, olia and other standard vocabularies.")
+        + "to the program. The extracted lexical data is encoded as RDF graphs using ontolex, " + "lexinfo, olia and other standard vocabularies.")
 public class ExtractWiktionary extends Extractor implements Callable<Integer> {
 
   private static final Logger log = LoggerFactory.getLogger(ExtractWiktionary.class);
@@ -83,15 +81,13 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
     try {
       return extract();
     } catch (IOException e) {
-      spec.commandLine().getErr().format("IOException while extracting, stopping: %s%n",
-          e.getLocalizedMessage());
+      spec.commandLine().getErr().format("IOException while extracting, stopping: %s%n", e.getLocalizedMessage());
       // e.printStackTrace(spec.commandLine().getErr());
       return -1;
     }
   }
 
-  protected Integer prepareExtraction()
-      throws WiktionaryIndexerException, IOException, NoWiktionaryExtractorException {
+  protected Integer prepareExtraction() throws WiktionaryIndexerException, IOException, NoWiktionaryExtractorException {
     prefs = new ExtractionPreferences(parent.dbnaryDir);
 
     if (batch.useTdb())
@@ -105,13 +101,11 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
       err.println("  Dump: " + wi.getDumpFile());
       err.println("  TDB : " + batch.tdbDir());
       err.println("  Format : " + features.getOutputFormat());
-      features.getEndolexFeatures()
-          .forEach(f -> err.format("  %s : %s%n", f.toString(), prefs.outputFileForFeature(f,
-              lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), false)));
+      features.getEndolexFeatures().forEach(f -> err.format("  %s : %s%n", f.toString(),
+          prefs.outputFileForFeature(f, lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), false)));
       if (null != features.getExolexFeatures())
-        features.getExolexFeatures()
-            .forEach(f -> err.format("  %s : %s%n", f.toString(), prefs.outputFileForFeature(f,
-                lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), true)));
+        features.getExolexFeatures().forEach(f -> err.format("  %s : %s%n", f.toString(),
+            prefs.outputFileForFeature(f, lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), true)));
     }
     return 0;
   }
@@ -139,8 +133,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
           if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.pageTag)) {
             title = "";
             page = "";
-          } else if (xmlr.isStartElement()
-              && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
+          } else if (xmlr.isStartElement() && xmlr.getLocalName().equals(WiktionaryIndexer.titleTag)) {
             title = xmlr.getElementText();
           } else if (xmlr.isStartElement() && xmlr.getLocalName().equals("text")) {
             page = xmlr.getElementText();
@@ -157,8 +150,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
               try {
                 we.extractData(title, page);
               } catch (RuntimeException | StackOverflowError e) {
-                spec.commandLine().getErr().println("Runtime exception while extracting  page<<"
-                    + title + ">>, proceeding to next pages.");
+                spec.commandLine().getErr().println("Runtime exception while extracting  page<<" + title + ">>, proceeding to next pages.");
                 if (log.isDebugEnabled())
                   e.printStackTrace(spec.commandLine().getErr());
                 spec.commandLine().getErr().println(e.getMessage());
@@ -168,10 +160,8 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
                 nbRelevantPages++;
                 if (nbRelevantPages % 1000 == 0) {
                   spec.commandLine().getErr()
-                      .println("Extracted: " + nbRelevantPages + " pages in: "
-                          + formatHMS(totalRelevantTime) + " / Average = "
-                          + (totalRelevantTime / nbRelevantPages) + " ms/extracted page ("
-                          + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000
+                      .println("Extracted: " + nbRelevantPages + " pages in: " + formatHMS(totalRelevantTime) + " / Average = "
+                          + (totalRelevantTime / nbRelevantPages) + " ms/extracted page (" + (System.currentTimeMillis() - relevantTimeOfLastThousands) / 1000
                           + " ms) (" + nbPages + " processed Pages)");
                   // System.err.println(" NbNodes = " + s.getNbNodes());
                   relevantTimeOfLastThousands = System.currentTimeMillis();
@@ -184,8 +174,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
         spec.commandLine().getErr().println(ex.getMessage());
 
         if (ex.getNestedException() != null) {
-          spec.commandLine().getErr()
-              .println("  Nested Exception: " + ex.getNestedException().getMessage());
+          spec.commandLine().getErr().println("  Nested Exception: " + ex.getNestedException().getMessage());
         }
         throw new IOException("XML Stream Exception while reading dump", ex);
       } catch (Exception ex) {
@@ -201,14 +190,12 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
         }
       }
 
-      spec.commandLine().getErr().println("Extracted " + nbRelevantPages + " pages in: "
-          + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
+      spec.commandLine().getErr().println("Extracted " + nbRelevantPages + " pages in: " + formatHMS(totalRelevantTime) + " (" + nbPages + " scanned Pages)");
 
       relevantStartTime = System.currentTimeMillis();
       postProcessAfterExtraction(VersionProvider.getDumpVersion(wi.getDumpFile().getName()));
       totalRelevantTime = System.currentTimeMillis() - relevantStartTime;
-      spec.commandLine().getErr().format("Post processed %d entries in %s%n", nbRelevantPages,
-          formatHMS(totalRelevantTime));
+      spec.commandLine().getErr().format("Post processed %d entries in %s%n", nbRelevantPages, formatHMS(totalRelevantTime));
 
       Files.createDirectories(prefs.getExtractionDir(lm.getLanguage()));
       for (ExtractionFeature f : features.getEndolexFeatures()) {
@@ -239,8 +226,7 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
         try {
           FileUtils.deleteDirectory(new File(batch.tdbDir()));
         } catch (IOException e) {
-          spec.commandLine().getErr().println("Caught " + e.getClass()
-              + " when attempting to delete the temporary TDB directory " + batch.tdbDir());
+          spec.commandLine().getErr().println("Caught " + e.getClass() + " when attempting to delete the temporary TDB directory " + batch.tdbDir());
           spec.commandLine().getErr().println(e.getLocalizedMessage());
         }
       }
@@ -257,35 +243,27 @@ public class ExtractWiktionary extends Extractor implements Callable<Integer> {
   }
 
   private void saveBox(ExtractionFeature f, boolean isExolex) throws IOException {
-    File of = prefs.outputFileForFeature(f, lm.getLanguage(), suffix, features.getOutputFormat(),
-        batch.doCompress(), isExolex).toFile();
+    File of = prefs.outputFileForFeature(f, lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), isExolex).toFile();
     Model model = isExolex ? wdh.getExolexFeatureBox(f) : wdh.getEndolexFeatureBox(f);
-    try (OutputStream ostream =
-        batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(of))
-            : new FileOutputStream(of)) {
-      spec.commandLine().getErr().println(
-          "Dumping " + features.getOutputFormat() + " representation of " + f.toString() + ".");
+    try (OutputStream ostream = batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(of)) : new FileOutputStream(of)) {
+      spec.commandLine().getErr().println("Dumping " + features.getOutputFormat() + " representation of " + f.toString() + ".");
       wdh.dump(model, ostream, features.getOutputFormat());
     } catch (IOException e) {
-      spec.commandLine().getErr()
-          .println("Caught IOException while printing extracted data: " + e.getLocalizedMessage());
+      spec.commandLine().getErr().println("Caught IOException while printing extracted data: " + e.getLocalizedMessage());
       // e.printStackTrace(spec.commandLine().getErr());
       throw e;
     }
   }
 
   private void saveAllAsHDT(boolean isExolex) throws IOException {
-    File hdtOutputFile = prefs.outputFileForFeature(ExtractionFeature.HDT, lm.getLanguage(), suffix,
-        features.getOutputFormat(), batch.doCompress(), isExolex).toFile();
+    File hdtOutputFile =
+        prefs.outputFileForFeature(ExtractionFeature.HDT, lm.getLanguage(), suffix, features.getOutputFormat(), batch.doCompress(), isExolex).toFile();
     try (OutputStream ostream =
-        batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(hdtOutputFile))
-            : new FileOutputStream(hdtOutputFile)) {
-      spec.commandLine().getErr().format("Dumping all features as a single HDT file in %s.%n",
-          hdtOutputFile);
+        batch.doCompress() ? new BZip2CompressorOutputStream(new FileOutputStream(hdtOutputFile)) : new FileOutputStream(hdtOutputFile)) {
+      spec.commandLine().getErr().format("Dumping all features as a single HDT file in %s.%n", hdtOutputFile);
       wdh.dumpAllFeaturesAsHDT(ostream, isExolex);
     } catch (IOException e) {
-      spec.commandLine().getErr()
-          .println("Caught IOException while producing HDT file: \n" + e.getLocalizedMessage());
+      spec.commandLine().getErr().println("Caught IOException while producing HDT file: \n" + e.getLocalizedMessage());
       // e.printStackTrace(spec.commandLine().getErr());
       throw e;
     }

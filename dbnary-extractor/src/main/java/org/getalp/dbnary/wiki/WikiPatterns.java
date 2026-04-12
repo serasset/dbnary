@@ -27,9 +27,8 @@ public class WikiPatterns {
     macroPatternString = "\\{\\{" + "([^\\}\\|\n\r]*)(?:\\|([^\\}\n\r]*))?" + "\\}\\}";
     // TODO: We should suppress multiline xml comments even if macros or line are to be on a single
     // line.
-    macroOrLinkPatternString = new StringBuilder().append("(?:").append(macroPatternString)
-        .append(")|(?:").append(linkPatternString).append(")|(?:").append("'{2,3}").append(")|(?:")
-        .append("<!--.*-->").append(")").toString();
+    macroOrLinkPatternString = new StringBuilder().append("(?:").append(macroPatternString).append(")|(?:").append(linkPatternString).append(")|(?:")
+        .append("'{2,3}").append(")|(?:").append("<!--.*-->").append(")").toString();
 
     categoryOrInterwikiLinkPattern = Pattern.compile(catOrInterwikiLink, Pattern.MULTILINE);
 

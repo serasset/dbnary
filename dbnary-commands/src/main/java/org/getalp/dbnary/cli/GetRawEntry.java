@@ -7,10 +7,8 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "source", mixinStandardHelpOptions = true,
-    header = "get the wikitext source of the specified pages.",
-    description = "The wikitext of specified pages is retrieved from the dump and written "
-        + "to stdout.")
+@Command(name = "source", mixinStandardHelpOptions = true, header = "get the wikitext source of the specified pages.",
+    description = "The wikitext of specified pages is retrieved from the dump and written " + "to stdout.")
 public class GetRawEntry implements Callable<Integer> {
 
   @Mixin

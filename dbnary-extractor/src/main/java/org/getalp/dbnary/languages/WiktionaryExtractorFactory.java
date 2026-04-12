@@ -28,20 +28,16 @@ public class WiktionaryExtractorFactory {
     } catch (IllegalAccessException e) {
       log.warn("Illegal access to wiktionary extractor for " + language);
     } catch (IllegalArgumentException e) {
-      System.err
-          .println("Illegal argument passed to wiktionary extractor's constructor for " + language);
+      System.err.println("Illegal argument passed to wiktionary extractor's constructor for " + language);
       e.printStackTrace(System.err);
     } catch (SecurityException e) {
-      System.err
-          .println("Security exception while instanciating wiktionary extractor for " + language);
+      System.err.println("Security exception while instanciating wiktionary extractor for " + language);
       e.printStackTrace(System.err);
     } catch (InvocationTargetException e) {
-      log.warn("InvocationTargetException exception while instanciating wiktionary extractor for "
-          + language);
+      log.warn("InvocationTargetException exception while instanciating wiktionary extractor for " + language);
       e.printStackTrace(System.err);
     } catch (NoSuchMethodException e) {
-      log.error(
-          "No appropriate constructor when instanciating wiktionary extractor for " + language);
+      log.error("No appropriate constructor when instanciating wiktionary extractor for " + language);
     }
     return we;
   }

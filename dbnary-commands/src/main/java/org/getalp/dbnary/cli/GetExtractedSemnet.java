@@ -1,7 +1,6 @@
 package org.getalp.dbnary.cli;
 
 import com.github.jsonldjava.shaded.com.google.common.io.Files;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
@@ -12,18 +11,14 @@ import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.cli.mixins.Extractor;
 import org.getalp.dbnary.cli.utils.NoWiktionaryExtractorException;
 import org.getalp.dbnary.cli.utils.VersionProvider;
-import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "sample", mixinStandardHelpOptions = true,
-    header = "extract the specified pages from a dump and write resulting RDF files to stdout.",
-    description = "Process all specified pages and extract lexical data according to options that "
-        + "are passed to the program. The extracted lexical data is encoded as RDF graphs using "
-        + "ontolex, lexinfo, olia and other standard vocabularies.")
+@Command(name = "sample", mixinStandardHelpOptions = true, header = "extract the specified pages from a dump and write resulting RDF files to stdout.",
+    description = "Process all specified pages and extract lexical data according to options that are passed to the program. The extracted lexical data is encoded as RDF graphs using ontolex, lexinfo, olia and other standard vocabularies.")
 public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
   private static final Logger log = LoggerFactory.getLogger(GetExtractedSemnet.class);
 
@@ -32,13 +27,10 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
 
   String[] entriesFromFile = null;
 
-  @Option(names = {"--entries"},
-      description = "take the list of entries from the specified file instead of remaining arguments.",
-      arity = "1")
+  @Option(names = {"--entries"}, description = "take the list of entries from the specified file instead of remaining arguments.", arity = "1")
   protected void getEntriesFromFile(Path entriesFile) {
     try {
-      entriesFromFile =
-          Files.readLines(entriesFile.toFile(), Charset.defaultCharset()).toArray(new String[0]);
+      entriesFromFile = Files.readLines(entriesFile.toFile(), Charset.defaultCharset()).toArray(new String[0]);
     } catch (IOException e) {
       throw new RuntimeException("Could not read the list of entries.", e);
     }
@@ -58,8 +50,7 @@ public class GetExtractedSemnet extends Extractor implements Callable<Integer> {
       try {
         we.extractData(entry, pageContent);
       } catch (RuntimeException | StackOverflowError e) {
-        spec.commandLine().getErr().println(
-            "Runtime exception while extracting  page<<" + entry + ">>, proceeding to next pages.");
+        spec.commandLine().getErr().println("Runtime exception while extracting  page<<" + entry + ">>, proceeding to next pages.");
         if (log.isDebugEnabled())
           e.printStackTrace(spec.commandLine().getErr());
         spec.commandLine().getErr().println(e.getMessage());

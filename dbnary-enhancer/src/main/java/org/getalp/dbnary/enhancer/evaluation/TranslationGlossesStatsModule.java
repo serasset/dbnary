@@ -20,8 +20,7 @@ public class TranslationGlossesStatsModule {
     return stats;
   }
 
-  private HashMap<String, TranslationGlossesStat> stats =
-      new HashMap<String, TranslationGlossesStat>();
+  private HashMap<String, TranslationGlossesStat> stats = new HashMap<String, TranslationGlossesStat>();
   private TranslationGlossesStat currentStat;
 
   public TranslationGlossesStatsModule() {

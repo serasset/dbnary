@@ -30,8 +30,7 @@ public class WiktionaryIndexer {
     }
   }
 
-  public static void createIndex(Path dump, Map<String, OffsetValue> map)
-      throws WiktionaryIndexerException {
+  public static void createIndex(Path dump, Map<String, OffsetValue> map) throws WiktionaryIndexerException {
 
     // create new XMLStreamReader
 
@@ -83,8 +82,7 @@ public class WiktionaryIndexer {
     }
 
     long endtime = System.currentTimeMillis();
-    System.out
-        .println(" Parsing Time = " + (endtime - starttime) + "; " + nbPages + " pages parsed.");
+    System.out.println(" Parsing Time = " + (endtime - starttime) + "; " + nbPages + " pages parsed.");
   }
 
   public static String getTextElementContent(String wiktionaryPageContent) {

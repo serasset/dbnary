@@ -20,31 +20,22 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("ltpsdlv", new PosAndType(LexinfoOnt.participle, LexinfoOnt.Particle));
     posAndTypeValueMap.put("ltbdv", new PosAndType(LexinfoOnt.adjective, LexinfoOnt.Adjective));
     posAndTypeValueMap.put("ltprv", new PosAndType(LexinfoOnt.adverb, LexinfoOnt.Adverb));
-    posAndTypeValueMap.put("ltpdlv",
-        new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
+    posAndTypeValueMap.put("ltpdlv", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
     posAndTypeValueMap.put("ltprl", new PosAndType(LexinfoOnt.preposition, LexinfoOnt.Preposition));
-    posAndTypeValueMap.put("ltjung",
-        new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("ltjung", new PosAndType(LexinfoOnt.phraseologicalUnit, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("ltjng", new PosAndType(LexinfoOnt.conjunction, LexinfoOnt.Conjunction));
     posAndTypeValueMap.put("ltįvrd", new PosAndType(LexinfoOnt.pronoun, LexinfoOnt.Pronoun));
     posAndTypeValueMap.put("ltskt", new PosAndType(LexinfoOnt.numeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("ltrad", new PosAndType(LexinfoOnt.letter, LexinfoOnt.Symbol));
-    posAndTypeValueMap.put("ltsant",
-        new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("ltdll",
-        new PosAndType(LexinfoOnt.baseElement, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltsant", new PosAndType(LexinfoOnt.abbreviation, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltdll", new PosAndType(LexinfoOnt.baseElement, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("ltprd", new PosAndType(LexinfoOnt.prefix, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("ltprs", new PosAndType(LexinfoOnt.suffix, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("ltjst",
-        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("ltišt",
-        new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("ltskt-kiek",
-        new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
-    posAndTypeValueMap.put("ltskt-kelint",
-        new PosAndType(LexinfoOnt.indefiniteOrdinalNumeral, LexinfoOnt.Numeral));
-    posAndTypeValueMap.put("ltskt-kelint-laips",
-        new PosAndType(LexinfoOnt.indefiniteOrdinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("ltjst", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltišt", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("ltskt-kiek", new PosAndType(LexinfoOnt.cardinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("ltskt-kelint", new PosAndType(LexinfoOnt.indefiniteOrdinalNumeral, LexinfoOnt.Numeral));
+    posAndTypeValueMap.put("ltskt-kelint-laips", new PosAndType(LexinfoOnt.indefiniteOrdinalNumeral, LexinfoOnt.Numeral));
     posAndTypeValueMap.put("ltsmb", new PosAndType(LexinfoOnt.symbol, LexinfoOnt.Symbol));
   }
 
@@ -155,8 +146,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
                 break;
               default:
                 if (!pair[0].startsWith("v") && !pair[0].startsWith("d")) {
-                  log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0],
-                      this.currentPagename());
+                  log.debug("Unknown value {} in {} --in-- {}", infos[i], infos[0], this.currentPagename());
                 }
             }
           }

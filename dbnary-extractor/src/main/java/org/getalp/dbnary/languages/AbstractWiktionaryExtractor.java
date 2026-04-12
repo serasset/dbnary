@@ -47,8 +47,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     this.wi = wi;
-    expander = new ExpandAllWikiModel(this.wi, new Locale(wdh.getExtractedLanguage()), "/${image}",
-        "/${title}");
+    expander = new ExpandAllWikiModel(this.wi, new Locale(wdh.getExtractedLanguage()), "/${image}", "/${title}");
   }
 
   protected String getWiktionaryPageName() {
@@ -160,10 +159,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
       log.trace("Extracting page '{}'", wiktionaryPageName);
       extractData();
     } catch (RuntimeException e) {
-      System.err.println(
-          "Caught RuntimeException while parsing entry [" + this.getWiktionaryPageName() + "]");
-      log.trace("Caught RuntimeException while parsing entry [{}]. Stack trace follows",
-          this.getWiktionaryPageName(), e);
+      System.err.println("Caught RuntimeException while parsing entry [" + this.getWiktionaryPageName() + "]");
+      log.trace("Caught RuntimeException while parsing entry [{}]. Stack trace follows", this.getWiktionaryPageName(), e);
       throw e;
     }
   }
@@ -178,11 +175,9 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   public abstract void extractData();
 
-  static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:"
-      + WikiPatterns.examplePatternString + ")";
+  static String defOrExamplePatternString = "(?:" + WikiPatterns.definitionPatternString + ")|(?:" + WikiPatterns.examplePatternString + ")";
 
-  static Pattern defOrExamplePattern =
-      Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
+  static Pattern defOrExamplePattern = Pattern.compile(defOrExamplePatternString, Pattern.MULTILINE);
 
   protected void extractDefinitions(int startOffset, int endOffset) {
 
@@ -218,7 +213,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   /**
    * Extract and register a new wordsense in the current lexical entry.
-   * 
+   *
    * @param definition the definition string
    * @param defLevel the level at which the word sense is defined (sub-senses vs senses)
    * @return the resource representing the new word sense
@@ -283,12 +278,12 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   /**
    * cleans up the wiktionary markup from a string in the following manner: <br>
-   * str is the string to be cleaned up. the result depends on the value of humanReadable.
-   * Wiktionary macros are always discarded. xml/xhtml comments are always discarded. Wiktionary
-   * links are modified depending on the value of humanReadable. e.g. str = "{{a Macro}} will be
-   * [[discard]]ed and [[feed|fed]] to the [[void]]." if humanReadable is true, it will produce:
-   * "will be discarded and fed to the void." if humanReadable is false, it will produce: "will be
-   * #{discard|discarded}# and #{feed|fed}# to the #{void|void}#."
+   * str is the string to be cleaned up. the result depends on the value of humanReadable. Wiktionary
+   * macros are always discarded. xml/xhtml comments are always discarded. Wiktionary links are
+   * modified depending on the value of humanReadable. e.g. str = "{{a Macro}} will be [[discard]]ed
+   * and [[feed|fed]] to the [[void]]." if humanReadable is true, it will produce: "will be discarded
+   * and fed to the void." if humanReadable is false, it will produce: "will be #{discard|discarded}#
+   * and #{feed|fed}# to the #{void|void}#."
    *
    * @param str is the String to be cleaned up
    * @param humanReadable a boolean
@@ -401,12 +396,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
       links.region(blockStart, m.regionEnd());
       while (links.find()) {
         // TODO: use localized versions of the namespaces
-        if (links.group(2).equals(this.wiktionaryPageName)
-            || links.group(1).equalsIgnoreCase("Catégorie")
-            || links.group(1).equalsIgnoreCase("Category")
-            || links.group(1).equalsIgnoreCase("Kategorie")
-            || links.group(1).equalsIgnoreCase("Annexe")
-            || LangTools.getCode(links.group(1)) != null) {
+        if (links.group(2).equals(this.wiktionaryPageName) || links.group(1).equalsIgnoreCase("Catégorie") || links.group(1).equalsIgnoreCase("Category")
+            || links.group(1).equalsIgnoreCase("Kategorie") || links.group(1).equalsIgnoreCase("Annexe") || LangTools.getCode(links.group(1)) != null) {
           return links.start();
         } else if (links.group(1) != null) {
           // System.out.println("--- In: " + this.wiktionaryPageName + " --->");
@@ -431,8 +422,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
       // TODO: remove debug specific treatment for nym extraction and take a better heuristic
       // It's a link, only keep the alternate string if present.
       String leftGroup = linkMatcher.group(1);
-      if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:")
-          && !leftGroup.startsWith("Catégorie:") && !leftGroup.startsWith("#")) {
+      if (leftGroup != null && !leftGroup.equals("") && !leftGroup.startsWith("Wikisaurus:") && !leftGroup.startsWith("Catégorie:")
+          && !leftGroup.startsWith("#")) {
         wdh.registerNymRelation(leftGroup, synRelation);
       }
     }
@@ -515,8 +506,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
       Class<?> wec = Class.forName(pack + ".GlossFilter");
       f = (AbstractGlossFilter) wec.getConstructor().newInstance();
     } catch (ClassNotFoundException e) {
-      System.err
-          .println("No gloss filter found for " + cname + " reverting to  DefaultGlossFilter");
+      System.err.println("No gloss filter found for " + cname + " reverting to  DefaultGlossFilter");
       f = new DefaultGlossFilter();
     } catch (InstantiationException e) {
       System.err.println("Could not instanciate gloss filter.");
@@ -539,10 +529,8 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
 
   @Override
   public void postProcessData(String dumpFileVersion) {
-    postProcessModel(wdh.getEndolexFeatureBox(ExtractionFeature.ENHANCEMENT),
-        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFileVersion);
-    postProcessModel(wdh.getExolexFeatureBox(ExtractionFeature.ENHANCEMENT),
-        wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpFileVersion);
+    postProcessModel(wdh.getEndolexFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFileVersion);
+    postProcessModel(wdh.getExolexFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpFileVersion);
   }
 
   public void postProcessModel(Model enhancementModel, Model sourceModel, String dumpFileVersion) {
@@ -551,33 +539,29 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     }
     TranslationGlossesStatsModule stats = new TranslationGlossesStatsModule();
     EvaluationStats evaluator = new EvaluationStats();
-    TranslationSourcesDisambiguator disambiguator =
-        new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
+    TranslationSourcesDisambiguator disambiguator = new TranslationSourcesDisambiguator(0.1, 0.9, 0.05, true, stats, evaluator);
     // TODO: getCurrentEntryLanguage may be incorrect in DataHandler refinements...
     disambiguator.processTranslations(sourceModel, enhancementModel, wdh.getExtractedLanguage());
 
     // add stats results in the Stats box
     for (String l : stats.getStatsMap().keySet()) {
-      wdh.buildDatacubeObservations(l, stats.getStatsMap().get(l),
-          evaluator.getConfidenceMap().get(l), dumpFileVersion);
+      wdh.buildDatacubeObservations(l, stats.getStatsMap().get(l), evaluator.getConfidenceMap().get(l), dumpFileVersion);
     }
   }
 
   @Override
   public void computeStatistics(String dumpVersion) {
-    wdh.computeStatistics(wdh.getEndolexFeatureBox(ExtractionFeature.STATISTICS),
-        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpVersion);
-    wdh.computeStatistics(wdh.getExolexFeatureBox(ExtractionFeature.ENHANCEMENT),
-        wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpVersion);
+    wdh.computeStatistics(wdh.getEndolexFeatureBox(ExtractionFeature.STATISTICS), wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpVersion);
+    wdh.computeStatistics(wdh.getExolexFeatureBox(ExtractionFeature.ENHANCEMENT), wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpVersion);
   }
 
   @Override
   public void populateMetadata(String dumpFilename, String extractorVersion) {
     // LIME is global to endolexicon and exolexicon
-    wdh.populateMetadata(wdh.getEndolexFeatureBox(ExtractionFeature.LIME),
-        wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion, false);
-    wdh.populateMetadata(wdh.getExolexFeatureBox(ExtractionFeature.LIME),
-        wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion, true);
+    wdh.populateMetadata(wdh.getEndolexFeatureBox(ExtractionFeature.LIME), wdh.getEndolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion,
+        false);
+    wdh.populateMetadata(wdh.getExolexFeatureBox(ExtractionFeature.LIME), wdh.getExolexFeatureBox(ExtractionFeature.MAIN), dumpFilename, extractorVersion,
+        true);
   }
 
 }

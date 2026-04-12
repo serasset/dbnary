@@ -55,11 +55,9 @@ public class EnhanceLatestExtracts {
   static {
     options = new Options();
     options.addOption("h", false, "Prints usage and exits. ");
-    options.addOption(PREFIX_DIR_OPTION, true,
-        "directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");
+    options.addOption(PREFIX_DIR_OPTION, true, "directory containing the extracts and stats. " + DEFAULT_PREFIX_DIR + " by default ");
     options.addOption(COMPRESS_OPTION, false, "if present, compress the ouput with BZip2.");
-    options.addOption(RDF_FORMAT_OPTION, true,
-        "RDF file format (xmlrdf, turtle, n3, etc.). " + DEFAULT_RDF_FORMAT + " by default.");
+    options.addOption(RDF_FORMAT_OPTION, true, "RDF file format (xmlrdf, turtle, n3, etc.). " + DEFAULT_RDF_FORMAT + " by default.");
   }
 
   String[] remainingArgs;
@@ -127,8 +125,7 @@ public class EnhanceLatestExtracts {
     String glossStatsFile = statsDir + File.separator + "latest_glosses_stats.csv";
     Map<String, String> glossStats = readAndParseStats(glossStatsFile);
 
-    for (File e : Objects
-        .requireNonNull(d.listFiles((dir, name) -> name.matches(".._dbnary_ontolex\\..*")))) {
+    for (File e : Objects.requireNonNull(d.listFiles((dir, name) -> name.matches(".._dbnary_ontolex\\..*")))) {
       String l2 = e.getName().substring(0, 2);
       String language = LangTools.getCode(l2);
       String elang = LangTools.inEnglish(language);
@@ -142,9 +139,7 @@ public class EnhanceLatestExtracts {
 
       System.err.println("Enhancing: " + e.getName());
 
-      try (InputStream flat = new FileInputStream(e);
-          InputStream in =
-              (e.getName().endsWith(".bz2")) ? new BZip2CompressorInputStream(flat) : flat) {
+      try (InputStream flat = new FileInputStream(e); InputStream in = (e.getName().endsWith(".bz2")) ? new BZip2CompressorInputStream(flat) : flat) {
         Model inputModel = ModelFactory.createDefaultModel();
         inputModel.read(in, null, this.rdfFormat);
 
@@ -180,8 +175,7 @@ public class EnhanceLatestExtracts {
     // TODO: stats should be written after each language so that already computed languages will be
     // correctly ignored at next launch.
     writeStats(enhConfidence, "Language,MD5," + EvaluationStats.HEADERS, enhConfidenceFile);
-    writeStats(glossStats, "Language," + TranslationGlossesStatsModule.getHeaders(),
-        glossStatsFile);
+    writeStats(glossStats, "Language," + TranslationGlossesStatsModule.getHeaders(), glossStatsFile);
   }
 
   protected void outputAndLink(String lang, String modelFile, Model m) {
@@ -210,14 +204,12 @@ public class EnhanceLatestExtracts {
     if (filename.endsWith(".bz2")) {
       filename = filename.substring(0, filename.length() - 4);
     }
-    outputModelFileName =
-        effectiveDir.resolve(filename.replace("_ontolex", "_enhancement")).normalize().toString();
+    outputModelFileName = effectiveDir.resolve(filename.replace("_ontolex", "_enhancement")).normalize().toString();
 
     if (doCompress)
       outputModelFileName = outputModelFileName + ".bz2";
     try (OutputStream flatOutputStream = new FileOutputStream(outputModelFileName);
-        OutputStream outputModelStream =
-            doCompress ? new BZip2CompressorOutputStream(flatOutputStream) : flatOutputStream) {
+        OutputStream outputModelStream = doCompress ? new BZip2CompressorOutputStream(flatOutputStream) : flatOutputStream) {
       m.write(outputModelStream, this.rdfFormat);
 
       // Linking effective outputfile into latest folder
@@ -235,8 +227,7 @@ public class EnhanceLatestExtracts {
   private void linkToLatest(String lang, Path latestFolder, Path effectiveEnhancement) {
 
     if (!effectiveEnhancement.toFile().exists()) {
-      System.err.println("Enhanced file " + effectiveEnhancement
-          + " does not exists. I will not link to this version.");
+      System.err.println("Enhanced file " + effectiveEnhancement + " does not exists. I will not link to this version.");
       return;
     }
 
@@ -249,8 +240,7 @@ public class EnhanceLatestExtracts {
     if (Files.exists(latestFile) && !Files.isSymbolicLink(latestFile)) {
       // If no symbolic link, then there is a problem (maybe latest file and effective files are the
       // same...
-      System.err.println("I'd like to link " + latestFile + " to " + effectiveEnhancement
-          + " but the former exists and is not a link...");
+      System.err.println("I'd like to link " + latestFile + " to " + effectiveEnhancement + " but the former exists and is not a link...");
       System.err.println("Symbolic link creation aborted.");
       return;
     }
@@ -261,20 +251,17 @@ public class EnhanceLatestExtracts {
       System.err.format("IOException while attempting to delete file '%s'.", latestFile);
     }
 
-    String linkTo =
-        Paths.get("..").resolve(lang).resolve(effectiveEnhancement.getFileName()).toString();
+    String linkTo = Paths.get("..").resolve(lang).resolve(effectiveEnhancement.getFileName()).toString();
     try {
       String[] args = {"ln", "-s", linkTo, latestLinkName};
       Runtime.getRuntime().exec(args, null, new File(extractsDir));
     } catch (IOException e) {
-      System.err
-          .println("Error while trying to link to latest extract: " + latestFile + "->" + linkTo);
+      System.err.println("Error while trying to link to latest extract: " + latestFile + "->" + linkTo);
       e.printStackTrace(System.err);
     }
   }
 
-  private void writeStats(Map<String, String> gstats, String headers, String gstatFile)
-      throws IOException {
+  private void writeStats(Map<String, String> gstats, String headers, String gstatFile) throws IOException {
     File gs = new File(gstatFile);
 
     if (!gs.exists() || (gs.isFile() && gs.canWrite())) {
@@ -299,8 +286,7 @@ public class EnhanceLatestExtracts {
     File gs = new File(gstatFile);
 
     if (gs.isFile() && gs.canRead()) {
-      try (BufferedReader br = new BufferedReader(
-          new InputStreamReader(new FileInputStream(gs), StandardCharsets.UTF_8))) {
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(gs), StandardCharsets.UTF_8))) {
         String s = br.readLine();
         s = br.readLine();
         while (s != null) {
@@ -316,9 +302,8 @@ public class EnhanceLatestExtracts {
   public static void printUsage() {
     HelpFormatter formatter = new HelpFormatter();
     String help = "Update Latest statistics based on latest extracts.";
-    formatter.printHelp("java -cp /path/to/dbnary.jar "
-        + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options,
-        help, false);
+    formatter.printHelp("java -cp /path/to/dbnary.jar " + EnhanceLatestExtracts.class.getCanonicalName() + "[OPTIONS]", "With OPTIONS in:", options, help,
+        false);
   }
 
   public static byte[] createChecksum(File file) throws IOException, NoSuchAlgorithmException {

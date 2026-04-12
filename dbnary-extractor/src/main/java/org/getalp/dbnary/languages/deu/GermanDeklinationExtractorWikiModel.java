@@ -33,12 +33,10 @@ public class GermanDeklinationExtractorWikiModel extends GermanTableExtractorWik
   private boolean isAdjectiveSection(Heading heading) {
     log.trace("MORPH: Header = {}", heading.getText());
     return heading.getContent().templates().stream()
-        .anyMatch(tmpl -> tmpl.asTemplate().getName().equals("Adjektivdeklination")
-            && tmpl.asTemplate().getParsedArg("1").equals("Deutsch"));
+        .anyMatch(tmpl -> tmpl.asTemplate().getName().equals("Adjektivdeklination") && tmpl.asTemplate().getParsedArg("1").equals("Deutsch"));
   }
 
-  public GermanDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public GermanDeklinationExtractorWikiModel(IWiktionaryDataHandler wdh, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL, wdh, new GermanDeklinationTableExtractor());
   }
 

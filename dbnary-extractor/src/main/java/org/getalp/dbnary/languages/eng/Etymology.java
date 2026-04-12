@@ -50,68 +50,52 @@ public class Etymology {
   static {
     HashMap<String, List<String>> tmp = new HashMap<>();
     tmp.put("FROM",
-        Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?",
-            "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from",
-            "[Bb]orrow(?:ing|ed)? (?:of|from)?", "[Cc]ontracted from", "[Aa]dopted from",
-            "[Cc]alque(?: of)?", "[Ii]terative of",
-            "[Ss]hort(?:ening|en|ened)? (?:form )?(?:of|from)?", "[Tt]hrough", "[Bb]lend of",
-            "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of",
-            "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of", "[Ff]orm of",
-            "[Aa]phetic variation of", "\\<", "[Aa] \\[\\[calque\\]\\] of", "[Ff]ormed as"));
+        Arrays.asList("[Ff]rom", "[Bb]ack-formation (?:from)?", "[Aa]bbreviat(?:ion|ed)? (?:of|from)?", "[Cc]oined from", "[Bb]orrow(?:ing|ed)? (?:of|from)?",
+            "[Cc]ontracted from", "[Aa]dopted from", "[Cc]alque(?: of)?", "[Ii]terative of", "[Ss]hort(?:ening|en|ened)? (?:form )?(?:of|from)?", "[Tt]hrough",
+            "[Bb]lend of", "[Pp]articiple of", "[Aa]lteration of", "[Vv]ia", "[Dd]iminutive (?:form )?of", "[Uu]ltimately of", "[Vv]ariant of", "[Pp]lural of",
+            "[Ff]orm of", "[Aa]phetic variation of", "\\<", "[Aa] \\[\\[calque\\]\\] of", "[Ff]ormed as"));
     tmp.put("TEMPLATE", List.of("\\{\\{"));
     tmp.put("LINK", List.of("\\[\\["));// removed (?:'') as this causes an error in
     // WiktinaryExtractor and function containedIn
     tmp.put("ABOVE", List.of("[Ss]ee above"));// this should precede cognateWith which matches
     // against "[Ss]ee"
-    tmp.put("COGNATE_WITH",
-        Arrays.asList("[Rr]elated(?: also)? to",
-            "[Cc]ognate(?:s)? (?:include |with |to |including )?", "[Cc]ompare (?:also )?",
-            "[Ww]hence (?:also )?", "(?:[Bb]elongs to the )?[Ss]ame family as ", "[Mm]ore at ",
-            "[Aa]kin to ", "[Ss]ee(?:n)? (?:also )?"));// this should follow abovePatternString
+    tmp.put("COGNATE_WITH", Arrays.asList("[Rr]elated(?: also)? to", "[Cc]ognate(?:s)? (?:include |with |to |including )?", "[Cc]ompare (?:also )?",
+        "[Ww]hence (?:also )?", "(?:[Bb]elongs to the )?[Ss]ame family as ", "[Mm]ore at ", "[Aa]kin to ", "[Ss]ee(?:n)? (?:also )?"));// this should follow
+                                                                                                                                       // abovePatternString
     // which matches against "[Ss]ee above"
-    tmp.put("COMPOUND_OF",
-        Arrays.asList("[Cc]ompound(?:ed)? (?:of|from) ",
-            "[Mm]erg(?:ing |er )(?:of |with )?(?: earlier )?", "[Uu]niverbation of ",
-            "[Ff]usion of ", "[Cc]orruption of "));
+    tmp.put("COMPOUND_OF", Arrays.asList("[Cc]ompound(?:ed)? (?:of|from) ", "[Mm]erg(?:ing |er )(?:of |with )?(?: earlier )?", "[Uu]niverbation of ",
+        "[Ff]usion of ", "[Cc]orruption of "));
     tmp.put("UNCERTAIN", List.of("[Oo]rigin uncertain"));
     tmp.put("COMMA", List.of(","));
-    tmp.put("YEAR", List.of(
-        "(?:[Aa].\\s*?[Cc].?|[Bb].?\\s*[Cc].?)?\\s*\\d++\\s*(?:[Aa].?\\s*[Cc].?|[Bb].?\\s*[Cc].?|th century|\\{\\{C\\.E\\.\\}\\})?"));
+    tmp.put("YEAR", List.of("(?:[Aa].\\s*?[Cc].?|[Bb].?\\s*[Cc].?)?\\s*\\d++\\s*(?:[Aa].?\\s*[Cc].?|[Bb].?\\s*[Cc].?|th century|\\{\\{C\\.E\\.\\}\\})?"));
     tmp.put("AND", Arrays.asList("\\s+and\\s+", "with suffix "));
     tmp.put("PLUS", List.of("\\+"));
     tmp.put("DOT", Arrays.asList("\\.", ";"));
     tmp.put("OR", List.of("[^a-zA-Z0-9]or[^a-zA-Z0-9]"));
     tmp.put("WITH", List.of("[^a-zA-Z0-9]with[^a-zA-Z0-9]"));
-    tmp.put("STOP",
-        Arrays.asList("[Ss]uperseded", "[Dd]isplaced(?: native)?", "[Rr]eplaced",
-            "[Mm]ode(?:l)?led on", "[Rr]eplacing", "[Cc]oined by",
-            "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));// this icludes two types of patterns:
+    tmp.put("STOP", Arrays.asList("[Ss]uperseded", "[Dd]isplaced(?: native)?", "[Rr]eplaced", "[Mm]ode(?:l)?led on", "[Rr]eplacing", "[Cc]oined by",
+        "equivalent to\\s*\\{\\{[^\\}]+\\}\\}"));// this icludes two types of patterns:
     // superseded and equivalent to
     tmp.put("COLON", List.of(":"));
     tmp.put("SLASH", List.of("/"));
     mappings = new HashMap<>(tmp);
   }
 
-  public static List<String> bulletSymbolsList =
-      Arrays.asList("COMMA", "TEMPLATE", "LINK", "COLON");
-  public static List<String> definitionSymbolsList =
-      Arrays.asList("FROM", "TEMPLATE", "LINK", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN",
-          "COMMA", "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP", "SLASH");
+  public static List<String> bulletSymbolsList = Arrays.asList("COMMA", "TEMPLATE", "LINK", "COLON");
+  public static List<String> definitionSymbolsList = Arrays.asList("FROM", "TEMPLATE", "LINK", "ABOVE", "COGNATE_WITH", "COMPOUND_OF", "UNCERTAIN", "COMMA",
+      "YEAR", "AND", "PLUS", "DOT", "OR", "WITH", "STOP", "SLASH");
 
   public static Pattern bulletSymbolsListPattern = Pattern.compile(eitherSymbol(bulletSymbolsList));
-  public static Pattern definitionSymbolsListPattern =
-      Pattern.compile(eitherSymbol(definitionSymbolsList));
+  public static Pattern definitionSymbolsListPattern = Pattern.compile(eitherSymbol(definitionSymbolsList));
 
-  public static Pattern definitionSymbolsPattern =
-      Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |SLASH |DOT |OR )");
+  public static Pattern definitionSymbolsPattern = Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )(COMMA |SLASH |DOT |OR )");
   public static Pattern compoundSymbolsPattern = Pattern.compile(
       "((COMPOUND_OF |FROM )(LANGUAGE )?(LEMMA (COMMA LEMMA )*)(?:(PLUS |AND |WITH )(LANGUAGE )?(LEMMA (COMMA LEMMA )*))+)|((LANGUAGE )?(LEMMA (COMMA LEMMA )*)(?:(PLUS )(LANGUAGE )?(LEMMA (COMMA LEMMA )*))+)");
   // TODO: add ARROW and allow for situations like Italian: LEMMA LEMMA COMMA LEMMA
-  public static Pattern bulletSymbolsPattern =
-      Pattern.compile("((((LEMMA )(COMMA )?)+)|(LANGUAGE ))(COLON ((LEMMA)( COMMA )?)+)?");
+  public static Pattern bulletSymbolsPattern = Pattern.compile("((((LEMMA )(COMMA )?)+)|(LANGUAGE ))(COLON ((LEMMA)( COMMA )?)+)?");
   public static Pattern tableDerivedLemmasPattern = Pattern.compile("(LEMMA)(?: COMMA (LEMMA))*");
-  public static Pattern multipleBorrowingSymbolsPattern = Pattern.compile(
-      "(FROM )?(LANGUAGE LEMMA |LEMMA )((COMMA (LANGUAGE LEMMA |LEMMA ))+)?(AND (LANGUAGE LEMMA |LEMMA ))?DOT ");
+  public static Pattern multipleBorrowingSymbolsPattern =
+      Pattern.compile("(FROM )?(LANGUAGE LEMMA |LEMMA )((COMMA (LANGUAGE LEMMA |LEMMA ))+)?(AND (LANGUAGE LEMMA |LEMMA ))?DOT ");
 
   public String lang;
   public String string;
@@ -187,8 +171,7 @@ public class Etymology {
     for (int j = 0; j < symbols.size(); j++) {
       if (symbols.get(j).values.size() > 0) {
 
-        if (symbols.get(j).values.get(0).equals("COGNATE_WITH")
-            || symbols.get(j).values.get(0).equals("OR")) {
+        if (symbols.get(j).values.get(0).equals("COGNATE_WITH") || symbols.get(j).values.get(0).equals("OR")) {
           symbols.subList(j, symbols.size()).clear();
           break;
         }
@@ -290,8 +273,7 @@ public class Etymology {
             if (match.containedIn(template)) {// match is contained in a template
               check = true;
               if (l.get(i).equals("TEMPLATE")) {// match is a template
-                Symbols b = new Symbols(string.substring(template.start + 2, template.end - 2),
-                    lang, l.get(i));
+                Symbols b = new Symbols(string.substring(template.start + 2, template.end - 2), lang, l.get(i));
                 if (b.values != null && b.args != null) {
                   for (String values : b.values) {
                     if (values.equals("STOP")) {
@@ -315,8 +297,7 @@ public class Etymology {
               if (match.containedIn(link)) {
                 check = true;
                 if (l.get(i).equals("LINK")) {// match is a link
-                  Symbols b =
-                      new Symbols(string.substring(link.start + 2, link.end - 2), lang, l.get(i));
+                  Symbols b = new Symbols(string.substring(link.start + 2, link.end - 2), lang, l.get(i));
                   if (b.values != null && b.args != null) {
                     symbols.add(b);
                   }
@@ -349,8 +330,7 @@ public class Etymology {
     int etylIndex = -1;
     for (int i = 0; i < symbols.size(); i++) {
       if (symbols.get(i).values != null && symbols.get(i).args != null) {
-        if (symbols.get(i).args.get("0").equals("etyl")
-            || symbols.get(i).args.get("0").equals("_etyl")) {
+        if (symbols.get(i).args.get("0").equals("etyl") || symbols.get(i).args.get("0").equals("_etyl")) {
           etylLang = symbols.get(i).args.get("lang");
           etylIndex = i;
         }
@@ -380,17 +360,12 @@ public class Etymology {
       } else if (linksLocations.size() == 1) {// PARSE case "[[Asturian]]: {{l|ast|águila}}"
         bulletLang = subs.get(0).substring(2, subs.get(0).length() - 2).trim();
       }
-      if (null != bulletLang && !bulletLang.startsWith("{{") && !bulletLang.startsWith("adjective")
-          && !bulletLang.startsWith("noun") && !bulletLang.startsWith("verb")
-          && !bulletLang.startsWith("prefix") && !bulletLang.startsWith("phrase")
-          && !bulletLang.startsWith("idiom") && !bulletLang.startsWith("antonym")
-          && !bulletLang.startsWith("adverb") && !bulletLang.startsWith("proverb")
-          && !bulletLang.startsWith("given") && !bulletLang.startsWith("interjection")
-          && !bulletLang.startsWith("postposition") && !bulletLang.startsWith("surname")
-          && !bulletLang.startsWith("index") && !bulletLang.startsWith("condition")
-          && !bulletLang.startsWith("saying") && !bulletLang.startsWith("suffix")
-          && !bulletLang.startsWith("pronoun") && !bulletLang.startsWith("substantive")
-          && !bulletLang.startsWith("determiner")) {
+      if (null != bulletLang && !bulletLang.startsWith("{{") && !bulletLang.startsWith("adjective") && !bulletLang.startsWith("noun")
+          && !bulletLang.startsWith("verb") && !bulletLang.startsWith("prefix") && !bulletLang.startsWith("phrase") && !bulletLang.startsWith("idiom")
+          && !bulletLang.startsWith("antonym") && !bulletLang.startsWith("adverb") && !bulletLang.startsWith("proverb") && !bulletLang.startsWith("given")
+          && !bulletLang.startsWith("interjection") && !bulletLang.startsWith("postposition") && !bulletLang.startsWith("surname")
+          && !bulletLang.startsWith("index") && !bulletLang.startsWith("condition") && !bulletLang.startsWith("saying") && !bulletLang.startsWith("suffix")
+          && !bulletLang.startsWith("pronoun") && !bulletLang.startsWith("substantive") && !bulletLang.startsWith("determiner")) {
         bulletLang = EnglishLangToCode.threeLettersCode(bulletLang);
         if (bulletLang != null) {
           string = "{{_etyl|" + bulletLang + "|" + lang + "}} : " + subs.get(1).trim();

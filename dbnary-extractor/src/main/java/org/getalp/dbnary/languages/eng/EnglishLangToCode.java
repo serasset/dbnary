@@ -161,8 +161,7 @@ public class EnglishLangToCode extends LangTools {
           }
         }
         if (null == code) {
-          log.debug("Ignoring line {} in file etymology-only_languages.csv: invlid language code",
-              s);
+          log.debug("Ignoring line {} in file etymology-only_languages.csv: invlid language code", s);
         } else {
           // Only add data for languages that are not present in the ISO file
           String language_names[] = new String[other_names.length + 1];

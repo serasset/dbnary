@@ -30,13 +30,11 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 
   private Logger log = LoggerFactory.getLogger(RussianTranslationExtractorWikiModel.class);
 
-  public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, Locale locale, String imageBaseURL, String linkBaseURL) {
     this(we, (WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi,
-      Locale locale, String imageBaseURL, String linkBaseURL) {
+  public RussianTranslationExtractorWikiModel(IWiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
     this.rank = 1;
@@ -54,8 +52,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
 
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if ("перев-блок".equals(templateName)) {
       // This is a translation block
       // System.err.println("Template call to translation block");
@@ -79,8 +76,7 @@ public class RussianTranslationExtractorWikiModel extends DbnaryWikiModel {
       // super.substituteTemplateCall(templateName, parameterMap, writer);
       // As template calls are expanded BEFORE (since gwtwiki-3.20-SNAPSHOT) enclosing template,
       // we now expand by the source code to restore previous behaviour
-      log.debug("Called macro: {} when expanding translation block in {}.", templateName,
-          this.getPageName());
+      log.debug("Called macro: {} when expanding translation block in {}.", templateName, this.getPageName());
       writer.append("{{").append(templateName).append("}}"); // TODO: reconstruct template with all
       // args
     }

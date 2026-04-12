@@ -17,8 +17,7 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
     this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
   }
 
-  public ExpandAllWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public ExpandAllWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -41,8 +40,7 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (templates != null) {
       templates.add(templateName);
     }

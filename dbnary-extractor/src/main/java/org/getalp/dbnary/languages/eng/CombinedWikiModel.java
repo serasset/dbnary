@@ -109,29 +109,18 @@ public class CombinedWikiModel extends EnglishWikiModel {
   private static final Pattern pronunciationPattern = Pattern.compile("/[^/]*/|\\[[^\\]]*\\]");
 
   // MORPHOLOGY MODE
-  private static final Supplier<EnglishInflectionData> plural =
-      () -> new EnglishInflectionData().plural();
-  private static final Supplier<EnglishInflectionData> singular =
-      () -> new EnglishInflectionData().singular();
-  private static final Supplier<EnglishInflectionData> feminine =
-      () -> new EnglishInflectionData().feminine();
-  private static final Supplier<EnglishInflectionData> masculine =
-      () -> new EnglishInflectionData().masculine();
-  private static final Supplier<EnglishInflectionData> comparative =
-      () -> new EnglishInflectionData().comparative();
-  private static final Supplier<EnglishInflectionData> superlative =
-      () -> new EnglishInflectionData().superlative();
-  private static final Supplier<EnglishInflectionData> pres3Sg =
-      () -> new EnglishInflectionData().presentTense().thirdPerson().singular();
-  private static final Supplier<EnglishInflectionData> presPtc =
-      () -> new EnglishInflectionData().presentTense().participle();
-  private static final Supplier<EnglishInflectionData> past =
-      () -> new EnglishInflectionData().pastTense();
-  private static final Supplier<EnglishInflectionData> pastPtc =
-      () -> new EnglishInflectionData().pastTense().participle();
+  private static final Supplier<EnglishInflectionData> plural = () -> new EnglishInflectionData().plural();
+  private static final Supplier<EnglishInflectionData> singular = () -> new EnglishInflectionData().singular();
+  private static final Supplier<EnglishInflectionData> feminine = () -> new EnglishInflectionData().feminine();
+  private static final Supplier<EnglishInflectionData> masculine = () -> new EnglishInflectionData().masculine();
+  private static final Supplier<EnglishInflectionData> comparative = () -> new EnglishInflectionData().comparative();
+  private static final Supplier<EnglishInflectionData> superlative = () -> new EnglishInflectionData().superlative();
+  private static final Supplier<EnglishInflectionData> pres3Sg = () -> new EnglishInflectionData().presentTense().thirdPerson().singular();
+  private static final Supplier<EnglishInflectionData> presPtc = () -> new EnglishInflectionData().presentTense().participle();
+  private static final Supplier<EnglishInflectionData> past = () -> new EnglishInflectionData().pastTense();
+  private static final Supplier<EnglishInflectionData> pastPtc = () -> new EnglishInflectionData().pastTense().participle();
 
-  private static final Map<String, BiConsumer<InflectedFormSet, String>> inflectionDecoder =
-      new HashMap<>();
+  private static final Map<String, BiConsumer<InflectedFormSet, String>> inflectionDecoder = new HashMap<>();
 
   static BiConsumer<InflectedFormSet, String> ppt = (forms, text) -> {
     forms.add(pastPtc.get(), text);
@@ -139,11 +128,9 @@ public class CombinedWikiModel extends EnglishWikiModel {
   };
 
   static {
-    inflectionDecoder.put("comparative-form-of",
-        (forms, text) -> forms.add(comparative.get(), text));
+    inflectionDecoder.put("comparative-form-of", (forms, text) -> forms.add(comparative.get(), text));
     inflectionDecoder.put("comparative", (forms, text) -> forms.add(comparative.get(), text));
-    inflectionDecoder.put("superlative-form-of",
-        (forms, text) -> forms.add(superlative.get(), text));
+    inflectionDecoder.put("superlative-form-of", (forms, text) -> forms.add(superlative.get(), text));
     inflectionDecoder.put("superlative", (forms, text) -> forms.add(superlative.get(), text));
     inflectionDecoder.put("p-form-of", (forms, text) -> forms.add(plural.get(), text));
     inflectionDecoder.put("plural", (forms, text) -> forms.add(plural.get(), text));
@@ -184,12 +171,10 @@ public class CombinedWikiModel extends EnglishWikiModel {
   private final WiktionaryDataHandler delegate;
   private Set<Pair<Property, RDFNode>> context;
   private final ExpandAllWikiModel simpleExpander;
-  private final Map<Pair<String, Map<String, String>>, MutableInt> citationCallCache =
-      new HashMap<>();
+  private final Map<Pair<String, Map<String, String>>, MutableInt> citationCallCache = new HashMap<>();
 
 
-  public CombinedWikiModel(WiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale,
-      String imageBaseURL, String linkBaseURL) {
+  public CombinedWikiModel(WiktionaryDataHandler we, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = we;
     simpleExpander = new ExpandAllWikiModel(wi, locale, imageBaseURL, linkBaseURL);
@@ -197,7 +182,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
 
   /**
    * Parse a mediawiki string and register its plain text rendering as a new definition
-   * 
+   *
    * @param definition the definition to parse
    * @param defLevel the level of the definition
    */
@@ -285,8 +270,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
       log.debug("LuaError while expanding citation in {}", getPageName());
     }
     if (!textWithoutErrors.trim().isEmpty()) {
-      addNodeToContext(context, DCTerms.bibliographicCitation,
-          rdfNode(textWithoutErrors, delegate.getCurrentEntryLanguage()));
+      addNodeToContext(context, DCTerms.bibliographicCitation, rdfNode(textWithoutErrors, delegate.getCurrentEntryLanguage()));
     }
     this.context = null;
     currentMode = Mode.NONE;
@@ -318,8 +302,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     switch (currentMode) {
       case EXAMPLE:
         substituteExampleTemplate(templateName, parameterMap, writer);
@@ -338,8 +321,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
     }
   }
 
-  private void substitutePronunciationTemplate(String templateName,
-      Map<String, String> parameterMap, Appendable writer) throws IOException {
+  private void substitutePronunciationTemplate(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (templateName.equals("IPA")) {
       String pronTemplate = parameterMap.get("2");
       if (pronTemplate != null) {
@@ -351,24 +333,20 @@ public class CombinedWikiModel extends EnglishWikiModel {
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }
 
-  private void substituteMorphologyTemplate(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  private void substituteMorphologyTemplate(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }
 
-  private void substituteExampleTemplate(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  private void substituteExampleTemplate(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (ignoredTemplates.contains(templateName)) {
       // NOP
-    } else if ("ux".equals(templateName) || "usex".equals(templateName) || "eg".equals(templateName)
-        || "uxi".equals(templateName) || "ux-lite".equals(templateName)
-        || "quote".equals(templateName)) {
+    } else if ("ux".equals(templateName) || "usex".equals(templateName) || "eg".equals(templateName) || "uxi".equals(templateName)
+        || "ux-lite".equals(templateName) || "quote".equals(templateName)) {
       // Simple usage example
       if (log.isTraceEnabled()) {
         String langCode = parameterMap.getOrDefault("1", "").trim();
         if (!langCode.equalsIgnoreCase(delegate.getCurrentEntryLanguage())) {
-          log.trace("UX Template: incoherent language code {} (expected {}) [{}]", langCode,
-              delegate.getCurrentEntryLanguage(), getPageName());
+          log.trace("UX Template: incoherent language code {} (expected {}) [{}]", langCode, delegate.getCurrentEntryLanguage(), getPageName());
         }
         // TODO: handle script code
         String scriptCode = parameterMap.get("sc");
@@ -377,24 +355,20 @@ public class CombinedWikiModel extends EnglishWikiModel {
         }
       }
       String text = parameterMap.get("2");
-      String translation = parameterMap.getOrDefault("t",
-          parameterMap.getOrDefault("translation", parameterMap.get("3")));
+      String translation = parameterMap.getOrDefault("t", parameterMap.getOrDefault("translation", parameterMap.get("3")));
       String transliteration = parameterMap.getOrDefault("tr", parameterMap.get("transliteration"));
       if (context != null) {
         if (null != text && !text.trim().isEmpty()) {
           addNodeToContext(context, RDF.value, rdfNode(text, delegate.getCurrentEntryLanguage()));
         }
         if (null != translation) {
-          addNodeToContext(context, RDF.value,
-              rdfNode(translation, delegate.getExtractedLanguage()));
+          addNodeToContext(context, RDF.value, rdfNode(translation, delegate.getExtractedLanguage()));
         }
         if (null != transliteration) {
-          addNodeToContext(context, RDF.value,
-              rdfNode(transliteration, delegate.getCurrentEntryLanguage() + "-Latn"));
+          addNodeToContext(context, RDF.value, rdfNode(transliteration, delegate.getCurrentEntryLanguage() + "-Latn"));
         }
       }
-    } else if ("ja-usex".equals(templateName) || "ja-x".equals(templateName)
-        || "ja-usex-inline".equals(templateName) || "ja-x-inline".equals(templateName)) {
+    } else if ("ja-usex".equals(templateName) || "ja-x".equals(templateName) || "ja-usex-inline".equals(templateName) || "ja-x-inline".equals(templateName)) {
       // Japanese usage example contains the japanese value + transliteration + translation
       String example = parameterMap.get("1");
       if (null == example || example.trim().isEmpty()) {
@@ -414,8 +388,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
           translation = null;
         }
       } else if (hasKanaChar(example)) {
-        if (null == transliteration || transliteration.trim().isEmpty()
-            || !hasKanaChar(transliteration)) {
+        if (null == transliteration || transliteration.trim().isEmpty() || !hasKanaChar(transliteration)) {
           translation = transliteration;
           transliteration = null;
         }
@@ -427,16 +400,13 @@ public class CombinedWikiModel extends EnglishWikiModel {
 
       if (context != null) {
         if (null != example && !example.trim().isEmpty()) {
-          addNodeToContext(context, RDF.value,
-              rdfNode(example, delegate.getCurrentEntryLanguage()));
+          addNodeToContext(context, RDF.value, rdfNode(example, delegate.getCurrentEntryLanguage()));
         }
         if (null != translation) {
-          addNodeToContext(context, RDF.value,
-              rdfNode(translation, delegate.getExtractedLanguage()));
+          addNodeToContext(context, RDF.value, rdfNode(translation, delegate.getExtractedLanguage()));
         }
         if (null != transliteration) {
-          addNodeToContext(context, RDF.value,
-              rdfNode(transliteration, delegate.getCurrentEntryLanguage() + "-Kana"));
+          addNodeToContext(context, RDF.value, rdfNode(transliteration, delegate.getCurrentEntryLanguage() + "-Kana"));
         }
       }
     } else if (nyms.containsKey(templateName)) {
@@ -446,8 +416,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
       if (log.isTraceEnabled()) {
         String langCode = parameterMap.getOrDefault("1", "").trim();
         if (!langCode.equalsIgnoreCase(delegate.getCurrentEntryLanguage())) {
-          log.trace("NYM Template: incoherent language code {} (expected {}) [{}]", langCode,
-              delegate.getCurrentEntryLanguage(), getPageName());
+          log.trace("NYM Template: incoherent language code {} (expected {}) [{}]", langCode, delegate.getCurrentEntryLanguage(), getPageName());
         }
       }
       String val;
@@ -463,12 +432,10 @@ public class CombinedWikiModel extends EnglishWikiModel {
     } else if ("seeSynonyms".equals(templateName)) {
       // TODO: HANDLE synonyms in an external page
       log.trace("SHOULD WE HANDLE call: {} --in-- {}", templateName, this.getPageName());
-    } else if ("seeCites".equals(templateName) || "seeMoreCites".equals(templateName)
-        || "seemoreCites".equals(templateName)) {
+    } else if ("seeCites".equals(templateName) || "seeMoreCites".equals(templateName) || "seemoreCites".equals(templateName)) {
       // TODO: HANDLE Citations that are given in another page
-    } else if ("quote-book".equals(templateName) || "quote-journal".equals(templateName)
-        || "quote-text".equals(templateName) || "quote-video game".equals(templateName)
-        || "quote-web".equals(templateName)) {
+    } else if ("quote-book".equals(templateName) || "quote-journal".equals(templateName) || "quote-text".equals(templateName)
+        || "quote-video game".equals(templateName) || "quote-web".equals(templateName)) {
       String passage = parameterMap.getOrDefault("passage", parameterMap.get("text"));
       // TODO: removing the passage from the text will generate a fake text in some cases
       if (null != passage && !passage.trim().isEmpty()) {
@@ -493,8 +460,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
       parameterMap.remove("origtag");
 
       // In foreign (or old) quotes, the translation is given in the "t" parameter
-      String translation = parameterMap.getOrDefault("t",
-          parameterMap.getOrDefault("translation", parameterMap.get("8")));
+      String translation = parameterMap.getOrDefault("t", parameterMap.getOrDefault("translation", parameterMap.get("8")));
       parameterMap.remove("translation");
       parameterMap.remove("t");
       parameterMap.remove("8");
@@ -519,13 +485,11 @@ public class CombinedWikiModel extends EnglishWikiModel {
       super.substituteTemplateCall(templateName, parameterMap, str);
       if (context != null) {
         if (null != passage && !passage.trim().isEmpty()) {
-          addNodeToContext(context, RDF.value,
-              rdfNode(passage, delegate.getCurrentEntryLanguage()));
+          addNodeToContext(context, RDF.value, rdfNode(passage, delegate.getCurrentEntryLanguage()));
         }
         String ref = StringUtils.strip(str.toString(), " \t\\x0B\f\n\r:");
         if (!ref.isEmpty()) {
-          addNodeToContext(context, DCTerms.bibliographicCitation,
-              rdfNode(ref, delegate.getExtractedLanguage()));
+          addNodeToContext(context, DCTerms.bibliographicCitation, rdfNode(ref, delegate.getExtractedLanguage()));
         }
       }
     } else if ("glossary".equals(templateName) || "glink".equals(templateName)) {
@@ -551,8 +515,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
 
   // DEFINITION MODE OVERRIDES
   @SuppressWarnings("StatementWithEmptyBody")
-  public void substituteDefinitionTemplate(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteDefinitionTemplate(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // TODO: the examples templates (e.g. ux) sometime appears in the same line as the definition.
     // Currently just expand the definition to get the full text.
     if (templateName.equals("label") || templateName.equals("lb") || templateName.equals("lbl")) {
@@ -580,19 +543,15 @@ public class CombinedWikiModel extends EnglishWikiModel {
       writer.append("(").append(text).append(")");
     } else if (templateName.equals("context") || templateName.equals("cx")) {
       log.debug("Obsolete Context template in {}", this.getPageName());
-    } else if (templateName.equals("l") || templateName.equals("link") || templateName.equals("m")
-        || templateName.equals("mention")) {
+    } else if (templateName.equals("l") || templateName.equals("link") || templateName.equals("m") || templateName.equals("mention")) {
       String l = parameterMap.get("3");
       if (null == l) {
         l = parameterMap.get("2");
       }
       writer.append(l);
-    } else if (templateName.equals("synonym of") || templateName.equals("ellipsis of")
-        || templateName.equals("initialism of") || templateName.equals("init of")
-        || templateName.equals("acronym of") || templateName.equals("abbr of")
-        || templateName.equals("abbreviation of") || templateName.equals("abbrev of")
-        || templateName.equals("clipping of") || templateName.equals("clip of")
-        || templateName.equals("former name of")) {
+    } else if (templateName.equals("synonym of") || templateName.equals("ellipsis of") || templateName.equals("initialism of") || templateName.equals("init of")
+        || templateName.equals("acronym of") || templateName.equals("abbr of") || templateName.equals("abbreviation of") || templateName.equals("abbrev of")
+        || templateName.equals("clipping of") || templateName.equals("clip of") || templateName.equals("former name of")) {
       // TODO: handle synonym of by creating the appropriate synonymy relation.
       // catch and expand synonym of template before it is caught by next condition.
       super.substituteTemplateCall(templateName, parameterMap, writer);
@@ -608,8 +567,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
       // StringWriter quotation = new StringWriter();
       // super.substituteTemplateCall(templateName, parameterMap, quotation);
       // delegate.registerExample(quotation.toString(), null);
-    } else if (templateName.equals("non-gloss definition") || templateName.equals("n-g")
-        || templateName.equals("ngd") || templateName.equals("non-gloss")
+    } else if (templateName.equals("non-gloss definition") || templateName.equals("n-g") || templateName.equals("ngd") || templateName.equals("non-gloss")
         || templateName.equals("non gloss")) {
       String def = parameterMap.getOrDefault("1", "");
       writer.append(def);
@@ -727,8 +685,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
     InflectedFormSet forms = new InflectedFormSet();
 
     String note = null;
-    Elements elts =
-        doc.select("strong.headword, b.form-of, a, span.qualifier-content, span.ib-content");
+    Elements elts = doc.select("strong.headword, b.form-of, a, span.qualifier-content, span.ib-content");
     for (Element elt : elts) {
       if (elt.tagName().equalsIgnoreCase("a")) {
         String href = elt.attr("href").trim();
@@ -739,8 +696,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
           } else if (concept.equals("uncountable")) {
             delegate.uncountable();
           } else {
-            if (!"comparative".equals(concept) && !"superlative".equals(concept)
-                && !"comparable".equals(concept))
+            if (!"comparative".equals(concept) && !"superlative".equals(concept) && !"comparable".equals(concept))
               log.trace("MORPH: Ignoring glossary term `{}` in `{}`", concept, getPageName());
           }
         }
@@ -809,8 +765,7 @@ public class CombinedWikiModel extends EnglishWikiModel {
     super.addCategory(categoryName, sortKey);
   }
 
-  private void addNodeToContext(Set<Pair<Property, RDFNode>> context, Property prop,
-      Literal rdfNode) {
+  private void addNodeToContext(Set<Pair<Property, RDFNode>> context, Property prop, Literal rdfNode) {
     if (null != rdfNode) {
       context.add(Pair.of(prop, rdfNode));
     }
@@ -819,13 +774,10 @@ public class CombinedWikiModel extends EnglishWikiModel {
   @Override
   public void displayGlobalTrace(String msg) {
     super.displayGlobalTrace(msg);
-    IntSummaryStatistics stats = citationCallCache.values().stream()
-        .collect(Collectors.summarizingInt(MutableInt::intValue));
-    log.trace(
-        "CACHE STATS: {} citation calls ({} uniques) with average duplicate of {} (min: {} / max: {})",
-        stats.getSum(), stats.getCount(), stats.getAverage(), stats.getMin(), stats.getMax());
-    citationCallCache.entrySet().stream().filter(e -> e.getValue().intValue() > 1)
-        .forEach(e -> log.trace("CACHE: {} citation call for {} with parameters {}",
-            e.getValue().intValue(), e.getKey(), e.getValue().toString().replaceAll("[\r\n]", "")));
+    IntSummaryStatistics stats = citationCallCache.values().stream().collect(Collectors.summarizingInt(MutableInt::intValue));
+    log.trace("CACHE STATS: {} citation calls ({} uniques) with average duplicate of {} (min: {} / max: {})", stats.getSum(), stats.getCount(),
+        stats.getAverage(), stats.getMin(), stats.getMax());
+    citationCallCache.entrySet().stream().filter(e -> e.getValue().intValue() > 1).forEach(e -> log.trace("CACHE: {} citation call for {} with parameters {}",
+        e.getValue().intValue(), e.getKey(), e.getValue().toString().replaceAll("[\r\n]", "")));
   }
 }

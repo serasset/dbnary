@@ -10,8 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Matcher;
 
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
-  private Logger log =
-      LoggerFactory.getLogger(org.getalp.dbnary.languages.eng.WiktionaryDataHandler.class);
+  private Logger log = LoggerFactory.getLogger(org.getalp.dbnary.languages.eng.WiktionaryDataHandler.class);
   static {
     // Chinese
     posAndTypeValueMap.put("动詞", new PosAndType(LexinfoOnt.verb, OntolexOnt.LexicalEntry));
@@ -24,14 +23,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     posAndTypeValueMap.put("代词", new PosAndType(LexinfoOnt.pronoun, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("形容词", new PosAndType(LexinfoOnt.adjective, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("谚语",
-        new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("谚语", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
 
     posAndTypeValueMap.put("成语", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("成語", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
 
-    posAndTypeValueMap.put("多义词",
-        new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("多义词", new PosAndType(LexinfoOnt.expression, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("感嘆詞", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
   }
 

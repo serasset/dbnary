@@ -37,16 +37,15 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
     if (cell.tagName().equalsIgnoreCase("td")) {
       // Test if background color is grey.
       String color = getBackgroundColor(cell);
-      if (color != null && (color.equalsIgnoreCase("#F4F4F4") || color.equalsIgnoreCase("#DEDEDE")
-          || color.equalsIgnoreCase("#C1C1C1") || color.equalsIgnoreCase("#CCCCFF"))) {
+      if (color != null && (color.equalsIgnoreCase("#F4F4F4") || color.equalsIgnoreCase("#DEDEDE") || color.equalsIgnoreCase("#C1C1C1")
+          || color.equalsIgnoreCase("#CCCCFF"))) {
         return true;
       }
       // Test special cases when no gender/number metadata is given, but pronouns (ich, du, etc. are
       // given)
       if (!cell.select("i").isEmpty()) {
         String text = cell.text();
-        return text.equalsIgnoreCase("ich") || text.equalsIgnoreCase("du")
-            || text.equalsIgnoreCase("er") || text.equalsIgnoreCase("wir")
+        return text.equalsIgnoreCase("ich") || text.equalsIgnoreCase("du") || text.equalsIgnoreCase("er") || text.equalsIgnoreCase("wir")
             || text.equalsIgnoreCase("ihr") || text.equalsIgnoreCase("sie");
       } else {
         return false;
@@ -69,8 +68,7 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
         inflection.voice = Voice.REFLEXIV;
       } else if ("intransitive".equals(h)) {
         inflection.valency = Valency.INTRANSITIVE;
-      } else if ("(nichterweiterte) Infinitive".equals(h) || "nichterweitert".equals(h)
-          || "Infinitive".equals(h)) {
+      } else if ("(nichterweiterte) Infinitive".equals(h) || "nichterweitert".equals(h) || "Infinitive".equals(h)) {
         inflection.mode = Mode.INFINITIV;
       } else if ("erweiterte Infinitive".equals(h) || "erweitert".equals(h)) {
         inflection.mode = Mode.ZU_INFINITIV;
@@ -151,19 +149,16 @@ public class GermanKonjugationTableExtractor extends GermanTableExtractor {
       } else if ("1. Person Singular".equals(h) || "Sg. 1. Pers.".equals(h) || "ich".equals(h)) {
         inflection.number = GNumber.SINGULAR;
         inflection.person = Person.FIRST;
-      } else if ("2. Person Singular".equals(h) || "Sg. 2. Pers.".equals(h) || "(du)".equals(h)
-          || "du".equals(h)) {
+      } else if ("2. Person Singular".equals(h) || "Sg. 2. Pers.".equals(h) || "(du)".equals(h) || "du".equals(h)) {
         inflection.number = GNumber.SINGULAR;
         inflection.person = Person.SECOND;
-      } else if ("3. Person Singular".equals(h) || "Sg. 3. Pers.".equals(h) || "er".equals(h)
-          || "er, sie, es".equals(h)) {
+      } else if ("3. Person Singular".equals(h) || "Sg. 3. Pers.".equals(h) || "er".equals(h) || "er, sie, es".equals(h)) {
         inflection.number = GNumber.SINGULAR;
         inflection.person = Person.THIRD;
       } else if ("1. Person Plural".equals(h) || "Pl. 1. Pers.".equals(h) || "wir".equals(h)) {
         inflection.number = GNumber.PLURAL;
         inflection.person = Person.FIRST;
-      } else if ("2. Person Plural".equals(h) || "Pl. 2. Pers.".equals(h) || "(ihr)".equals(h)
-          || "ihr".equals(h)) {
+      } else if ("2. Person Plural".equals(h) || "Pl. 2. Pers.".equals(h) || "(ihr)".equals(h) || "ihr".equals(h)) {
         inflection.number = GNumber.PLURAL;
         inflection.person = Person.SECOND;
       } else if ("3. Person Plural".equals(h) || "Pl. 3. Pers.".equals(h) || "sie".equals(h)) {

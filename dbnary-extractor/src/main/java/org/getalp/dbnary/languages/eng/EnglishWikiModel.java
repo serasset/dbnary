@@ -17,14 +17,12 @@ import org.getalp.iso639.ISO639_3;
 
 public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
 
-  public EnglishWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public EnglishWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (!templateName.startsWith("tracking")) {
       if (templateName.equals("check deprecated lang param usage")) {
         writer.append(parameterMap.get("1"));
@@ -36,8 +34,7 @@ public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
         } catch (NumberFormatException e) {
           // nop
         }
-      } else if ("catlangname".equals(templateName) || "cln".equals(templateName)
-          || "categorize".equals(templateName) || "C".equals(templateName)
+      } else if ("catlangname".equals(templateName) || "cln".equals(templateName) || "categorize".equals(templateName) || "C".equals(templateName)
           || "topics".equals(templateName)) {
         // Just ignore these templates
       } else if ("langname".equals(templateName)) {
@@ -61,39 +58,30 @@ public class EnglishWikiModel extends EnglishLikeModulesPatcherWikiModel {
   }
 
   @Override
-  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map)
-      throws WikiModelContentException {
-    if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("langname")) {
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
+    if (parsedPagename.namespace.isType(NamespaceCode.TEMPLATE_NAMESPACE_KEY) && parsedPagename.pagename.equals("langname")) {
       // give a langname implementation without safesubst
       return "{{#invoke:languages/templates|getByCode|{{{1}}}|getCanonicalName}}";
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("Jpan-sortkey")) {
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY) && parsedPagename.pagename.equals("Jpan-sortkey")) {
       // Jpan sortkey uses a hack that is not possible in our setting and generates a Lua error
       // As sortkey is not essential in our setting, just return a stub
-      return getAndPatchModule(parsedPagename, map, t -> t.replaceAll(
-          "tonumber\\(mw.getCurrentFrame\\(\\):extensionTag\\('nowiki', ''\\):match'\\(\\[%dA-F\\]\\+\\)', 16\\)",
-          "0"));
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("parameters/track")) {
+      return getAndPatchModule(parsedPagename, map,
+          t -> t.replaceAll("tonumber\\(mw.getCurrentFrame\\(\\):extensionTag\\('nowiki', ''\\):match'\\(\\[%dA-F\\]\\+\\)', 16\\)", "0"));
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY) && parsedPagename.pagename.equals("parameters/track")) {
       // December 2024: Module:parameters now uses the traceback that is only available in debug
       // mode avoid an error while compiling the module as debug is not available in our execution
       // environment — patch it
       // July 2025: now defined in Module/parameters/track
-      return getAndPatchModule(parsedPagename, map,
-          t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
-              "local function traceback() \n" //
-                  + " return \"\"\n" //
-                  + "end\n"));
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("table/getUnprotectedMetatable")) {
+      return getAndPatchModule(parsedPagename, map, t -> t.replaceAll("local\\s+traceback\\s*=\\s*debug.traceback\n", //
+          "local function traceback() \n" //
+              + " return \"\"\n" //
+              + "end\n"));
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY) && parsedPagename.pagename.equals("table/getUnprotectedMetatable")) {
       // December 2024: Module:table/getUnprotectedMetatable queries debug which is nil
       // in our environment — patch it
-      return getAndPatchModule(parsedPagename, map,
-          t -> t.replaceAll("local _getmetatable = debug.getmetatable\n", //
-              "local _getmetatable = nil\n"));
-    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)
-        && parsedPagename.pagename.equals("checkparams")) {
+      return getAndPatchModule(parsedPagename, map, t -> t.replaceAll("local _getmetatable = debug.getmetatable\n", //
+          "local _getmetatable = nil\n"));
+    } else if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY) && parsedPagename.pagename.equals("checkparams")) {
       String resource = loadStubResource("checkparams.lua");
       return null == resource ? super.getRawWikiContent(parsedPagename, map) : resource;
     }

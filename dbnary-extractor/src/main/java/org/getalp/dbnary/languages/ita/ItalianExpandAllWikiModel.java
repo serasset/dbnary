@@ -10,8 +10,7 @@ public class ItalianExpandAllWikiModel extends ExpandAllWikiModel {
     super(locale, imageBaseURL, linkBaseURL);
   }
 
-  public ItalianExpandAllWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public ItalianExpandAllWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 

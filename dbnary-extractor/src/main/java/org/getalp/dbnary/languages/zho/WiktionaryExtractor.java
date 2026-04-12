@@ -77,10 +77,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    definitionExtractor = new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("en"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    pronunciationExtractor = new ChinesePronunciationExtractorWikiModel(wdh, wi, new Locale("en"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    definitionExtractor = new ChineseDefinitionExtractorWikiModel(wdh, wi, new Locale("en"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    pronunciationExtractor = new ChinesePronunciationExtractorWikiModel(wdh, wi, new Locale("en"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
   }
 
   public void extractData() {
@@ -114,8 +112,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private boolean isChineseHeader(Matcher m) {
     String head = m.group(1).trim();
-    return head.startsWith("{{zh") || head.startsWith("{{zho") || head.startsWith("漢語")
-        || head.startsWith("汉语") || head.startsWith("官話") || head.startsWith("粵語");
+    return head.startsWith("{{zh") || head.startsWith("{{zho") || head.startsWith("漢語") || head.startsWith("汉语") || head.startsWith("官話")
+        || head.startsWith("粵語");
   }
 
   void gotoDefBlock(Matcher m, String pos) {
@@ -178,8 +176,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   // Nyms
   private boolean isNymHeader(Matcher m) {
-    return (m.group(1).trim().equals("近義詞")) || (m.group(1).trim().equals("同義詞"))
-        || (m.group(1).equals("相關詞"));
+    return (m.group(1).trim().equals("近義詞")) || (m.group(1).trim().equals("同義詞")) || (m.group(1).equals("相關詞"));
   }
 
   private void gotoNymBlock(Matcher m) {
@@ -518,8 +515,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case IGNOREPOS:
         break;
       default:
-        assert false
-            : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
+        assert false : "Unexpected state while ending extraction of entry: " + getWiktionaryPageName();
     }
     wdh.finalizeLanguageSection();
   }
@@ -556,8 +552,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private void removeIrrelevantToken(List<Token> tokens, int location) {
-    if (tokens.get(location).getText().equals(" ") || tokens.get(location).getText().equals(": ")
-        || tokens.get(location).getText().equals("：")) {
+    if (tokens.get(location).getText().equals(" ") || tokens.get(location).getText().equals(": ") || tokens.get(location).getText().equals("：")) {
       tokens.remove(location);
     }
   }

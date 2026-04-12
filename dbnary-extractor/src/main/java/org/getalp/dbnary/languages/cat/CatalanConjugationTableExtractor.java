@@ -31,8 +31,7 @@ public class CatalanConjugationTableExtractor extends RefactoredTableExtractor {
     MorphoSyntacticFeature currentForm = null;
     context = cleanContext(context);
 
-    if (context.contains("formes personals compostes i perifràstiques")
-        || context.contains("compostes") || context.contains("verb")
+    if (context.contains("formes personals compostes i perifràstiques") || context.contains("compostes") || context.contains("verb")
         || context.contains("plusquamperfet"))
       return inflection;
 
@@ -116,8 +115,7 @@ public class CatalanConjugationTableExtractor extends RefactoredTableExtractor {
         case "–":
           break;
         default:
-          log.debug("{} => Conjugation field non handled -> {} ---> {}", entryName, h,
-              "https://ca.wiktionary.org/wiki/" + entryName);
+          log.debug("{} => Conjugation field non handled -> {} ---> {}", entryName, h, "https://ca.wiktionary.org/wiki/" + entryName);
           break;
       }
     }
@@ -138,8 +136,7 @@ public class CatalanConjugationTableExtractor extends RefactoredTableExtractor {
   }
 
   @Override
-  protected List<String> getRowAndColumnContext(int nrow, int ncol,
-      ArrayMatrix<Element> columnHeaders) {
+  protected List<String> getRowAndColumnContext(int nrow, int ncol, ArrayMatrix<Element> columnHeaders) {
     LinkedList<String> res = new LinkedList<>();
     int closestRow = -1;
     int secondClosestRow = -1;
@@ -147,8 +144,7 @@ public class CatalanConjugationTableExtractor extends RefactoredTableExtractor {
 
     for (int i = 0; i < nrow; i++)
       if (addToContext(columnHeaders, i, ncol, new ArrayList<>())
-          && (closestRow == -1 || !columnHeaders.get(closestRow, ncol).text()
-              .equals(columnHeaders.get(i, ncol).text()))) {
+          && (closestRow == -1 || !columnHeaders.get(closestRow, ncol).text().equals(columnHeaders.get(i, ncol).text()))) {
         secondClosestRow = closestRow;
         closestRow = i;
       }

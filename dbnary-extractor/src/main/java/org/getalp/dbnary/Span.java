@@ -18,7 +18,7 @@ public class Span {
    * Check if a given Pair is contained in the input Pair p.
    *
    * @param p a Pair
-   * 
+   *
    * @return true if the given Pair is contained in the input Pair p, false otherwise
    */
   public boolean containedIn(Span p) {
@@ -29,7 +29,7 @@ public class Span {
    * Check if the given Pair is contained in any of the input ArrayList of Pair-s.
    *
    * @param a an ArrayList of Pair-s
-   * 
+   *
    * @return true if the given Pair is contained in any of the input Pair-s, false otherwise
    */
   public boolean containedIn(ArrayList<Span> a) {

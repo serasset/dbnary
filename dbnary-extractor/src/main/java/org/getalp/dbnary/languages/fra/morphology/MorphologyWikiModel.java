@@ -18,8 +18,7 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
   private static final Logger log = LoggerFactory.getLogger(MorphologyWikiModel.class);
 
 
-  public MorphologyWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL,
-      String linkBaseURL) {
+  public MorphologyWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
   }
 
@@ -32,8 +31,7 @@ public abstract class MorphologyWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     // Currently just expand the definition to get the full text.
     if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
       // intercept this template as it leeds to a very inefficient Lua Script.

@@ -12,8 +12,7 @@ public class ItalianExampleExtractorWikiModel extends DbnaryWikiModel {
 
   private IWiktionaryDataHandler delegate;
 
-  public ItalianExampleExtractorWikiModel(IWiktionaryDataHandler dataHandler,
-      WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+  public ItalianExampleExtractorWikiModel(IWiktionaryDataHandler dataHandler, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
     this.delegate = dataHandler;
   }
@@ -32,8 +31,7 @@ public class ItalianExampleExtractorWikiModel extends DbnaryWikiModel {
   }
 
   @Override
-  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap,
-      Appendable writer) throws IOException {
+  public void substituteTemplateCall(String templateName, Map<String, String> parameterMap, Appendable writer) throws IOException {
     if (templateName.equals("ColoreN")) {
       // This template generate on-screen examples of colors. IGNORE IT
 

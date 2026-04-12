@@ -12,8 +12,9 @@
   <artifactId>dbnary-commands</artifactId>
 
   <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+    <!--maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target-->
   </properties>
 
   <dependencies>

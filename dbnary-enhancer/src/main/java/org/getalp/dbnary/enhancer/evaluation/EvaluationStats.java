@@ -50,7 +50,7 @@ public class EvaluationStats {
     private double sumRecall;
     private int nbReq;
     private double randRecall;
-    private int randPrec;
+    private double randPrec;
 
     public Stat() {
       sumPrec = 0;
@@ -120,7 +120,7 @@ public class EvaluationStats {
       if (0 == nbReq) {
         return 0;
       } else {
-        return ((double) randPrec) / ((double) nbReq);
+        return randPrec / ((double) nbReq);
       }
     }
 

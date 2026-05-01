@@ -269,7 +269,7 @@
         <artifactId>formatter-maven-plugin</artifactId>
       </plugin>
     </plugins>
-    <pluginManagement>
+    <!--pluginManagement>
       <plugins>
         <plugin>
           <groupId>net.alchim31.maven</groupId>
@@ -277,6 +277,6 @@
           <version>4.5.4</version>
         </plugin>
       </plugins>
-    </pluginManagement>
+    </pluginManagement-->
   </build>
 </project>

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by serasset on 28/01/16.
@@ -19,6 +20,7 @@ public class WikiSectionsSequence implements Iterable<WikiText.WikiSection> {
   }
 
   @Override
+  @NotNull
   public Iterator<WikiText.WikiSection> iterator() {
     return new WikiText.LevelBasedWikiSectionsIterator(content, level);
   }

@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -321,9 +323,9 @@ public class DBnaryEnhancer {
     if (arg.matches("[^:]{2,6}:.*")) {
       // It's an URL
       try {
-        String fname = new File(new URL(arg).getPath()).getName();
+        String fname = new File(new URI(arg).toURL().getPath()).getName();
         return ISO639_3.sharedInstance.getIdCode(fname.split("_")[0]);
-      } catch (MalformedURLException e) {
+      } catch (MalformedURLException | URISyntaxException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }

@@ -761,6 +761,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             if (null != lg && null != lemma && !"".equals(lemma)) {
               wdh.registerTranslation(lg, or(currentGloss, globalGloss), usage, lemma);
             }
+            break;
           default:
             log.trace("Translation: Ignoring template {} || {}", t, getWiktionaryPageName());
         }

@@ -231,6 +231,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
           </exclusion>
+          <exclusion>
+            <!-- Older version of commons codec in jena, newer version imported by commons-compress -->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-codec</artifactId>
+          </exclusion>
           <!-- protobuf version included in jena has a vulnerability -->
           <exclusion>
             <groupId>com.google.protobuf</groupId>
@@ -300,7 +305,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.27.1</version>
+        <version>1.28.0</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>

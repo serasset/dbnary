@@ -65,6 +65,12 @@
       <groupId>com.typesafe.scala-logging</groupId>
       <artifactId>scala-logging_${scalaBinaryVersion}</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.jetbrains</groupId>
+          <artifactId>annotations</artifactId>
+          <version>13.0</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
   <build>

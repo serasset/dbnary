@@ -102,6 +102,7 @@ public class EnglishInflectionData extends InflectionData {
         break;
       case DATIF:
         inflections.add(PropertyObjectPair.get(OliaOnt.hasCase, OliaOnt.DativeCase));
+        break;
       case NOTHING:
         break;
       default:

@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.getalp.dbnary.languages.ell;
 
 import java.util.HashMap;

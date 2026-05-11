@@ -3,11 +3,7 @@ package org.getalp.dbnary.languages.est;
 import static org.getalp.dbnary.tools.TokenListSplitter.splitAndProcessToken;
 import static org.getalp.dbnary.tools.TokenListSplitter.splitProcessAndKeepToken;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -27,11 +23,12 @@ import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected WiktionaryDataHandler estWdh;
 
@@ -61,8 +58,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       log.trace("Assuming {} is a form PoS.", sname);
       return Pair.of(sname, SectionKind.IGNORED_POS); // These are inflected forms
     }
-    if (estWdh.isPartOfSpeech(sname))
+    if (estWdh.isPartOfSpeech(sname)) {
+      if (log.isTraceEnabled() && t.getLevel() > 3)
+        log.trace("Part of speech title in a non PoS Header [{}]: {}", this.getWiktionaryPageName(), sname);
       return Pair.of(sname, SectionKind.MAIN);
+    }
     switch (sname) {
       case "hääldus":
         return Pair.of(sname, SectionKind.PRONUNCIATION);
@@ -88,6 +88,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case "fraasid":
       case "nimisõnafraasid":
       case "väljendid":
+      case "väljend":
       case "sõnaühendid":
         return Pair.of(sname, SectionKind.COMPOUNDS);
       case "tõlked":
@@ -97,6 +98,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       case "variant":
       case "tähised":
       case "lühendid":
+      case "lühend":
         return Pair.of(sname, SectionKind.ALTERNATIVE_FORMS);
       case "sünonüümid":
       case "sünonüüm":
@@ -194,17 +196,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     } else if (t instanceof Template && languageTemplateMatcher.reset(t.asTemplate().getName()).matches()) {
       String languageCode = languageTemplateMatcher.group(1).trim();
       log.trace("Template language: '{}'", languageCode);
-      switch (languageCode) {
-        case "jaR":
-          return "ja-Latn";
-        case "lvpn":
-          return "lv";
-        case "nlf":
-          return "lfn";
-        case "bh":
-          return "bih";
-      }
-      return LangTools.getCode(languageCode);
+        return switch (languageCode) {
+            case "jaR" -> "ja-Latn";
+            case "lvpn" -> "lv";
+            case "nlf" -> "lfn";
+            case "bh" -> "bih";
+            default -> LangTools.getCode(languageCode);
+        };
     }
     // null means it is not a language
     return null;
@@ -276,55 +274,244 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
+  private sealed
+
+  interface SubSection {
+  }
+
+  private record NYM (String nym) implements SubSection {}
+
+  private record TRANSLATIONS() implements SubSection {}
+
+  private record VARIANTS() implements SubSection {}
+
+  private record ALTERNATIVE_FORMS() implements SubSection {}
+
+  private record OTHER_NAMES() implements SubSection {}
+
+  private record OLD_SPELLING() implements SubSection {}
+
+  private record ABBREVIATIONS() implements SubSection {}
+
+  private record DIALECTS() implements SubSection {}
+
+  private record SYMBOLS() implements SubSection {}
+
+  private record SIGNS() implements SubSection {}
+
+  private record EXAMPLES() implements SubSection {}
+
+  private record COMPOUNDS() implements SubSection {}
+
+  private record USAGE() implements SubSection {}
+
+  private record SEE_ALSO() implements SubSection {}
+
+  private record RECTION() implements SubSection {}
+
+  private final NYM SYNONYM = new NYM("syn");
+  private final NYM ANTONYM = new NYM("ant");
+  private final NYM HYPONYM = new NYM("hypo");
+  private final NYM HYPERNYM = new NYM("hyper");
+  private final TRANSLATIONS TRANSLATIONS = new TRANSLATIONS();
+  private final VARIANTS VARIANTS = new VARIANTS();
+  private final ALTERNATIVE_FORMS ALTERNATIVE_FORMS = new ALTERNATIVE_FORMS();
+  private final OTHER_NAMES OTHER_NAMES = new OTHER_NAMES();
+  private final OLD_SPELLING OLD_SPELLING = new OLD_SPELLING();
+  private final ABBREVIATIONS ABBREVIATIONS = new ABBREVIATIONS();
+  private final DIALECTS DIALECTS = new DIALECTS();
+  private final SYMBOLS SYMBOLS = new SYMBOLS();
+  private final SIGNS SIGNS = new SIGNS();
+  private final EXAMPLES EXAMPLES = new EXAMPLES();
+  private final COMPOUNDS COMPOUNDS = new COMPOUNDS();
+  private final USAGE USAGE = new USAGE();
+  private final SEE_ALSO SEE_ALSO = new SEE_ALSO();
+  private final RECTION RECTION = new RECTION();
+
   private void extractDefinitions(List<Token> mainSection) {
+    Deque<Token> stack = new LinkedList<>(mainSection);
     // Iterate through list tokens and extract definition, examples or other info
-    String currentSubsection = null;
-    for (Token token : mainSection) {
-      if (token instanceof NumberedListItem) {
-        NumberedListItem t = token.asNumberedListItem();
-        WikiContent content = t.getContent();
-        if ("#".equals(t.getListPrefix())) {
-          extractDefinition(content.getText(), 1);
-        } else if ("#:".equals(t.getListPrefix())) {
-          // check if it is a subsection title
-          String subSection = decodeSubSection(t);
+    SubSection currentSubsection = null;
+    while (!stack.isEmpty()) {
+      Token token = stack.pop();
+      switch (token) {
+        case NumberedListItem t -> {
+          WikiContent content = t.getContent();
+          switch (t.getListPrefix()) {
+            case "#" -> extractDefinition(content.getText(), 1);
+            case "#:" -> {
+              // check if it is a subsection title
+              Pair<SubSection, String> subSectionAndTrail = decodeSubSection(t);
+              if (null != subSectionAndTrail.getLeft()) {
+                log.trace("Starting subsection extraction: {}", subSectionAndTrail.getLeft());
+                currentSubsection = subSectionAndTrail.getLeft();
+                if (subSectionAndTrail.getRight() != null && !subSectionAndTrail.getRight().isEmpty()) {
+                  // push back the trailing into the list of item as if they were one after the other
+                  stack.push(new WikiText("FAKEPAGE", "#:* "+ subSectionAndTrail.getRight() + "\n").tokens().getFirst());
+                }
+              } else {
+                String right = subSectionAndTrail.getRight();
+                String trailing = right.replaceAll("<br\\s*/?>", "");
+                if (! trailing.equals(right)) {
+                  log.trace("MODIFICATION: {} -> {}", right, trailing);
+                }
+                trailing = StringUtils.strip(trailing, " \t\n\r\f:;");
+                if (trailing.isEmpty())
+                  continue;
+                log.debug("No subsection extraction after a '#:': {}", t.getContent().getText());
+                // Handle the rest as an example
+                stack.push(new WikiText("FAKEPAGE", "#:: "+ subSectionAndTrail.getRight() + "\n").tokens().getFirst());
+              }
+            }
+            case "#:*", "#::" -> {
+              // Extract the links and register them depending on the current subsection
+              if (null != currentSubsection)
+                log.trace("Extracting as a subsection: {}", t.getContent().getText());
+              else
+                log.debug("UNIMPLEMENTED Example extraction of {}", t.getContent().getText());
+            }
+            case null, default -> {
+            }
+          }
+        }
+        case IndentedItem indentedItem -> {
+          // Consider it as a definition, when only an indentation, with exceptions
+          switch (indentedItem.getListPrefix()) {
+            case ":", ":#" -> {
+              String text = indentedItem.getContent().getText();
+              if (text.contains("{{kuula")) continue;
+              extractDefinition(text, 0);
+            }
+            case null, default -> log.trace("Got non definition indented item: {}", token);
+          }
+        }
+        case Text _ -> {
+          if (log.isTraceEnabled()) {
+            String text = token.getText();
+            text = StringUtils.strip(text);
+            if (!text.isEmpty()) {
+              log.trace("Ignoring Text token: {}", text);
+            }
+          }
+        }
+        case Template template -> {
+          // check if it is a subsection title encoded as a template
+          SubSection subSection = decodeSubSection(template);
           if (null != subSection) {
             log.trace("Starting subsection extraction: {}", subSection);
             currentSubsection = subSection;
           } else {
-            log.debug("No subsection extraction after a '#:': {}", t.getContent().getText());
+            log.debug("No subsection extraction after a template: {}", template.getName());
+            currentSubsection = null;
+            if (template.getName().endsWith("/tõlked")) {
+              // Handle very specific case where the template contains specific translations
+              // e.g.: {{taevatäht/tõlked}}
+              // Get the template content and extract translations from it, then switch to translation mode to handle
+              // eventual additional translations.
+              String templateSource = this.wi.getTextOfPageWithRedirects("Mall:" + template.getName());
+              if (templateSource != null) {
+                List<Token> templateTokens = new WikiText(template.getName(), templateSource).tokens();
+                ListIterator<Token> it = templateTokens.listIterator(templateTokens.size());
+                while (it.hasPrevious()) {
+                  stack.push(it.previous());
+                }
+              }
+            }
           }
-        } else if ("#:*".equals(t.getListPrefix())) {
-          // Extract the links and register them depending on the current subsection
-          log.trace("Extracting as a subsection: {}", t.getContent().getText());
-        } else if ("#::".equals(t.getListPrefix())) {
-          // Extract an example
-          log.debug("UNIMPLEMENTED Example extraction of {}", t.getContent().getText());
         }
-      } else if (token instanceof IndentedItem) {
-        log.trace("Got non definition indented item: {}", token);
-      } else if (token instanceof Text) {
-        if (log.isTraceEnabled()) {
-          String text = token.getText();
-          text = StringUtils.strip(text);
-          if (!text.isEmpty()) {
-            log.trace("Ignoring Text token: {}", text);
-          }
-        }
-      } else {
-        log.trace("Other token: {}", token);
+        case null, default -> log.trace("Other token: {}", token);
       }
     }
   }
 
-  private Matcher subSectionHeader = Pattern.compile("\\s*'''(.*)''':\\s*").matcher("");
+  private final Matcher subSectionHeader = Pattern.compile("\\s*'''(.*):?''':?\\s*(.*)").matcher("");
 
-  private String decodeSubSection(NumberedListItem t) {
+  private Pair<SubSection, String> decodeSubSection(NumberedListItem t) {
     boolean containsSubSectionHeader = subSectionHeader.reset(t.getContent().getText()).matches();
     if (containsSubSectionHeader) {
-      return subSectionHeader.group(1);
+      String subSectionTitle = StringUtils.strip(subSectionHeader.group(1), " \t\n\r\f:;").toLowerCase();
+      SubSection subSection = decodeSubSection(subSectionTitle);
+      String trailing = subSectionHeader.group(2);
+      if (null != subSection) {
+        trailing = trailing.replaceAll("<.*?>", "");
+        trailing = StringUtils.strip(trailing, " \t\n\r\f:;");
+        if (trailing.isEmpty()) trailing = null;
+        if (null != trailing)
+          log.trace("Non empty trailing in subsection header: {}: {}", subSectionTitle, trailing);
+        return Pair.of(subSection, trailing);
+      }
     }
-    return null;
+    return Pair.of(null, t.getContent().getText());
+  }
+
+  @Nullable
+  private SubSection decodeSubSection(String subSectionTitle) {
+    switch (subSectionTitle) {
+      case "tõlked", "tõlkeid", "T", "tõlge", "vasted teistes keeltes", "tõlkima", "tõlkes", "tõlked ja laenud" -> {
+        return TRANSLATIONS;
+      }
+      case "sünonüümid", "sünonüüm", "S", "sümonüüm", "sünonüümod", "sünonüümiga", "sünonüümi", "sünonüumid", "Sünomüümid",
+           "rahvapärased nimed", "stiililiselt lähedased sünonüümid"
+              -> {
+        return SYNONYM;
+      }
+      case "antonüümid", "antonüüm", "A", "antononüümid", "vastandsõna" -> {
+        return ANTONYM;
+      }
+      case "hüponüümid", "hüponüüm", "H", "hüpoüümid" -> {
+        return HYPONYM;
+      }
+      case "hüpernüümid", "hüpernüüm", "hüpernonüümid", "hüperonüümid" -> {
+        return HYPERNYM;
+      }
+      case "variant", "variandid", "V" -> {
+        return VARIANTS;
+      }
+      case "rööpvormid", "rööpvorm", "R", "rööpkuju", "rööpkujud", "teised kujud" -> {
+        return ALTERNATIVE_FORMS;
+      }
+      case "lühend", "lühendid", "L", "lühinimi" -> {
+        return ABBREVIATIONS;
+      }
+      case "tähised", "tähis", "märk" -> {
+        return SIGNS;
+      }
+      case "murdesõnad" -> {
+        return DIALECTS;
+      }
+      case "teised nimetused" -> {
+        return OTHER_NAMES;
+      }
+      case "vaata ka" -> {
+        return SEE_ALSO;
+      }
+      case "vana kirjaviis" -> {
+        return OLD_SPELLING;
+      }
+      case "sümbol", "keemiline sümbol" -> {
+        return SYMBOLS;
+      }
+      case "näiteid" -> {
+        return EXAMPLES;
+      }
+      case "liitsõnad" -> {
+        return COMPOUNDS;
+      }
+      case "rektsioon" -> {
+        return RECTION;
+      }
+      case "kasutamine" -> {
+        return USAGE;
+      }
+      default -> {
+        return null;
+      }
+    }
+  }
+
+  private SubSection decodeSubSection(Template t) {
+    String name = t.getName().trim();
+    return decodeSubSection(name);
   }
 
   private void extractPronunciation(String name, List<Token> contents) {

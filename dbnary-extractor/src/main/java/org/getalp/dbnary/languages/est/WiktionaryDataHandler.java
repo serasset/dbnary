@@ -1,5 +1,6 @@
 package org.getalp.dbnary.languages.est;
 
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
@@ -119,5 +120,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     currentLexEntry = null;
     currentEncodedLexicalEntryName = null;
     currentSense = null;
+  }
+
+  public void registerTranslation(boolean senseLocal, String lang, Resource currentGloss, String usage, String word) {
+    Resource target = senseLocal ? currentSense : currentLexEntry;
+    super.registerTranslationToEntity(target, lang, currentGloss, usage, word);
   }
 }

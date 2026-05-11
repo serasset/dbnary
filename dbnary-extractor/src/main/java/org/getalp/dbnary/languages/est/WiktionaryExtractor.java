@@ -14,6 +14,7 @@ import org.getalp.LangTools;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.wiki.WikiCharSequence;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Heading;
 import org.getalp.dbnary.wiki.WikiText.IndentedItem;
@@ -196,13 +197,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     } else if (t instanceof Template && languageTemplateMatcher.reset(t.asTemplate().getName()).matches()) {
       String languageCode = languageTemplateMatcher.group(1).trim();
       log.trace("Template language: '{}'", languageCode);
-        return switch (languageCode) {
-            case "jaR" -> "ja-Latn";
-            case "lvpn" -> "lv";
-            case "nlf" -> "lfn";
-            case "bh" -> "bih";
-            default -> LangTools.getCode(languageCode);
-        };
+      return switch (languageCode) {
+        case "jaR" -> "ja-Latn";
+        case "lvpn" -> "lv";
+        case "nlf" -> "lfn";
+        case "bh" -> "bih";
+        default -> LangTools.getCode(languageCode);
+      };
     }
     // null means it is not a language
     return null;
@@ -241,8 +242,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case IGNORED_POS:
           estWdh.voidPartOfSpeech();
           break;
-        case PRONUNCIATION:
         case TRANSLATIONS:
+          extractTranslations(section.getRight());
+          break;
+        case PRONUNCIATION:
         case DERIVATIVES:
         case PROVERBS:
         case MORPHOLOGY:
@@ -338,8 +341,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         case NumberedListItem t -> {
           WikiContent content = t.getContent();
           switch (t.getListPrefix()) {
-            case "#" -> extractDefinition(content.getText(), 1);
-            case "#:" -> {
+              case "#" -> {
+                  currentSubsection = null;
+                  extractDefinition(content.getText(), 1);
+              }
+              case "#:" -> {
               // check if it is a subsection title
               Pair<SubSection, String> subSectionAndTrail = decodeSubSection(t);
               if (null != subSectionAndTrail.getLeft()) {
@@ -365,10 +371,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
             case "#:*", "#::" -> {
               // Extract the links and register them depending on the current subsection
-              if (null != currentSubsection)
-                log.trace("Extracting as a subsection: {}", t.getContent().getText());
-              else
-                log.debug("UNIMPLEMENTED Example extraction of {}", t.getContent().getText());
+              switch (currentSubsection) {
+                case EXAMPLES _ -> {
+                    extractExample(content.getText());
+                }
+                case TRANSLATIONS _ -> {
+                  extractTranslationLine(t, true);
+                }
+                case null -> {
+                  // Handle an example by default
+                  extractExample(content.getText());
+                }
+                default -> {
+                  log.debug("No subsection extraction after a '#:*' or '#::': {}", content.getText());
+                }
+              }
             }
             case null, default -> {
             }
@@ -423,6 +440,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       }
     }
   }
+
+  private void extractTranslationLine(IndentedItem t, boolean senseLocal) {
+    log.trace("Translation line: {}", t.getContent().getText());
+    WikiCharSequence line = new WikiCharSequence(t.getContent());
+    TranslationLineParser tp = new TranslationLineParser(this.getWiktionaryPageName());
+    tp.extractTranslationLine(line, senseLocal, estWdh);
+  }
+
+
 
   private final Matcher subSectionHeader = Pattern.compile("\\s*'''(.*):?''':?\\s*(.*)").matcher("");
 
@@ -535,24 +561,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private void extractMorphology(String name, List<Token> contents) {}
 
-  // TODO: translations in definitions: template T or #:'''Tolked''' or some specific template calls
-  // (see 'täht')
-  private void extractDefinitions(String name, List<Token> contents) {
-    for (Token t : contents) {
-      if (t instanceof NumberedListItem) {
-        NumberedListItem li = t.asNumberedListItem();
-
-        /* examples */
-        if (li.getContent().getText().startsWith("*")) {
-          /* 'Přiklad' template */
-          extractExample(li);
-        } else {
-          extractDefinition(li.getContent().getText().trim(), li.getLevel());
-        }
-      }
-    }
-  }
-
   @Override
   public Resource extractDefinition(String definition, int defLevel) {
     String def = expander.expandAll(definition, null);
@@ -562,100 +570,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return null;
   }
 
-  private void extractExample(NumberedListItem li) {
-    for (Token t : li.getContent().tokens()) {
-      if (t instanceof Template) {
-        Template tm = t.asTemplate();
-        Map<String, String> args = tm.getParsedArgs();
-
-        if (tm.getName().trim().equals("Příklad") && args.size() == 2 && args.get("1").equals("cs")) {
-          super.extractExample(args.get("2"));
-        } else {
-          log.debug("'{}': Unexpected example template: '{}' ({} arguments)", getWiktionaryPageName(), tm.getName(), args.size());
-        }
-      }
-    }
-  }
-
-  private void extractTranslations(String name, List<Token> contents) {
+  private void extractTranslations(List<Token> contents) {
     for (Token t : contents) {
-      if (t instanceof NumberedListItem) {
-        NumberedListItem li = t.asNumberedListItem();
-
-        for (Token t1 : li.getContent().tokens()) {
-          extractTranslation(t1);
-        }
-      } else {
-        extractTranslation(t);
+      if (t instanceof IndentedItem) {
+        extractTranslationLine(t.asIndentedItem(), false);
       }
     }
   }
 
-  private void extractTranslation(Token t) {
-    /* {{ Překlady | význam = <sense> | <lang1> = <trad1> | ... | <langN> = <tradN> }} */
-    if (t instanceof Template) {
-      Template tm = t.asTemplate();
-
-      if (tm.getName().trim().equals("Překlady")) {
-        LinkedHashMap<String, WikiContent> args = tm.getArgs();
-
-        if (args.size() == 0) {
-          log.trace("'{}': No translations for this sense.", getWiktionaryPageName());
-          return;
-        }
-
-        WikiContent sense = args.get("význam");
-        String senseText = (sense == null) ? "" : sense.toString().trim();
-        Resource gloss = estWdh.createGlossResource(senseText);
-
-        for (Map.Entry<String, WikiContent> entry : args.entrySet()) {
-          String lang = entry.getKey();
-          WikiContent trans = entry.getValue();
-
-          if (!lang.equals("význam")) {
-            for (Token tk : trans.tokens()) {
-              // TODO: match on token type
-              if (tk instanceof Template) {
-                Template tm1 = tk.asTemplate();
-                Map<String, String> args1 = tm1.getParsedArgs();
-
-                if (tm1.getName().equals("P") && args1.size() >= 2) {
-                  estWdh.registerTranslation(lang, gloss, senseText, args1.get("2"));
-                }
-              }
-            }
-          }
-        }
-      } else {
-        log.debug("'{}': Expected 'Překlady' template for translations, found '{}' template", getWiktionaryPageName(), tm.getName());
-      }
-    } else {
-      if (!t.getText().trim().equals("")) {
-        log.debug("'{}': expected template for translation, found {}", getWiktionaryPageName(), t);
-      }
-    }
-  }
-
-  private void extractNyms(String name, List<Token> contents) {
-    String nymrel = nyms.get(name);
-
-    for (Token t : contents) {
-      if (t instanceof NumberedListItem) {
-        NumberedListItem li = t.asNumberedListItem();
-
-        for (Token tl : li.getContent().tokens()) {
-          if (tl instanceof Link) {
-            extractNymString(nymrel, tl.asLink().getLinkText());
-          }
-        }
-      }
-    }
-  }
-
-  private void extractNymString(String nymrel, String nym) {
-    if (!nym.trim().equals("—")) {
-      /* empty synonym symbol = no register */
-      estWdh.registerNymRelation(nym, nymrel);
-    }
-  }
 }

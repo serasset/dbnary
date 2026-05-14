@@ -5,6 +5,8 @@ import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.OntolexOnt;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 
+import java.util.Map;
+
 public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   static {
     posAndTypeValueMap.put("nimisõna", new PosAndType(LexinfoOnt.noun, OntolexOnt.Word));
@@ -107,6 +109,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("lause", new PosAndType(LexinfoOnt.setPhrase, OntolexOnt.MultiWordExpression));
   }
 
+  private static final Map<String, String> Nym2NymMap = Map.of("sünonüümid", "syn", "sünonüüm", "syn", "antonüümid", "ant", "antonüüm", "ant");
+
+  public String normaliseNym(String nym) {
+    return Nym2NymMap.getOrDefault(nym, nym);
+  }
+
   public boolean isPartOfSpeech(String s) {
     return posAndTypeValueMap.containsKey(s);
   }
@@ -125,5 +133,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   public void registerTranslation(boolean senseLocal, String lang, Resource currentGloss, String usage, String word) {
     Resource target = senseLocal ? currentSense : currentLexEntry;
     super.registerTranslationToEntity(target, lang, currentGloss, usage, word);
+  }
+
+  public void registerNymRelation(String target, String synRelation, boolean senseLocal) {
+    Resource entity = senseLocal ? currentSense : currentLexEntry;
+    super.registerNymRelationToEntity(target, synRelation, entity);
   }
 }

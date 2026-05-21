@@ -321,6 +321,7 @@ public class ISO639_3 {
                 langMap.put(obsolete_lang.id, obsolete_lang);
               }
             }
+            break;
           default:
             break;
         }

@@ -3,7 +3,6 @@ package org.getalp.dbnary.languages.bul
 import com.typesafe.scalalogging.Logger
 import org.apache.jena.rdf.model.Resource
 import org.getalp.dbnary.api.IWiktionaryDataHandler
-import org.getalp.dbnary.languages.AbstractGlossFilter
 
 import scala.util.matching.Regex
 import scala.util.matching.Regex.Match

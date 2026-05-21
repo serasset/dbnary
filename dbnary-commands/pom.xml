@@ -5,15 +5,16 @@
   <parent>
     <artifactId>dbnary</artifactId>
     <groupId>org.getalp</groupId>
-    <version>3.1.32</version>
+    <version>3.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>dbnary-commands</artifactId>
 
   <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+    <!--maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target-->
   </properties>
 
   <dependencies>

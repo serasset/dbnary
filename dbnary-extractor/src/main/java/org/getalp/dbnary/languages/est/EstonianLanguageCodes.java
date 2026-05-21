@@ -28,6 +28,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("geegi", "aln");
     h.put("altai", "alt");
     h.put("amhara", "am");
+    h.put("amhari", "am");
     h.put("aragoni", "an");
     h.put("vanainglise", "ang");
     h.put("obolo", "ann");
@@ -168,6 +169,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("egiptuse", "egy");
     h.put("ekadžuki", "eka");
     h.put("kreeka", "el");
+    h.put("uuskreeka", "el");
     h.put("eelami", "elx");
     h.put("inglise", "en");
     h.put("austraalia inglise", "en-AU");
@@ -256,6 +258,7 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("armeenia", "hy");
     h.put("herero", "hz");
     h.put("interlingua", "ia");
+    h.put("interlingva", "ia");
     h.put("ibani", "iba");
     h.put("ibibio", "ibb");
     h.put("indoneesia", "id");
@@ -686,6 +689,11 @@ public class EstonianLanguageCodes extends LangTools {
     h.put("karagassi", "kim");
     h.put("bärndütsch", "bern1242");
     h.put("abasiini", "abq");
+    h.put("evengi", "evn");
+    h.put("šoori", "cjs");
+    h.put("kildini saami", "sjd");
+    h.put("hakassi", "kjh");
+    h.put("eveeni", "eve");
 
     // Others
     // Bieweri ?

@@ -3,7 +3,7 @@ package org.getalp.dbnary.cli;
 import java.nio.file.Path;
 import org.getalp.dbnary.cli.utils.ShortErrorMessageHandler;
 import org.getalp.dbnary.cli.utils.VersionProvider;
-import org.slf4j.impl.SimpleLogger;
+import org.slf4j.simple.SimpleLogger;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.HelpCommand;

@@ -26,7 +26,7 @@ public class ClassBasedFilter implements WikiEventFilter {
     this.classesToKeep.addAll(allowedClasses);
   }
 
-  public ClassBasedFilter(Set<Class<? extends Token>> allowedClasses, Set<Class> goIntoClasses) {
+  public ClassBasedFilter(Set<Class<? extends Token>> allowedClasses, Set<Class<? extends Token>> goIntoClasses) {
     super();
     this.classesToKeep.addAll(allowedClasses);
     this.enterAll();

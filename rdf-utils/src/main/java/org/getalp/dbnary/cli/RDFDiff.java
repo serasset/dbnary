@@ -30,7 +30,7 @@ import org.apache.jena.riot.RiotNotFoundException;
 import org.apache.jena.tdb2.TDB2Factory;
 import org.apache.jena.util.iterator.ExtendedIterator;
 
-public class RDFDiff extends VerboseCommand {
+public final class RDFDiff extends VerboseCommand {
 
   private final TreeMap<String, String> anodes2id = new TreeMap<>();
   public static final Resource me = ResourceFactory.createResource("#me");

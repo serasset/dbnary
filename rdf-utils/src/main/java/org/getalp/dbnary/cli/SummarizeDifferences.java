@@ -37,11 +37,11 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.riot.RDFDataMgr;
 
-public class SummarizeDifferences extends VerboseCommand {
+public final class SummarizeDifferences extends VerboseCommand {
 
-  protected final static String SLACK_OPTION = "slack";
-  protected final static String DISCORD_OPTION = "discord";
-  protected final static String STDOUT_OPTION = "stdout";
+  private final static String SLACK_OPTION = "slack";
+  private final static String DISCORD_OPTION = "discord";
+  private final static String STDOUT_OPTION = "stdout";
 
 
   static {

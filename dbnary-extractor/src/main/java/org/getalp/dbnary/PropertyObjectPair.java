@@ -1,5 +1,6 @@
 package org.getalp.dbnary;
 
+import java.io.Serial;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import org.apache.jena.rdf.model.Literal;
@@ -10,6 +11,8 @@ import org.apache.jena.rdf.model.Resource;
 public class PropertyObjectPair extends SimpleImmutableEntry<Property, RDFNode> {
 
   private static final HashMap<Property, HashMap<RDFNode, PropertyObjectPair>> instances = new HashMap<Property, HashMap<RDFNode, PropertyObjectPair>>();
+  @Serial
+  private static final long serialVersionUID = 8795704085086385116L;
 
   private PropertyObjectPair(Property p, RDFNode o) {
     super(p, o);

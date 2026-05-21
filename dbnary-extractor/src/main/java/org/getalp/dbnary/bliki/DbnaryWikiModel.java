@@ -33,11 +33,12 @@ public class DbnaryWikiModel extends WikiModel {
   }
 
   public DbnaryWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
-    super(new Configuration(), locale, imageBaseURL, linkBaseURL);
-    this.wi = wi;
+    Configuration conf = new Configuration();
     // This tag is used at least in French Morphology templates.
-    this.addTokenTag("bdi", new HTMLTag("bdi"));
-    this.addTokenTag("templatestyles", new HTMLTag("templatestyles"));
+    conf.addTokenTag("bdi", new HTMLTag("bdi"));
+    conf.addTokenTag("templatestyles", new HTMLTag("templatestyles"));
+    super(conf, locale, imageBaseURL, linkBaseURL);
+    this.wi = wi;
   }
 
   protected String expandWikiCode(String wikicode) {

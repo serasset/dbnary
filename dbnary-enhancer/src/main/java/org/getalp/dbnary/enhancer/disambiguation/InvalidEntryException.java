@@ -1,6 +1,12 @@
 package org.getalp.dbnary.enhancer.disambiguation;
 
+import java.io.Serial;
+
 public class InvalidEntryException extends Exception {
+
+
+  @Serial
+  private static final long serialVersionUID = -3093043044636990444L;
 
   public InvalidEntryException() {
     super();

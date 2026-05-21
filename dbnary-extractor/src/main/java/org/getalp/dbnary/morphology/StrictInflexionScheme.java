@@ -1,11 +1,17 @@
 package org.getalp.dbnary.morphology;
 
 
-import java.util.Formatter;
+import java.io.Serial;
 
 public class StrictInflexionScheme extends InflectionScheme {
 
+  @Serial
+  private static final long serialVersionUID = 5083072650908599632L;
+
   public static class INCOHERENT_INFLECTION_SCHEME extends RuntimeException {
+
+    @Serial
+    private static final long serialVersionUID = -1155453439796506462L;
 
     public INCOHERENT_INFLECTION_SCHEME() {}
 

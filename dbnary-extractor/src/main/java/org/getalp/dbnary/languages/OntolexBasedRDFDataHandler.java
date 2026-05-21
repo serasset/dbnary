@@ -606,7 +606,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
 
   final static Pattern CONTROL_CHAR = Pattern.compile("\\p{Cntrl}");
 
-  protected Resource registerTranslationToEntity(Resource entity, String lang, Resource currentGloss, String usage, String word) {
+  public Resource registerTranslationToEntity(Resource entity, String lang, Resource currentGloss, String usage, String word) {
     if (null == entity) {
       log.debug("Registering Translation when lex entry is null in \"{}\".", this.currentPage.getWiktionaryURI());
       return null; // Don't register anything if current lex entry is not known.

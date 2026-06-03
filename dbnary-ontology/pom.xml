@@ -38,6 +38,8 @@
     <skos.class>SkosOnt</skos.class>
     <datacube.source>${onto.source.dir}${file.separator}cube.ttl</datacube.source>
     <datacube.class>DataCubeOnt</datacube.class>
+    <lemonety.source>${onto.source.dir}${file.separator}lemonEty.ttl</lemonety.source>
+    <lemonety.class>LemonEtyOnt</lemonety.class>
   </properties>
 
   <name>DBnary Ontology API</name>
@@ -392,6 +394,35 @@
                 <argument>${onto.target.dir}</argument>
                 <argument>-n</argument>
                 <argument>${datacube.class}</argument>
+                <argument>--owl</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>lemonEty</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <classpathScope>test</classpathScope>
+              <executable>java</executable>
+              <arguments>
+                <argument>-classpath</argument>
+                <classpath/>
+                <argument>-Dlog4j.configurationFile=\"${log4jprops}\"</argument>
+                <argument>-Dfile.encoding=UTF-8</argument>
+                <argument>org.getalp.dbnary.cli.schemagenIfNewer</argument>
+                <argument>-i</argument>
+                <argument>${lemonety.source}</argument>
+                <argument>-e</argument>
+                <argument>TURTLE</argument>
+                <argument>--package</argument>
+                <argument>org.getalp.dbnary</argument>
+                <argument>-o</argument>
+                <argument>${onto.target.dir}</argument>
+                <argument>-n</argument>
+                <argument>${lemonety.class}</argument>
                 <argument>--owl</argument>
               </arguments>
             </configuration>

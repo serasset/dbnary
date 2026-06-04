@@ -93,6 +93,8 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   @CommandLine.Option(names = {"--sample"}, paramLabel = "N", defaultValue = "-1", description = "sample only the first N extracted entries.")
   private int sample = -1;
 
+  @CommandLine.Option(names = {"--download-only"}, description = "sample only the first N extracted entries.")
+  private boolean downloadOnly = false;
 
   private ExtractionPreferences prefs;
 
@@ -185,8 +187,10 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   public void updateAndExtract() {
     List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential().map(this::retrieveLastDump).collect(Collectors.toList());
     confs = confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
-    confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
-        .forEach(this::linkToLatestExtractedFiles);
+    if (downloadOnly) {
+      confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
+          .forEach(this::linkToLatestExtractedFiles);
+    }
   }
 
   private LanguageConfiguration checkLock(LanguageConfiguration conf) {

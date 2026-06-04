@@ -47,6 +47,7 @@ import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.DataCubeOnt;
 import org.getalp.dbnary.DecompOnt;
 import org.getalp.dbnary.ExtractionFeature;
+import org.getalp.dbnary.LemonEtyOnt;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.LimeOnt;
 import org.getalp.dbnary.OliaOnt;
@@ -197,6 +198,7 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
     box.setNsPrefix("dbnary", DBnaryOnt.getURI());
     box.setNsPrefix("dbstats", DBNARY_NS_PREFIX + "/statistics/");
     box.setNsPrefix("dbetym", DBnaryEtymologyOnt.getURI());
+    box.setNsPrefix("lemonety", LemonEtyOnt.getURI());
     box.setNsPrefix("lexinfo", LexinfoOnt.getURI());
     box.setNsPrefix("rdfs", RDFS.getURI());
     box.setNsPrefix("dcterms", DCTerms.getURI());

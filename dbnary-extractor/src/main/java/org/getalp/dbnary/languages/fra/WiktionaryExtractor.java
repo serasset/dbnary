@@ -1,13 +1,6 @@
 package org.getalp.dbnary.languages.fra;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +17,7 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
+import org.getalp.dbnary.languages.fra.lemonetyModel.Graph;
 import org.getalp.dbnary.languages.fra.morphology.FrenchInflectionDecoder;
 import org.getalp.dbnary.languages.fra.morphology.InflectionExtractorWikiModel;
 import org.getalp.dbnary.languages.fra.morphology.VerbalInflexionExtractorWikiModel;
@@ -483,6 +477,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String pos;
       if ("étymologie".equals(sectionName)) {
         // NOTHING YET
+        WikiText wikiTextEtymoloy = new WikiText(section.getContent().toString());
+        FrenchEtymology frenchEtymology = new FrenchEtymology(wikiTextEtymoloy, getWiktionaryPageName());
+        frenchEtymology.check();
+        frwdh.createEtymologyGraph(getWiktionaryPageName(), normalizedLanguage, frenchEtymology);
+
       } else if ((pos = posMarkers.get(sectionName)) != null) {
         if (title != null && "flexion".equals(title.getParsedArg("3"))) {
           // TODO: we could re-use inflexion extractor to get the inflected past participles
@@ -904,4 +903,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
     super.postProcessData(dumpFileVersion);
   }
+
+
+
 }

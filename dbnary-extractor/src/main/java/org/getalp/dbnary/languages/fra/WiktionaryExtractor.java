@@ -17,7 +17,6 @@ import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
-import org.getalp.dbnary.languages.fra.lemonetyModel.Graph;
 import org.getalp.dbnary.languages.fra.morphology.FrenchInflectionDecoder;
 import org.getalp.dbnary.languages.fra.morphology.InflectionExtractorWikiModel;
 import org.getalp.dbnary.languages.fra.morphology.VerbalInflexionExtractorWikiModel;

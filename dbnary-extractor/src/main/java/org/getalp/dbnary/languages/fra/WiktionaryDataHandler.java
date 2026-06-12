@@ -211,7 +211,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
 
+  private static int etymologyCounter= 1;
+
   public void createEtymologyGraph(String wiktionaryPageName, String lang, FrenchEtymology frenchEtymology) {
+    String etymonFiller="__etymon__";
+    String etyLinkFiller="__etyLink__"+uriEncode(wiktionaryPageName);
+    String etymologyFiller="__ety__fr__"+etymologyCounter;
 
     System.out.println(getPrefix());
     if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
@@ -227,7 +232,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     System.out.println("Creating etymology graph for " + wiktionaryPageName + " in " + lang);
 
 
-    Resource etymology = etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + "_etymology");
+    Resource etymology = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller,Etymology);
     etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
 
     // je commence avec la création des étymons car tous les mots liés sont des étymons, et ça va aider
@@ -251,8 +256,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
           }
         }
         Resource etymon =
-            etymologyBox.createResource(getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)) + uriEncode(word) + "_ETYMON", Etymon);
-        etymologyBox.add(etymology, LemonEtyOnt.etymology, etymon);
+            etymologyBox.createResource(getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)) + etymonFiller+uriEncode(word) , Etymon);
+        etymologyBox.add(etymology, LemonEtyOnt.etymon, etymon);
+        etymologyBox.add(etymon, RDFS.label, word, lang);
+        etymologyBox.add(etymon,RDFS.seeAlso , WIKT + uriEncode(wiktionaryPageName));
         etymologyBox.add(etymon, LemonEtyOnt.isEtymonOf, etymology);
         System.out.println("language" + getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology) + " " + word + " " + etymon.getURI());
       }
@@ -262,22 +269,24 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // construction des etyLinks
     int etyLinkCounter = 1;
 
-    Resource firstLink = etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + "_etymology");
+    Resource firstLink = etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller);
 
     FSymbols firstSym = frenchEtymology.linkedTemplates.get(0);
 
     Resource prev = null;
     try {
-      prev = etymologyBox.getResource(getPrefix(getLanguageFromSymbolsTemplats(firstSym, frenchEtymology))
-          + uriEncode(getWordFromFSymbolsTemplates(firstSym, frenchEtymology)) + "_ETYMON");
+      prev = etymologyBox.getResource(getPrefix(getLanguageFromSymbolsTemplats(firstSym, frenchEtymology))+
+          etymonFiller+ uriEncode(getWordFromFSymbolsTemplates(firstSym, frenchEtymology)) );
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
 
-    Resource etyLink1 = etymologyBox.createResource(getPrefix(lang) + "ety_Link" + etyLinkCounter, EtyLink);
+    Resource etyLink1 = etymologyBox.createResource(getPrefix(lang) + etyLinkFiller + etyLinkCounter, EtyLink);
 
     etymologyBox.add(firstLink, LemonEtyOnt.startingLink, etyLink1);
-    etymologyBox.add(etyLink1, LemonEtyOnt.etySource, etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + "_FR_LE"));
+    etymologyBox.add(firstLink,LemonEtyOnt.hasEtyLink,etyLink1);
+    etymologyBox.add(etyLink1, LemonEtyOnt.etyLinkType, firstSym.relationShip.toLowerCase());
+    etymologyBox.add(etyLink1, LemonEtyOnt.etySource, etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller));
     etymologyBox.add(etyLink1, LemonEtyOnt.etyTarget, prev);
 
     for (int i = 1; i < frenchEtymology.linkedTemplates.size(); i++) {
@@ -286,8 +295,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
       Resource current = null;
       try {
-        current = etymologyBox.getResource(getPrefix(getLanguageFromSymbolsTemplats(currentSym, frenchEtymology))
-            + uriEncode(getWordFromFSymbolsTemplates(currentSym, frenchEtymology)) + "_ETYMON");
+        current = etymologyBox.getResource(getPrefix(getLanguageFromSymbolsTemplats(currentSym, frenchEtymology))+
+            etymonFiller+ uriEncode(getWordFromFSymbolsTemplates(currentSym, frenchEtymology)) );
       } catch (Exception e) {
         continue;
       }
@@ -298,8 +307,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
       etyLinkCounter++;
 
-      Resource etyLink = etymologyBox.createResource(getPrefix(lang) + "ety_Link" + etyLinkCounter, EtyLink);
+      Resource etyLink = etymologyBox.createResource(getPrefix(lang) + etyLinkFiller + etyLinkCounter, EtyLink);
 
+      etymologyBox.add(firstLink, LemonEtyOnt.hasEtyLink, etyLink);
+      etymologyBox.add(etyLink, LemonEtyOnt.etyLinkType, currentSym.relationShip);
       etymologyBox.add(etyLink, LemonEtyOnt.etySource, prev);
       etymologyBox.add(etyLink, LemonEtyOnt.etyTarget, current);
 

@@ -475,10 +475,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       String sectionName = titleTemplateAndSection.getRight();
       String pos;
       if ("étymologie".equals(sectionName)) {
-        // NOTHING YET
+
         WikiText wikiTextEtymoloy = new WikiText(section.getContent().toString());
         FrenchEtymology frenchEtymology = new FrenchEtymology(wikiTextEtymoloy, getWiktionaryPageName());
-        frenchEtymology.check();
+        frenchEtymology.extractEtymology();// maybe call this function directory in the constructor ??
         frwdh.createEtymologyGraph(getWiktionaryPageName(), normalizedLanguage, frenchEtymology);
 
       } else if ((pos = posMarkers.get(sectionName)) != null) {

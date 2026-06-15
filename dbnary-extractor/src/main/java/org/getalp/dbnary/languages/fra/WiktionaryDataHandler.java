@@ -14,8 +14,6 @@ import org.getalp.dbnary.*;
 import org.getalp.dbnary.commons.HierarchicalSenseNumber;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.languages.eng.EnglishLangToCode;
-import org.getalp.dbnary.languages.eng.Etymology;
-import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.iso639.ISO639_3;
 import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
@@ -231,7 +229,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     lang = FrenchLangtoCode.threeLettersCode(lang);
     System.out.println("Creating etymology graph for " + wiktionaryPageName + " in " + lang);
 
-
     Resource etymology = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller,Etymology);
     etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
 
@@ -239,20 +236,21 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // avec les LinkedList
     for (FSymbols fSymbols : frenchEtymology.linkedTemplates) {
       String word = null;
+
       try {
         word = getWordFromFSymbolsTemplates(fSymbols, frenchEtymology);
       } catch (Exception e) {
         System.out.println("Error getting word from FSymbols templates");
         continue;
       }
-      if (word != null) {
+      if (word != null && !word.equals("no word found")) {
         String langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
         if (langCode != lang) {
           try {
             etymologyBox.setNsPrefix(lang + "-" + langCode, getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)));
           } catch (Exception e) {
             lang = "fra"; // temporaray solution
-            System.out.println("Error setting namespace prefix for language " + langCode);
+              log.info("could not retrieve language for ", langCode);
           }
         }
         Resource etymon =
@@ -326,8 +324,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   private String getWordFromFSymbolsTemplates(FSymbols fSymbols, FrenchEtymology frenchEtymology) throws Exception {
     return frenchEtymology.getWordFromTemplateList(fSymbols.templates);
   }
-
-
   /**
    * @param fSymbols
    * @return the language that is described in the template

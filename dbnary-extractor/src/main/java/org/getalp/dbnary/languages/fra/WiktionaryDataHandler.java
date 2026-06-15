@@ -243,7 +243,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         System.out.println("Error getting word from FSymbols templates");
         continue;
       }
-      if (word != null && !word.equals("no word found")) {
+      if (word != null && !word.equals("null-word")) {
         String langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
         if (langCode != lang) {
           try {

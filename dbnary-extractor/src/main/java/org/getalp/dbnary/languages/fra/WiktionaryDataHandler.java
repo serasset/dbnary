@@ -245,7 +245,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       }
       if (word != null && !word.equals("null-word")) {
         String langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
-        if (langCode != lang) {
+        if (!langCode.equals(lang)) {
           try {
             etymologyBox.setNsPrefix(lang + "-" + langCode, getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)));
           } catch (Exception e) {

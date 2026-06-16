@@ -209,12 +209,12 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
 
-  private static int etymologyCounter= 1;
 
   public void createEtymologyGraph(String wiktionaryPageName, String lang, FrenchEtymology frenchEtymology) {
+
     String etymonFiller="__etymon__";
     String etyLinkFiller="__etyLink__"+uriEncode(wiktionaryPageName);
-    String etymologyFiller="__ety__fr__"+etymologyCounter;
+    String etymologyFiller="__ety__fr";
 
     System.out.println(getPrefix());
     if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
@@ -236,23 +236,19 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     // avec les LinkedList
     for (FSymbols fSymbols : frenchEtymology.linkedTemplates) {
       String word = null;
+      String langCode = null;
 
       try {
         word = getWordFromFSymbolsTemplates(fSymbols, frenchEtymology);
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         System.out.println("Error getting word from FSymbols templates");
         continue;
       }
       if (word != null && !word.equals("null-word")) {
-        String langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
-        if (!langCode.equals(lang)) {
-          try {
-            etymologyBox.setNsPrefix(lang + "-" + langCode, getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)));
-          } catch (Exception e) {
-            lang = "fra"; // temporaray solution
-              log.info("could not retrieve language for ", langCode);
-          }
-        }
+          langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
+          etymologyBox.setNsPrefix(lang + "-" + langCode, getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)));
+
         Resource etymon =
             etymologyBox.createResource(getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)) + etymonFiller+uriEncode(word) , Etymon);
         etymologyBox.add(etymology, LemonEtyOnt.etymon, etymon);
@@ -329,7 +325,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
    * @return the language that is described in the template
    */
   private String getLanguageFromSymbolsTemplats(FSymbols fSymbols, FrenchEtymology frenchEtymology) {
-    return frenchEtymology.getLanguageFromTemplateList(fSymbols.templates);
+      String lang = null;
+      if((lang=frenchEtymology.getLanguageFromTemplateList(fSymbols.templates))!=null)
+          return lang;
+    return "fra";
   }
 
 

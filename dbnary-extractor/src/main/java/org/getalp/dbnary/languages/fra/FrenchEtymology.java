@@ -38,7 +38,6 @@ public class FrenchEtymology {
 
     public FrenchEtymology(WikiText etymology, String pageName) {
         this.etymology = etymology;
-        System.out.println("etymology : " + etymology.toString());
         etymologyIterator = etymology.templates().iterator();
         this.pageName = pageName;
     }
@@ -50,8 +49,7 @@ public class FrenchEtymology {
         }
 
         linkedTemplates = cleanFSymbols(list.stream().map(this::getFSymbols).collect(Collectors.toList()));
-        System.out.println("final linkedTemplates :");
-        System.out.println(
+        log.trace(
                 linkedTemplates.stream().map(fs -> fs.relationShip + ' ' + fs.templates.toString() + " size " + fs.templates.size()).collect(Collectors.joining("\n")));
     }
 

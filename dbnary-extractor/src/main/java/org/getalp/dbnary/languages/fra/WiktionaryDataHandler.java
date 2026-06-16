@@ -192,8 +192,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     String etymonFiller="__etymon__";
     String etyLinkFiller="__etyLink__"+uriEncode(wiktionaryPageName);
     String etymologyFiller="__ety__fr";
-
-    System.out.println(getPrefix());
     if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
       return;
     }
@@ -204,8 +202,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     // les 4 classes principales de lemonetyy
     lang = FrenchLangtoCode.threeLettersCode(lang);
-    System.out.println("Creating etymology graph for " + wiktionaryPageName + " in " + lang);
-
     Resource etymology = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller,Etymology);
     etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
     etymologyBox.add(getPageResource(currentPage.getName()), RDFS.seeAlso, ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName)));
@@ -221,7 +217,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         word = getWordFromFSymbolsTemplates(fSymbols, frenchEtymology);
       }
       catch (Exception e) {
-        System.out.println("Error getting word from FSymbols templates");
+        log.trace("Error getting word from FSymbols templates", e);
+        log.debug("Error getting word from FSymbols templates");
         continue;
       }
       if (word != null && !word.equals("null-word")) {
@@ -234,7 +231,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         etymologyBox.add(etymon, RDFS.label, word, lang);
         etymologyBox.add(etymon,RDFS.seeAlso , WIKT + uriEncode(wiktionaryPageName));
         etymologyBox.add(etymon, LemonEtyOnt.isEtymonOf, etymology);
-        System.out.println("language" + getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology) + " " + word + " " + etymon.getURI());
+          log.trace("language{} {} {}", getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology), word, etymon.getURI());
       }
     }
 

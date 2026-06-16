@@ -158,8 +158,14 @@ public class FrenchEtymology {
         return fsymbolsList.stream().filter(this::isValid).collect(Collectors.toList());
     }
 
-
-    public String getWordFromTemplateList(List<WikiText.Template> templates) {
+    /**
+     * Extracts the word from a list of templates.
+     *
+     * @param templates The list of templates.
+     * @return The extracted word or an empty string if no word is found.
+     * note : the raison this method exists is because the the template that contains the word could have other templates around it as additional information , so we must track down the template which contains the word.
+     */
+    public Optional<WikiText.WikiContent> getWordFromTemplateList(List<WikiText.Template> templates) {
         switch (templates.size()) {
             case 1:
                 return getTemplateWord(templates.getFirst());
@@ -171,41 +177,30 @@ public class FrenchEtymology {
                 }
                 return getTemplateWord(templates.get(1));
             default:
-                return "no word found";
+                if(templates.getFirst().getName().equals("étyl") && templates.get(1).getName().equals("recons")){
+                    return getTemplateWord(templates.get(1));
+                }
+                log.debug("getWordFromTemplateList in {} did not retrieve word from template {} this combination of templates is still not treated in method {}/getWordFromTemplateList ,consider " +
+                        "  adding these templates's combination   to the method {}/getWordFromTemplateList if it contains a relevant word ", this, templates, this, this);
+                return Optional.empty();
         }
     }
 
-    public String getTemplateWord(WikiText.Template t) {
+
+    public Optional<WikiText.WikiContent> getTemplateWord(WikiText.Template t) {
+        String notFoundMessage = "getTemplateWord in {} did not retrieve word from template {}, consider adding this template's case  to the method {}/getWordFromTemplateList if it contains a relevant word ";
         switch (t.getName()) {
             case "étyl":
-                try {
-                    return t.getArg("3").toString();
-                } catch (NullPointerException e) {
-                    try {
-                        return t.getArg("mot").toString();
-                    } catch (NullPointerException e2) {
-                        return "no word found";
-                    }
-
-                }
-
-
-            case "recons":
-                try {
-                    return t.getArg("1").toString();
-                } catch (NullPointerException e) {
-                    return e.toString();
-                }
-
-
-            case "lien":
-                return t.getArg("1").toString();
+                Optional<WikiText.WikiContent> word=Optional.ofNullable(t.getArg("3"))
+                        .or(() -> Optional.ofNullable(t.getArg("mot")));
+                return word;
+            case "recons", "lien":
+                word=Optional.ofNullable(t.getArg("1"));
+                return word;
             default:
-                return "null-word";
-
-
+                log.debug(notFoundMessage, this, t,this);
+                return Optional.empty();
         }
-
     }
 
     public String getLanguageFromTemplateList(List<WikiText.Template> templates) {
@@ -216,8 +211,6 @@ public class FrenchEtymology {
                 if ((templates.getFirst().getArgs().containsKey("mot") || templates.getFirst().getArgs().containsKey("dif"))
                         && templates.getFirst().getName().equals("étyl")) {
                     return getTemplateLanguage(templates.getFirst());
-
-
                 }
             default:
                 return getTemplateLanguage(templates.get(1));
@@ -227,20 +220,20 @@ public class FrenchEtymology {
 
 
     public String getTemplateLanguage(WikiText.Template t) {
-
         switch (t.getName()) {
             case "étyl":
                 try {
                     return ISO639_3.sharedInstance.getIdCode(t.getArg("1").toString());
                 } catch (NullPointerException e) {
-                    return e.toString();
+                    log.debug("getTemplateLanguage in {} did not retrieve language from template {}, consider adding this template's case  to the method {}/getLanguageFromTemplateList if it contains a relevant language ", this, t,this);
+                    return "fra";
                 }
-
             case "recons":
                 try {
                     return ISO639_3.sharedInstance.getIdCode(t.getArg("lang").toString());
                 } catch (NullPointerException e) {
-                    return "null_lang";
+                    log.debug("getTemplateLanguage in {} did not retrieve language from template {}, consider adding this template's case  to the method {}/getLanguageFromTemplateList if it contains a relevant language ", this, t,this);
+                    return "fra";
                 }
             default:
                 return "fra";

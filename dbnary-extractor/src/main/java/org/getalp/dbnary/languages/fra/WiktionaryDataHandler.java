@@ -187,20 +187,16 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
 
     public void createEtymologyGraph(String wiktionaryPageName, String lang, FrenchEtymology frenchEtymology) {
-
         String etymonFiller = "__etymon__";
         String etyLinkFiller = "__etyLink__" + uriEncode(wiktionaryPageName);
         String etymologyFiller = "__ety__fr";
         if (wiktionaryPageName.trim().split("\\s+").length >= 3) {
             return;
         }
-
         Model etymologyBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY);
         if (etymologyBox == null)
             return;
-
         //initialisation du graph
-        lang = FrenchLangtoCode.threeLettersCode(lang);
         Resource etymology = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller, Etymology);
         etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
         etymologyBox.add(getPageResource(currentPage.getName()), RDFS.seeAlso, ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName)));
@@ -209,10 +205,9 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         // je commence avec la création des étymons car tous les mots liés sont des étymons, et ça va aider
         // avec les LinkedList
         for (FSymbols fSymbols : frenchEtymology.linkedTemplates) {
-            String langCode = null;
             Optional<WikiText.WikiContent> word = getWordFromFSymbolsTemplates(fSymbols, frenchEtymology);
             if (word.isPresent()) {
-                langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
+               String langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
                 etymologyBox.setNsPrefix(lang + "-" + langCode, getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)));
                 Resource etymon =
                         etymologyBox.createResource(getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)) + etymonFiller + uriEncode(word.get().toString()), Etymon);

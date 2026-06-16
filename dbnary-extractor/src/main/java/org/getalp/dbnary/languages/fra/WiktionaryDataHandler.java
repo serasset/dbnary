@@ -187,29 +187,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
   }
 
-
-  private Model createGlobalEtymologyResource(String wiktionaryPageName, String lang) {
-    if (wiktionaryPageName.trim().split("\\s+").length >= 3)
-      return null;
-    Model eBox = null;
-    if ((eBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY)) != null) {
-      // TODO : should I check that getPrefix returns null ?
-      lang = EnglishLangToCode.threeLettersCode(lang);
-      Resource r = eBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + "_FR_LE", OntolexOnt.LexicalEntry);
-      Resource w =
-          ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName) + "#" + uriEncode(ISO639_3.sharedInstance.getLanguageNameInFrench(lang)));
-      Resource Etymology = eBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + "_etymology", this.Etymology);
-      eBox.add(r, RDFS.seeAlso, w);
-      eBox.add(r, RDFS.label, wiktionaryPageName, lang);
-      eBox.add(Etymology, LemonEtyOnt.isEtymologyOf, r);
-
-      return eBox;
-    }
-    return null;
-  }
-
-
-
   public void createEtymologyGraph(String wiktionaryPageName, String lang, FrenchEtymology frenchEtymology) {
 
     String etymonFiller="__etymon__";
@@ -231,6 +208,8 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     Resource etymology = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller,Etymology);
     etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
+    etymologyBox.add(getPageResource(currentPage.getName()), RDFS.seeAlso, ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName)));
+    etymologyBox.add(getPageResource(currentPage.getName()), RDFS.label, wiktionaryPageName, lang);
 
     // je commence avec la création des étymons car tous les mots liés sont des étymons, et ça va aider
     // avec les LinkedList

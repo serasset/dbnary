@@ -187,7 +187,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   public void updateAndExtract() {
     List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential().map(this::retrieveLastDump).collect(Collectors.toList());
     confs = confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
-    if (downloadOnly) {
+    if (! downloadOnly) {
       confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
           .forEach(this::linkToLatestExtractedFiles);
     }

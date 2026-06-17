@@ -3,7 +3,6 @@ package org.getalp.dbnary.languages.fra;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +21,7 @@ public class FrenchEtymology {
 
 
   private static final Logger log = LoggerFactory.getLogger(FrenchEtymology.class);
-  private static final  HashMap<String, List<String>> tmp = new HashMap<>();
+  private static final HashMap<String, List<String>> tmp = new HashMap<>();
 
   // mapping des mots , faudra l'enrichir
   static {

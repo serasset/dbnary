@@ -420,14 +420,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"),
-        "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
-        "/${image}", "/${title}");
-    verbalInflectionExtractor = new VerbalInflexionExtractorWikiModel(this.wdh, this.wi,
-        new Locale("fr"), "/${image}", "/${title}");
-    morphologyExtractor = new InflectionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"),
-        "/${image}", "/${title}");
+    exampleExpander = new ExampleExpanderWikiModel(wi, new Locale("fr"), "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
+    definitionExpander = new FrenchDefinitionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
+    verbalInflectionExtractor = new VerbalInflexionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
+    morphologyExtractor = new InflectionExtractorWikiModel(this.wdh, this.wi, new Locale("fr"), "/${image}", "/${title}");
     glossExtractor = new ExpandAllWikiModel(this.wi, new Locale("fr"), "/${image}", "/${title}");
   }
 
@@ -448,8 +444,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     frwdh.initializePageExtraction(getWiktionaryPageName());
     WikiText page = new WikiText(getWiktionaryPageName(), pageContent);
     WikiDocument doc = page.asStructuredDocument();
-    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection)
-        .map(Token::asWikiSection).forEach(WiktionaryExtractor.this::extractSection);
+    doc.getContent().wikiTokens().stream().filter(t -> t instanceof WikiSection).map(Token::asWikiSection).forEach(WiktionaryExtractor.this::extractSection);
     frwdh.finalizePageExtraction();
   }
 
@@ -462,8 +457,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if (null == language) {
       return;
     }
-    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !wdh.getExtractedLanguage()
-        .equals(language)) {
+    if (null == wdh.getExolexFeatureBox(ExtractionFeature.MAIN) && !wdh.getExtractedLanguage().equals(language)) {
       return;
     }
 
@@ -484,8 +478,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if ("étymologie".equals(sectionName)) {
 
         WikiText wikiTextEtymoloy = new WikiText(section.getContent().toString());
-        FrenchEtymology frenchEtymology = new FrenchEtymology(wikiTextEtymoloy,
-            getWiktionaryPageName());
+        FrenchEtymology frenchEtymology = new FrenchEtymology(wikiTextEtymoloy, getWiktionaryPageName());
         frenchEtymology.extractEtymology();// maybe call this function directory in the constructor ??
         frwdh.createEtymologyGraph(getWiktionaryPageName(), normalizedLanguage, frenchEtymology);
 
@@ -500,19 +493,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           extractLexicalEntry(section, pos);
         }
       } else if (ignoredPosMarkers.contains(sectionName)) {
-        log.trace("Ignoring part of speech {} in {}", title == null ? sectionName : title.getText(),
-            getWiktionaryPageName());
+        log.trace("Ignoring part of speech {} in {}", title == null ? sectionName : title.getText(), getWiktionaryPageName());
         // IGNORE
       } else if (ignoredSectionTitles.contains(sectionName)) {
-        log.trace("Ignoring section {} in {}", title == null ? sectionName : title.getText(),
-            getWiktionaryPageName());
+        log.trace("Ignoring section {} in {}", title == null ? sectionName : title.getText(), getWiktionaryPageName());
         // There are several entries with misplaced sub section (e.g. translations given after
         // reference section). Try to extract data from these misplaced subsections.
         handleLexicalEntrySubSections(section);
         // IGNORE
       } else {
-        log.debug("Unexpected title {} in {}", title == null ? sectionName : title.getText(),
-            getWiktionaryPageName());
+        log.debug("Unexpected title {} in {}", title == null ? sectionName : title.getText(), getWiktionaryPageName());
         // There are several entries with misplaced sub section (e.g. translations given after
         // reference section). Try to extract data from these misplaced subsections.
         handleLexicalEntrySubSections(section);
@@ -540,44 +530,36 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     WikiContent content = section.getPrologue();
     WikiContent heading = section.getHeading().getContent();
 
-    Pair<String, String> langAndPoS = heading.templatesOnUpperLevel().stream()
-        .map(Token::asTemplate).filter(t -> t.getName().equals("S")).findFirst()
-        .map(t -> new ImmutablePair<>(t.getParsedArgs().get("2").trim(),
-            posMarkers.get(t.getParsedArgs().get("1").trim().toLowerCase()))).orElse(null);
+    Pair<String, String> langAndPoS = heading.templatesOnUpperLevel().stream().map(Token::asTemplate).filter(t -> t.getName().equals("S")).findFirst()
+        .map(t -> new ImmutablePair<>(t.getParsedArgs().get("2").trim(), posMarkers.get(t.getParsedArgs().get("1").trim().toLowerCase()))).orElse(null);
 
     // Only get inflections for verbs so that we capture the missing inflected past participles.
     if (null == langAndPoS || !langAndPoS.getRight().equals("-verb-")) {
       return;
     }
 
-    String pronunciation = content.templatesOnUpperLevel().stream().map(Token::asTemplate)
-        .filter(t -> t.getName().equals("pron")).findFirst()
+    String pronunciation = content.templatesOnUpperLevel().stream().map(Token::asTemplate).filter(t -> t.getName().equals("pron")).findFirst()
         .map(t -> t.getParsedArgs().get("1").trim()).orElse(null);
 
     ClassBasedFilter filter = new ClassBasedFilter();
     filter.denyAll().allowIndentedItem(); // Only parse indented item
-    List<Pair<InternalLink, LexicalForm>> forms = content.filteredTokens(filter).stream()
-        .map(Token::asIndentedItem)
-        .flatMap(ident -> FrenchInflectionDecoder.getOtherForms(ident, pronunciation))
-        .collect(Collectors.toList());
+    List<Pair<InternalLink, LexicalForm>> forms = content.filteredTokens(filter).stream().map(Token::asIndentedItem)
+        .flatMap(ident -> FrenchInflectionDecoder.getOtherForms(ident, pronunciation)).collect(Collectors.toList());
     forms.forEach(pair -> {
-      pair.getRight().addValue(
-          new WrittenRepresentation(wdh.currentPagename(), wdh.getCurrentEntryLanguage()));
+      pair.getRight().addValue(new WrittenRepresentation(wdh.currentPagename(), wdh.getCurrentEntryLanguage()));
       if (null != pronunciation && pronunciation.length() > 0) {
-        pair.getRight()
-            .addValue(new PhoneticRepresentation(pronunciation, wdh.getCurrentEntryLanguage()));
+        pair.getRight().addValue(new PhoneticRepresentation(pronunciation, wdh.getCurrentEntryLanguage()));
       }
     });
 
-    forms.forEach(pair -> frwdh.registerInflection(pair.getRight(), pair.getLeft().getTargetText(),
-        langAndPoS.getLeft(), langAndPoS.getRight()));
+    forms.forEach(pair -> frwdh.registerInflection(pair.getRight(), pair.getLeft().getTargetText(), langAndPoS.getLeft(), langAndPoS.getRight()));
   }
 
   /**
    * Extract the lexical entry that is described in the section.
    *
    * @param section the wiki section describing the entry
-   * @param pos     the (standardised) part of speech described by the section
+   * @param pos the (standardised) part of speech described by the section
    */
   private void extractLexicalEntry(WikiSection section, String pos) {
     log.trace("Extracting LexicalEntry {} in {}", pos, getWiktionaryPageName());
@@ -610,27 +592,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if (sectionName.startsWith("trad")) {
         extractTranslations(subsection.getPrologue());
       } else if (variantSections.contains(sectionName)) {
-        extractOrthoAlt(subsection.getContent().getBeginIndex(),
-            subsection.getPrologue().getEndIndex());
+        extractOrthoAlt(subsection.getContent().getBeginIndex(), subsection.getPrologue().getEndIndex());
       } else if (null != (nym = nymMarkerToNymName.get(sectionName))) {
-        if (log.isTraceEnabled() && section.getContent().sections().stream().findFirst()
-            .isPresent()) {
+        if (log.isTraceEnabled() && section.getContent().sections().stream().findFirst().isPresent()) {
           log.trace("Subsection under nym section in {}", getWiktionaryPageName());
         }
-        extractNyms(nym, subsection.getContent().getBeginIndex(),
-            subsection.getPrologue().getEndIndex());
+        extractNyms(nym, subsection.getContent().getBeginIndex(), subsection.getPrologue().getEndIndex());
       } else if (derivationSections.contains(sectionName)) {
         extractDerivationSection(subsection.getContent());
       } else {
-        log.trace("Unexpected sub section title {} in {}",
-            title == null ? sectionName : title.getText(), getWiktionaryPageName());
+        log.trace("Unexpected sub section title {} in {}", title == null ? sectionName : title.getText(), getWiktionaryPageName());
       }
       // There may be a level 5 subsubsection named "traductions à trier" that contain more
       // translations. This subsubsection is usually present at the end of the translations section,
       // but it may appear alone, inside any other subsection. We need to handle this specific
       // translations section separately.
-      subsection.getContent().sections().stream().map(Token::asWikiSection)
-          .filter(s -> sectionTitle(s).getRight().startsWith("trad"))
+      subsection.getContent().sections().stream().map(Token::asWikiSection).filter(s -> sectionTitle(s).getRight().startsWith("trad"))
           .forEach(s -> extractTranslations(s.getPrologue()));
     }
   }
@@ -651,37 +628,30 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private Pair<Template, String> sectionTitle(WikiSection section) {
     List<Token> titleTemplate = section.getHeading().getContent().tokens().stream()
-        .filter(t -> !(t instanceof Text && t.asText().getText().replaceAll("\u00A0", "").trim()
-            .equals(""))).collect(Collectors.toList());
+        .filter(t -> !(t instanceof Text && t.asText().getText().replaceAll("\u00A0", "").trim().equals(""))).collect(Collectors.toList());
     if (titleTemplate.size() == 0) {
       log.trace("Unexpected empty title in {}", getWiktionaryPageName());
       return new ImmutablePair<>(null, "");
     }
     if (titleTemplate.size() > 1) {
-      log.trace("Unexpected multi title {} in {}", section.getHeading().getText(),
-          getWiktionaryPageName());
+      log.trace("Unexpected multi title {} in {}", section.getHeading().getText(), getWiktionaryPageName());
     }
     if (!(titleTemplate.get(0) instanceof Template)) {
-      log.trace("Unexpected non template title {} in {}", section.getHeading().getText(),
-          getWiktionaryPageName());
-      return new ImmutablePair<>(null,
-          section.getHeading().getContent().getText().toLowerCase().trim());
+      log.trace("Unexpected non template title {} in {}", section.getHeading().getText(), getWiktionaryPageName());
+      return new ImmutablePair<>(null, section.getHeading().getContent().getText().toLowerCase().trim());
     }
     String tname = titleTemplate.get(0).asTemplate().getName().trim();
     if (!"S".equals(tname)) {
-      log.trace("Template title is not an S: {} in {}", section.getHeading().getText(),
-          getWiktionaryPageName());
+      log.trace("Template title is not an S: {} in {}", section.getHeading().getText(), getWiktionaryPageName());
       return new ImmutablePair<>(titleTemplate.get(0).asTemplate(), tname);
     }
 
-    return new ImmutablePair<>(titleTemplate.get(0).asTemplate(),
-        titleTemplate.get(0).asTemplate().getParsedArg("1").toLowerCase().trim());
+    return new ImmutablePair<>(titleTemplate.get(0).asTemplate(), titleTemplate.get(0).asTemplate().getParsedArg("1").toLowerCase().trim());
   }
 
   private Optional<String> sectionLanguage(WikiSection section) {
     if (section.getHeading().getLevel() == 2) {
-      return section.getHeading().getContent().templatesOnUpperLevel().stream()
-          .map(Token::asTemplate).filter(t -> "langue".equals(t.getName()))
+      return section.getHeading().getContent().templatesOnUpperLevel().stream().map(Token::asTemplate).filter(t -> "langue".equals(t.getName()))
           .map(t -> t.getParsedArg("1")).findFirst();
     }
     return Optional.empty();
@@ -723,10 +693,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     derivationSections.add("phrases");
   }
 
-  private static final String translationTokenizer =
-      "(?<ITALICS>'{2,3}.*?'{2,3})|" + "(?<PARENS>\\(\\P{Reserved}*?\\))|"
-          + "(?<SPECIALPARENS>\\(.*?\\))|"
-          + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
+  private static final String translationTokenizer = "(?<ITALICS>'{2,3}.*?'{2,3})|" + "(?<PARENS>\\(\\P{Reserved}*?\\))|" + "(?<SPECIALPARENS>\\(.*?\\))|"
+      + "(?<TMPL>\\p{Template})|" + "(?<LINK>\\p{InternalLink})";
 
   private static final Pattern tokenizer = WikiPattern.compile(translationTokenizer);
 
@@ -747,8 +715,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // TODO: keep as usage and add current translation object when finding a comma
         log.trace("Found parenthesis | {} | in translation for {}", g, getWiktionaryPageName());
       } else if (null != (g = lexer.group("SPECIALPARENS"))) {
-        log.trace("Template or link inside parens: | {} | for [ {} ]", line.getSourceContent(g),
-            getWiktionaryPageName());
+        log.trace("Template or link inside parens: | {} | for [ {} ]", line.getSourceContent(g), getWiktionaryPageName());
         // TODO: some are only additional usage notes, other are alternate translation, decide
         // between them and handle the translation cases.
       } else if (null != (g = lexer.group("LINK"))) {
@@ -793,8 +760,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             }
             String gloss = null;
             if (g1 != null || g2 != null) {
-              gloss = (g1 == null || g1.equals("") ? "" : g1) + (g2 == null || g2.equals("") ? ""
-                  : "|" + g2);
+              gloss = (g1 == null || g1.equals("") ? "" : g1) + (g2 == null || g2.equals("") ? "" : "|" + g2);
             }
             glossExtractor.setPageName(getWiktionaryPageName());
             if (null != gloss) {
@@ -818,23 +784,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractPronunciation(WikiContent content) {
-    content.templatesOnUpperLevel().stream().map(Token::asTemplate)
-        .filter(t -> t.getName().equals("pron")).forEach(p -> {
-          String pron = p.getParsedArgs().get("1");
-          String lang = p.getParsedArgs().get("2");
-          if (null == lang) {
-            lang = p.getParsedArgs().get("lang");
-          }
-          if (null != lang) {
-            lang = LangTools.getShortCode(lang.trim());
-          }
-          if (null == lang || lang.equals("")) {
-            lang = wdh.getCurrentEntryLanguage();
-          }
-          if (null != pron && !(pron = pron.trim()).equals("")) {
-            wdh.registerPronunciation(pron, lang + "-fonipa");
-          }
-        });
+    content.templatesOnUpperLevel().stream().map(Token::asTemplate).filter(t -> t.getName().equals("pron")).forEach(p -> {
+      String pron = p.getParsedArgs().get("1");
+      String lang = p.getParsedArgs().get("2");
+      if (null == lang) {
+        lang = p.getParsedArgs().get("lang");
+      }
+      if (null != lang) {
+        lang = LangTools.getShortCode(lang.trim());
+      }
+      if (null == lang || lang.equals("")) {
+        lang = wdh.getCurrentEntryLanguage();
+      }
+      if (null != pron && !(pron = pron.trim()).equals("")) {
+        wdh.registerPronunciation(pron, lang + "-fonipa");
+      }
+    });
   }
 
   /**
@@ -881,23 +846,21 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractDefinitions(WikiSection section) {
     WikiContent content = section.getPrologue();
-    content.filteredTokens(new ClassBasedFilter().allowNumberedListItem()).stream()
-        .map(Token::asNumberedListItem).forEach(item -> {
-          // DONE: parsing part of the prefix in the content while it is not there anymore
-          if (item.getListPrefix().contains("*") || item.getListPrefix().contains(":")) {
-            extractExample(item.getContent().getText().trim());
-          } else {
-            extractDefinition(item.getContent().getText().trim(), item.asNumberedListItem().getLevel());
-          }
-        });
+    content.filteredTokens(new ClassBasedFilter().allowNumberedListItem()).stream().map(Token::asNumberedListItem).forEach(item -> {
+      // DONE: parsing part of the prefix in the content while it is not there anymore
+      if (item.getListPrefix().contains("*") || item.getListPrefix().contains(":")) {
+        extractExample(item.getContent().getText().trim());
+      } else {
+        extractDefinition(item.getContent().getText().trim(), item.asNumberedListItem().getLevel());
+      }
+    });
   }
 
   @Override
   public Resource extractExample(String example) {
     Set<Pair<Property, RDFNode>> context = new HashSet<>();
 
-    String ex = exampleExpander.expandExample(example, exampleTemplates, context,
-        wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
+    String ex = exampleExpander.expandExample(example, exampleTemplates, context, wdh.getExtractedLanguage(), wdh.getCurrentEntryLanguage());
     Resource exampleNode = null;
     if ("".equals(ex.trim()) && !context.isEmpty()) {
       // There is no example, it is a note that should be attached to the definition
@@ -928,8 +891,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       // context.removeIf("Féminin"::equals);
     }
 
-    content.templatesOnUpperLevel().stream().map(Token::asTemplate)
-        .filter(t -> t.getName().startsWith("fr-")).filter(t -> !t.getName().startsWith("fr-verbe"))
+    content.templatesOnUpperLevel().stream().map(Token::asTemplate).filter(t -> t.getName().startsWith("fr-")).filter(t -> !t.getName().startsWith("fr-verbe"))
         .forEach(t -> morphologyExtractor.parseOtherForm(t.getText(), context));
   }
 

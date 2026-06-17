@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDFS;
+import org.checkerframework.checker.units.qual.N;
 import org.getalp.LangTools;
 import org.getalp.dbnary.*;
 import org.getalp.dbnary.commons.HierarchicalSenseNumber;
@@ -32,14 +33,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.Word));
     posAndTypeValueMap.put("-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.Word));
     posAndTypeValueMap.put("-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.Word));
-    posAndTypeValueMap.put("-loc-adv-",
-        new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("-loc-adj-",
-        new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("-loc-nom-",
-        new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
-    posAndTypeValueMap.put("-loc-verb-",
-        new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-adv-", new PosAndType(LexinfoOnt.adverb, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-adj-", new PosAndType(LexinfoOnt.adjective, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-nom-", new PosAndType(LexinfoOnt.noun, OntolexOnt.MultiWordExpression));
+    posAndTypeValueMap.put("-loc-verb-", new PosAndType(LexinfoOnt.verb, OntolexOnt.MultiWordExpression));
 
   }
 
@@ -76,8 +73,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     Model morphoBox = getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
       String heldBackKey = computeLanguageSectionKey();
-      HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms.getOrDefault(heldBackKey,
-          new HashMap<>());
+      HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms.getOrDefault(heldBackKey, new HashMap<>());
       Set<LexicalForm> forms = pos2forms.getOrDefault(pos, new HashSet<>());
       forms.forEach(f -> f.attachTo(currentLexEntry.inModel(morphoBox)));
     }
@@ -111,8 +107,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     return pagename + "___/___" + language;
   }
 
-  public void registerInflection(LexicalForm form, String onLexicalEntry, String languageCode,
-      String pos) {
+  public void registerInflection(LexicalForm form, String onLexicalEntry, String languageCode, String pos) {
 
     Resource posResource = posResource(pos);
 
@@ -121,8 +116,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
     Model morphoBox = this.getFeatureBox(ExtractionFeature.MORPHOLOGY);
     if (null != morphoBox) {
-      page.listProperties(DBnaryOnt.describes).toList().stream().map(Statement::getResource)
-          .filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
+      page.listProperties(DBnaryOnt.describes).toList().stream().map(Statement::getResource).filter(r -> aBox.contains(r, LexinfoOnt.partOfSpeech, posResource))
           .map(r -> r.inModel(morphoBox)).forEach(form::attachTo);
     }
 
@@ -130,8 +124,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     Pair<String, String> key = new ImmutablePair<>(onLexicalEntry, pos);
 
     String heldBackKey = computeLanguageSectionKey(onLexicalEntry, languageCode);
-    HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms.computeIfAbsent(heldBackKey,
-        k -> new HashMap<>());
+    HashMap<String, Set<LexicalForm>> pos2forms = heldBackOtherForms.computeIfAbsent(heldBackKey, k -> new HashMap<>());
     Set<LexicalForm> otherForms = pos2forms.computeIfAbsent(pos, k -> new HashSet<>());
 
     otherForms.add(form);
@@ -194,8 +187,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   }
 
 
-  public void createEtymologyGraph(String wiktionaryPageName, String lang,
-      FrenchEtymology frenchEtymology) {
+  public void createEtymologyGraph(String wiktionaryPageName, String lang, FrenchEtymology frenchEtymology) {
     String etymonFiller = "__etymon__";
     String etyLinkFiller = "__etyLink__" + uriEncode(wiktionaryPageName);
     String etymologyFiller = "__ety__fr";
@@ -203,15 +195,13 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     }
     Model etymologyBox = this.getFeatureBox(ExtractionFeature.ETYMOLOGY);
-      if (etymologyBox == null) {
-          return;
-      }
-    //initialisation du graph
-    Resource etymology = etymologyBox.createResource(
-        getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller, Etymology);
+    if (etymologyBox == null) {
+      return;
+    }
+    // initialisation du graph
+    Resource etymology = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller, Etymology);
     etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
-    etymologyBox.add(getPageResource(currentPage.getName()), RDFS.seeAlso,
-        ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName)));
+    etymologyBox.add(getPageResource(currentPage.getName()), RDFS.seeAlso, ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName)));
     etymologyBox.add(getPageResource(currentPage.getName()), RDFS.label, wiktionaryPageName, lang);
 
     // je commence avec la création des étymons car tous les mots liés sont des étymons, et ça va aider
@@ -220,57 +210,53 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       Optional<WikiText.WikiContent> word = getWordFromFSymbolsTemplates(fSymbols, frenchEtymology);
       if (word.isPresent()) {
         String langCode = getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology);
-        etymologyBox.setNsPrefix(lang + "-" + langCode,
-            getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)));
-        Resource etymon =
-            etymologyBox.createResource(
-                getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)) + etymonFiller
-                    + uriEncode(word.get().toString()), Etymon);
+        etymologyBox.setNsPrefix(lang + "-" + langCode, getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)));
+        Resource etymon = etymologyBox
+            .createResource(getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)) + etymonFiller + uriEncode(word.get().toString()), Etymon);
         etymologyBox.add(etymology, LemonEtyOnt.etymon, etymon);
 
         etymologyBox.add(etymon, RDFS.label, word.get().toString(), lang);
         etymologyBox.add(etymon, RDFS.seeAlso, WIKT + uriEncode(wiktionaryPageName));
         etymologyBox.add(etymon, LemonEtyOnt.isEtymonOf, etymology);
-        log.trace("language{} {} {}", getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology),
-            word.get(), etymon.getURI());
+        log.trace("language : {} {} {}", getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology), word.get(), etymon.getURI());
       }
     }
 
     // construction des etyLinks
     int etyLinkCounter = 1;
-    Resource firstLink = etymologyBox.getResource(
-        getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller);
+    Resource firstLink = etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller);
 
-    FSymbols firstSym = frenchEtymology.linkedTemplates.getFirst();
-    Optional<WikiText.WikiContent> firstWord = getWordFromFSymbolsTemplates(firstSym,
-        frenchEtymology);
+    FSymbols firstSym = new FSymbols("none");
+
+    try {
+      firstSym = frenchEtymology.linkedTemplates.getFirst();
+    } catch (NoSuchElementException e) {
+      log.trace("entry {} gave 0 etymons ", wiktionaryPageName);
+      return;
+    }
+
+    Optional<WikiText.WikiContent> firstWord = getWordFromFSymbolsTemplates(firstSym, frenchEtymology);
 
     Resource prev;
     if (firstWord.isPresent()) {
-      prev = etymologyBox.getResource(
-          getPrefix(getLanguageFromSymbolsTemplats(firstSym, frenchEtymology)) +
-              etymonFiller + uriEncode(firstWord.get().toString()));
+      prev =
+          etymologyBox.getResource(getPrefix(getLanguageFromSymbolsTemplats(firstSym, frenchEtymology)) + etymonFiller + uriEncode(firstWord.get().toString()));
 
-      Resource etyLink1 = etymologyBox.createResource(
-          getPrefix(lang) + etyLinkFiller + etyLinkCounter, EtyLink);
+      Resource etyLink1 = etymologyBox.createResource(getPrefix(lang) + etyLinkFiller + etyLinkCounter, EtyLink);
 
       etymologyBox.add(firstLink, LemonEtyOnt.startingLink, etyLink1);
       etymologyBox.add(firstLink, LemonEtyOnt.hasEtyLink, etyLink1);
       etymologyBox.add(etyLink1, LemonEtyOnt.etyLinkType, firstSym.relationShip.toLowerCase());
-      etymologyBox.add(etyLink1, LemonEtyOnt.etySource, etymologyBox.getResource(
-          getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller));
+      etymologyBox.add(etyLink1, LemonEtyOnt.etySource, etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller));
       etymologyBox.add(etyLink1, LemonEtyOnt.etyTarget, prev);
 
       for (int i = 1; i < frenchEtymology.linkedTemplates.size(); i++) {
-
         FSymbols currentSym = frenchEtymology.linkedTemplates.get(i);
-        Optional<WikiText.WikiContent> currentWord = getWordFromFSymbolsTemplates(currentSym,
-            frenchEtymology);
+        Optional<WikiText.WikiContent> currentWord = getWordFromFSymbolsTemplates(currentSym, frenchEtymology);
         Resource current = null;
         if (currentWord.isPresent()) {
-          current = etymologyBox.getResource(
-              getPrefix(getLanguageFromSymbolsTemplats(currentSym, frenchEtymology)) +
-                  etymonFiller + uriEncode(currentWord.get().toString()));
+          current = etymologyBox
+              .getResource(getPrefix(getLanguageFromSymbolsTemplats(currentSym, frenchEtymology)) + etymonFiller + uriEncode(currentWord.get().toString()));
 
           // safety: prevent self-loop
           assert prev != null;
@@ -280,8 +266,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
           etyLinkCounter++;
 
-          Resource etyLink = etymologyBox.createResource(
-              getPrefix(lang) + etyLinkFiller + etyLinkCounter, EtyLink);
+          Resource etyLink = etymologyBox.createResource(getPrefix(lang) + etyLinkFiller + etyLinkCounter, EtyLink);
 
           etymologyBox.add(firstLink, LemonEtyOnt.hasEtyLink, etyLink);
           etymologyBox.add(etyLink, LemonEtyOnt.etyLinkType, currentSym.relationShip);
@@ -299,8 +284,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
    * @param fSymbols
    * @return the word that is described in the template
    */
-  private Optional<WikiText.WikiContent> getWordFromFSymbolsTemplates(FSymbols fSymbols,
-      FrenchEtymology frenchEtymology) {
+  private Optional<WikiText.WikiContent> getWordFromFSymbolsTemplates(FSymbols fSymbols, FrenchEtymology frenchEtymology) {
     return frenchEtymology.getWordFromTemplateList(fSymbols.templates);
   }
 
@@ -308,12 +292,11 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
    * @param fSymbols
    * @return the language that is described in the template
    */
-  private String getLanguageFromSymbolsTemplats(FSymbols fSymbols,
-      FrenchEtymology frenchEtymology) {
+  private String getLanguageFromSymbolsTemplats(FSymbols fSymbols, FrenchEtymology frenchEtymology) {
     String lang = null;
-      if ((lang = frenchEtymology.getLanguageFromTemplateList(fSymbols.templates)) != null) {
-          return lang;
-      }
+    if ((lang = frenchEtymology.getLanguageFromTemplateList(fSymbols.templates)) != null) {
+      return lang;
+    }
     return "fra";
   }
 

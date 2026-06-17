@@ -1,15 +1,18 @@
 package org.getalp.dbnary.languages.fra;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 /*
@@ -24,9 +27,7 @@ public class FrenchEtymology {
   // mapping des mots , faudra l'enrichir
   static {
 
-    tmp.put("INHERITANCE",
-        Arrays.asList("[Dd]e", "[Dd]u", "[Dd]epuis", "[iI]ssue d[eu]", "[Vv]enant d[eu]",
-            "[Vv]ient d[eu]"));
+    tmp.put("INHERITANCE", Arrays.asList("[Dd]e", "[Dd]u", "[Dd]epuis", "[iI]ssue d[eu]", "[Vv]enant d[eu]", "[Vv]ient d[eu]"));
     tmp.put("BORROWING", Arrays.asList("[Ee]mprunté à", "[Cc]alqué d[eu]", "[Ff]ormé d[eu]"));
     tmp.put("COGNATE", List.of("[Cc]ognat(e)?"));
     tmp.put("FORM", Arrays.asList("[Ff]orm(e)?"));
@@ -50,21 +51,17 @@ public class FrenchEtymology {
       Arrays.stream(getLinkedTemplatesAsString(t)).iterator().forEachRemaining(list::add);
     }
 
-    linkedTemplates = cleanFSymbols(
-        list.stream().map(this::getFSymbols).collect(Collectors.toList()));
-    log.trace(
-        linkedTemplates.stream().map(
-                fs -> fs.relationShip + ' ' + fs.templates.toString() + " size " + fs.templates.size())
-            .collect(Collectors.joining("\n")));
+    linkedTemplates = cleanFSymbols(list.stream().map(this::getFSymbols).collect(Collectors.toList()));
+    log.trace(linkedTemplates.stream().map(fs -> "template detected:  " + fs.templates.toString()).collect(Collectors.joining("\n")));
   }
 
 
   /**
    *
    * @param t a WikiText.Token is a part of the etymology description of a word , usually each token
-   *          contians a type of information ,
-   * @return an array of strings, each string contains a template and the informations related to
-   * that template
+   *        contians a type of information ,
+   * @return an array of strings, each string contains a template and the informations related to that
+   *         template
    */
   private String[] getLinkedTemplatesAsString(WikiText.Token t) {
     return WikiTool.splitUnlessInTemplateOrLink(t.toString(), ',').toArray(String[]::new);
@@ -77,31 +74,9 @@ public class FrenchEtymology {
 
 
   private FSymbols getFSymbols(String text) {
-
-    String regex = "(\\{\\{[^}]+}})" + // templates
-        "|(''{2}[^']+''{2})" + // italique
-        "|([A-Za-zÀ-ÿ’]+)";
-
-    Pattern p = Pattern.compile(regex);
-    Matcher m = p.matcher(text);
-
-    List<String> fragment = new ArrayList<>();
-
-    while (m.find()) {
-      String t = m.group();
-
-      // enlever italique wiki
-      t = t.replaceAll("^''|''$", "");
-
-      fragment.add(t);
-    }
-
+    ArrayList<String> fragment = WikiTool.splitUnlessInTemplateOrLink(text, ' ');
     FSymbols fsymbols = new FSymbols("none");
-
-    // on ce moment fragment représente une liste de mots individuelles
-    fragment = fragment.stream().toList();
     int indiceFrangment = 0;
-
     // while fragment not finished and keyWord not found : continue
     while (indiceFrangment < fragment.size() && !exists(tmp, fragment.get(indiceFrangment))) {
       indiceFrangment++;
@@ -110,8 +85,7 @@ public class FrenchEtymology {
     if (indiceFrangment < fragment.size()) {
       fsymbols.setRelationShip(getKeyFromValue(tmp, fragment.get(indiceFrangment)));
       for (int i = indiceFrangment + 1; i < fragment.size(); i++) {
-        fsymbols.addTemplates(
-            new WikiText(fragment.get(i)).templates()); // all the templates after keyword is found
+        fsymbols.addTemplates(new WikiText(fragment.get(i)).templates()); // all the templates after keyword is found
       }
       // if keyWord not found : set relationShip to none ,all none relationships get removed
     } else {
@@ -124,7 +98,7 @@ public class FrenchEtymology {
   /**
    * Check if the value matches any of the regex patterns in the map.
    *
-   * @param tmp   The map containing regex patterns.
+   * @param tmp The map containing regex patterns.
    * @param value The value to check.
    * @return true if the value matches any of the regex patterns, false otherwise.
    */
@@ -142,14 +116,12 @@ public class FrenchEtymology {
   /**
    * Get the key from the map that matches the given value.
    *
-   * @param tmp   The map containing regex patterns.
+   * @param tmp The map containing regex patterns.
    * @param value The value to match.
    * @return The key that matches the value or null if no match is found.
    */
   private String getKeyFromValue(Map<String, List<String>> tmp, String value) {
-    return tmp.entrySet().stream()
-        .filter(entry -> entry.getValue().stream().anyMatch(value::matches)).map(Map.Entry::getKey)
-        .findFirst().orElse(null);
+    return tmp.entrySet().stream().filter(entry -> entry.getValue().stream().anyMatch(value::matches)).map(Map.Entry::getKey).findFirst().orElse(null);
   }
 
 
@@ -171,10 +143,10 @@ public class FrenchEtymology {
    * Extracts the word from a list of templates.
    *
    * @param templates The list of templates.
-   * @return The extracted word or an empty string if no word is found. note : the raison this
-   * method exists is because the the template that contains the word could have other templates
-   * around it as additional information , so we must track down the template which contains the
-   * word.
+   * @return The extracted word or an empty string if no word is found. note : the raison this method
+   *         exists is because the the template that contains the word could have other templates
+   *         around it as additional information , so we must track down the template which contains
+   *         the word.
    */
   public Optional<WikiText.WikiContent> getWordFromTemplateList(List<WikiText.Template> templates) {
     switch (templates.size()) {
@@ -182,21 +154,18 @@ public class FrenchEtymology {
         return getTemplateWord(templates.getFirst());
 
       case 2:
-        if ((templates.getFirst().getArgs().containsKey("mot") || templates.getFirst().getArgs()
-            .containsKey("dif"))
+        if ((templates.getFirst().getArgs().containsKey("mot") || templates.getFirst().getArgs().containsKey("dif"))
             && templates.getFirst().getName().equals("étyl")) {
           return getTemplateWord(templates.getFirst());
         }
         return getTemplateWord(templates.get(1));
       default:
-        if (templates.getFirst().getName().equals("étyl") && templates.get(1).getName()
-            .equals("recons")) {
+        if (templates.getFirst().getName().equals("étyl") && templates.get(1).getName().equals("recons")) {
           return getTemplateWord(templates.get(1));
         }
         log.debug(
             "getWordFromTemplateList in {} did not retrieve word from template {} this combination of templates is still not treated in method {}/getWordFromTemplateList ,consider "
-                +
-                "  adding these templates's combination   to the method {}/getWordFromTemplateList if it contains a relevant word ",
+                + "  adding these templates's combination   to the method {}/getWordFromTemplateList if it contains a relevant word ",
             this, templates, this, this);
         return Optional.empty();
     }
@@ -204,11 +173,11 @@ public class FrenchEtymology {
 
 
   public Optional<WikiText.WikiContent> getTemplateWord(WikiText.Template t) {
-    String notFoundMessage = "getTemplateWord in {} did not retrieve word from template {}, consider adding this template's case  to the method {}/getWordFromTemplateList if it contains a relevant word ";
+    String notFoundMessage =
+        "getTemplateWord in {} did not retrieve word from template {}, consider adding this template's case  to the method {}/getWordFromTemplateList if it contains a relevant word ";
     switch (t.getName()) {
       case "étyl":
-        Optional<WikiText.WikiContent> word = Optional.ofNullable(t.getArg("3"))
-            .or(() -> Optional.ofNullable(t.getArg("mot")));
+        Optional<WikiText.WikiContent> word = Optional.ofNullable(t.getArg("3")).or(() -> Optional.ofNullable(t.getArg("mot")));
         return word;
       case "recons", "lien":
         word = Optional.ofNullable(t.getArg("1"));
@@ -224,8 +193,7 @@ public class FrenchEtymology {
       case 1:
         return getTemplateLanguage(templates.getFirst());
       case 2:
-        if ((templates.getFirst().getArgs().containsKey("mot") || templates.getFirst().getArgs()
-            .containsKey("dif"))
+        if ((templates.getFirst().getArgs().containsKey("mot") || templates.getFirst().getArgs().containsKey("dif"))
             && templates.getFirst().getName().equals("étyl")) {
           return getTemplateLanguage(templates.getFirst());
         }

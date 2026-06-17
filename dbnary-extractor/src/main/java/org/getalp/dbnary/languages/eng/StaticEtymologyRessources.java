@@ -120,10 +120,10 @@ public class StaticEtymologyRessources {
 
 
     else if (list != null) {
-      try{
-        String transformedValue=transformToRegularExpression(value);
+      try {
+        String transformedValue = transformToRegularExpression(value);
         list.add(transformedValue);
-      }catch (IllegalArgumentException e){
+      } catch (IllegalArgumentException e) {
         log.error(e.getMessage());
       }
 
@@ -137,21 +137,20 @@ public class StaticEtymologyRessources {
 
 
 
-
-  private String transformToRegularExpression(String value) throws IllegalArgumentException{
-    value=value.stripLeading();
-    value=value.stripTrailing();
-    if(value.isEmpty()){
+  private String transformToRegularExpression(String value) throws IllegalArgumentException {
+    value = value.stripLeading();
+    value = value.stripTrailing();
+    if (value.isEmpty()) {
       throw new IllegalArgumentException("value is empty");
     }
 
-      String firstChar=value.substring(0,1);
+    String firstChar = value.substring(0, 1);
 
-    if(!firstChar.matches("[a-zA-Z]")){
+    if (!firstChar.matches("[a-zA-Z]")) {
       throw new IllegalArgumentException("value does not start with a letter");
     }
 
-      return value.replaceFirst(firstChar,"["+firstChar.toUpperCase() +firstChar.toLowerCase()+ "]");
+    return value.replaceFirst(firstChar, "[" + firstChar.toUpperCase() + firstChar.toLowerCase() + "]");
 
 
   }

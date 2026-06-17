@@ -10,6 +10,7 @@ import java.util.List;
  * example SymbolsObject: relationShip: INHERITANCE , template: {{étyl | frm | word }}
  */
 public class FSymbols {
+
   public String relationShip;
   public List<WikiText.Template> templates;
 

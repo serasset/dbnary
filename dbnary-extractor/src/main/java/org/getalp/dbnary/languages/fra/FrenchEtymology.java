@@ -22,7 +22,7 @@ public class FrenchEtymology {
 
 
   private static final Logger log = LoggerFactory.getLogger(FrenchEtymology.class);
-  static HashMap<String, List<String>> tmp = new HashMap<>();
+  private static final  HashMap<String, List<String>> tmp = new HashMap<>();
 
   // mapping des mots , faudra l'enrichir
   static {

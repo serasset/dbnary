@@ -36,12 +36,10 @@ public class FrenchEtymology {
 
   public WikiText etymology;
   public String pageName;
-  public Iterator<WikiText.Token> etymologyIterator;
   List<FSymbols> linkedTemplates = null;
 
   public FrenchEtymology(WikiText etymology, String pageName) {
     this.etymology = etymology;
-    etymologyIterator = etymology.templates().iterator();
     this.pageName = pageName;
   }
 

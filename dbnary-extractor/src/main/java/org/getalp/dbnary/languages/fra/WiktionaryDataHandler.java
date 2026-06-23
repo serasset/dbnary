@@ -1,7 +1,9 @@
 package org.getalp.dbnary.languages.fra;
 
+import jakarta.json.Json;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
@@ -13,6 +15,7 @@ import org.getalp.dbnary.*;
 import org.getalp.dbnary.commons.HierarchicalSenseNumber;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.model.ontolex.LexicalForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,8 +202,10 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       return;
     }
     // initialisation du graph
+    Resource lexicalEntry = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName), OntolexOnt.LexicalEntry);
     Resource etymology = etymologyBox.createResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller, Etymology);
-    etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
+    etymologyBox.add(lexicalEntry, LemonEtyOnt.etymology, etymology);
+    // etymologyBox.add(getPageResource(currentPage.getName()), LemonEtyOnt.etymology, etymology);
     etymologyBox.add(getPageResource(currentPage.getName()), RDFS.seeAlso, ResourceFactory.createResource(WIKT + uriEncode(wiktionaryPageName)));
     etymologyBox.add(getPageResource(currentPage.getName()), RDFS.label, wiktionaryPageName, lang);
 
@@ -214,7 +219,6 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
         Resource etymon = etymologyBox
             .createResource(getPrefix(getLanguageFromSymbolsTemplats(fSymbols, frenchEtymology)) + etymonFiller + uriEncode(word.get().toString()), Etymon);
         etymologyBox.add(etymology, LemonEtyOnt.etymon, etymon);
-
         etymologyBox.add(etymon, RDFS.label, word.get().toString(), lang);
         etymologyBox.add(etymon, RDFS.seeAlso, WIKT + uriEncode(wiktionaryPageName));
         etymologyBox.add(etymon, LemonEtyOnt.isEtymonOf, etymology);
@@ -287,6 +291,14 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
   private Optional<WikiText.WikiContent> getWordFromFSymbolsTemplates(FSymbols fSymbols, FrenchEtymology frenchEtymology) {
     return frenchEtymology.getWordFromTemplateList(fSymbols.templates);
   }
+
+  /*
+   * private Optional<WikiText.WikiContent> getWordFromFSymbolsTokenList(FSymbols fSymbols,
+   * FrenchEtymology frenchEtymology) { return frenchEtymology.getWordFromTokenList(fSymbols.tokens);
+   * }
+   */
+
+
 
   /**
    * @param fSymbols

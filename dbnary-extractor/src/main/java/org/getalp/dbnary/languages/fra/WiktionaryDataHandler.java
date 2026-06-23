@@ -250,7 +250,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
 
       etymologyBox.add(firstLink, LemonEtyOnt.startingLink, etyLink1);
       etymologyBox.add(firstLink, LemonEtyOnt.hasEtyLink, etyLink1);
-      etymologyBox.add(etyLink1, LemonEtyOnt.etyLinkType, firstSym.relationShip.toLowerCase());
+      etymologyBox.add(etyLink1, LemonEtyOnt.etyLinkType, firstSym.relationShip);
       etymologyBox.add(etyLink1, LemonEtyOnt.etySource, etymologyBox.getResource(getPrefix(lang) + uriEncode(wiktionaryPageName) + etymologyFiller));
       etymologyBox.add(etyLink1, LemonEtyOnt.etyTarget, prev);
 

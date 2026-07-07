@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiTool;
 import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class FrenchEtymology {
   static {
 
     tmp.put("INHERITANCE", Arrays.asList("[Dd]e", "[Dd]u", "[Dd]epuis", "[iI]ssue d[eu]", "[Vv]enant d[eu]", "[Vv]ient d[eu]"));
-    tmp.put("BORROWING", Arrays.asList("[Ee]mprunté à", "[Cc]alqué d[eu]", "[Ff]ormé d[eu]"));
+    tmp.put("BORROWING", Arrays.asList("[Ee]mprunté", "[Cc]alqué d[eu]", "[Ff]ormé d[eu]"));
     tmp.put("COGNATE", List.of("[Cc]ognat(e)?"));
     tmp.put("FORM", Arrays.asList("[Ff]orm(e)?"));
     tmp.put("PHONETIC", Arrays.asList("[Pp]rononciation"));
@@ -40,6 +41,7 @@ public class FrenchEtymology {
   public FrenchEtymology(WikiText etymology, String pageName) {
     this.etymology = etymology;
     this.pageName = pageName;
+
   }
 
   public void extractEtymology() {
@@ -77,11 +79,15 @@ public class FrenchEtymology {
     // while fragment not finished and keyWord not found : continue
     while (indiceFrangment < fragment.size() && !exists(tmp, fragment.get(indiceFrangment))) {
       indiceFrangment++;
+
     }
     // if keyWord found : set relationShip and add templates
     if (indiceFrangment < fragment.size()) {
+
       fsymbols.setRelationShip(getKeyFromValue(tmp, fragment.get(indiceFrangment)));
       for (int i = indiceFrangment + 1; i < fragment.size(); i++) {
+
+
         fsymbols.addTemplates(new WikiText(fragment.get(i)).templates()); // all the templates after keyword is found
       }
       // if keyWord not found : set relationShip to none ,all none relationships get removed

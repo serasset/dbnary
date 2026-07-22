@@ -4,7 +4,6 @@ import static org.getalp.dbnary.ExtractionFeature.MAIN;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,7 +13,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -191,7 +189,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   public void updateAndExtract() {
     List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential().map(this::retrieveLastDump).collect(Collectors.toList());
     confs = confs.stream().parallel().map(this::uncompressRetrievedDump).toList();
-    confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
+    confs.stream().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
         .forEach(this::linkToLatestExtractedFiles);
   }
 
@@ -219,7 +217,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   }
 
   private Path getLockPath(String lang, String dir) {
-    if (null == dir || dir.equals("")) {
+    if (null == dir || dir.isEmpty()) {
       return null;
     }
 

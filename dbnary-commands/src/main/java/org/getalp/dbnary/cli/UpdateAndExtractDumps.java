@@ -20,9 +20,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
@@ -34,6 +39,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.getalp.dbnary.ExtractionFeature;
@@ -184,7 +190,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
 
   public void updateAndExtract() {
     List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential().map(this::retrieveLastDump).collect(Collectors.toList());
-    confs = confs.stream().parallel().map(this::uncompressRetrievedDump).collect(Collectors.toList());
+    confs = confs.stream().parallel().map(this::uncompressRetrievedDump).toList();
     confs.stream().sequential().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
         .forEach(this::linkToLatestExtractedFiles);
   }
@@ -398,10 +404,12 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
         return defaultRes;
       }
 
-      String languageDumpFolder = server + lang + "wiktionary";
-      String lastDir;
+      String wikiId = lang + "wiktionary";
+      String languageDumpFolder = server + "other/mediawiki_content_current/" + wikiId;
+      String lastDir = null;
 
-      try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+      try (CloseableHttpClient client =
+          HttpClientBuilder.create().setUserAgent("DBnary/1.0 (https://kaiko.getalp.org/about-dbnary gilles.serasset@imag.fr)").build()) {
         System.err.println("Updating " + lang);
 
         if (null != fetchDate) {
@@ -430,29 +438,14 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
 
         Files.createDirectories(dump.getParent());
 
-        String dumpFileUrl = languageDumpFolder + "/" + lastDir + "/" + ExtractionPreferences.originalDumpFilename(lang, lastDir);
-        if (parent.isVerbose()) {
-          System.err.println("Fetching dump from " + dumpFileUrl);
-        }
-        HttpGet request = new HttpGet(dumpFileUrl);
-        try (CloseableHttpResponse response = client.execute(request)) {
-          HttpEntity entity = response.getEntity();
-
-          if (entity != null) {
-            if (parent.isVerbose()) {
-              System.err.println("Retrieving data from : " + dumpFileUrl);
-            }
-            try (OutputStream dfile = Files.newOutputStream(dump)) {
-              System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
-              long s = System.currentTimeMillis();
-              entity.writeTo(dfile);
-              System.err.println("Retrieved " + dump.getFileName() + "[" + (System.currentTimeMillis() - s) + " ms]");
-            }
-          }
-        }
+        System.err.println("====>  Retrieving new dump for " + lang + ": " + lastDir);
+        downloadDump(languageDumpFolder, lastDir, dump, client);
       } catch (IOException e) {
         System.err.println("IOException while retrieving dump: " + e.getLocalizedMessage());
         // e.printStackTrace();
+        if (null != lastDir) {
+          deleteDump(lang, lastDir);
+        }
         return null;
       }
 
@@ -479,8 +472,8 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
 
       // parse directory listing to get the latest dump folder
       dirs = getFolderSetFromIndex(entity, languageDumpFolder);
-      return getLastVersionDir(dirs);
     }
+    return getLastVersionDir(dirs, languageDumpFolder, client);
   }
 
   private SortedSet<String> getFolderSetFromIndex(HttpEntity entity, String url) {
@@ -509,23 +502,118 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     return (versions.isEmpty()) ? null : versions.first();
   }
 
-  private static final String versionPattern = "\\d{8}";
+  private static final String versionPattern = "\\d{4}-\\d{2}-\\d{2}";
   private static final Pattern vpat = Pattern.compile(versionPattern);
 
-  private String getLastVersionDir(SortedSet<String> dirs) {
+  private String getLastVersionDir(SortedSet<String> dirs, String languageDumpFolder, CloseableHttpClient client) throws IOException {
     if (null == dirs) {
       return null;
     }
 
-    String res = null;
-    Matcher m = vpat.matcher("");
-    for (String d : dirs) {
-      m.reset(d);
-      if (m.matches()) {
-        res = d;
+    return dirs.reversed().stream().filter(dir -> vpat.matcher(dir).matches()).filter(d -> isDumpComplete(d, languageDumpFolder, client))
+        .findFirst().orElse(null);
+  }
+
+  private boolean isDumpComplete(String dir, String languageDumpFolder, CloseableHttpClient client) {
+    String checksumsUrl = languageDumpFolder + "/" + dir + "/xml/bzip2/SHA256SUMS";
+    HttpHead head = new HttpHead(checksumsUrl);
+    try (CloseableHttpResponse response = client.execute(head)) {
+      return response.getStatusLine().getStatusCode() == 200;
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
+  private static final Pattern pageRangePattern = Pattern.compile("p(\\d+)p\\d+");
+
+  // Large wikis split the xml/bzip2 dump into several multistream parts; the part number in the
+  // filename is not zero-padded (multistream1, multistream10, ...), so a lexicographic sort would
+  // misorder them. The page range embedded in the filename (pXXXpYYY) sorts correctly instead.
+  private int startPageOf(String fileName) {
+    Matcher m = pageRangePattern.matcher(fileName);
+    return m.find() ? Integer.parseInt(m.group(1)) : 0;
+  }
+
+  private void downloadDump(String languageDumpFolder, String lastDir, Path dump, CloseableHttpClient client) throws IOException {
+    String bzip2FolderUrl = languageDumpFolder + "/" + lastDir + "/xml/bzip2";
+    Map<String, String> checksums = getChecksums(bzip2FolderUrl, client);
+    if (checksums.isEmpty()) {
+      throw new IOException("Could not retrieve file list from " + bzip2FolderUrl + "/SHA256SUMS");
+    }
+
+    List<String> fileNames = new ArrayList<>(checksums.keySet());
+    fileNames.sort(Comparator.comparingInt(this::startPageOf));
+
+    try (OutputStream dfile = Files.newOutputStream(dump)) {
+      for (String fileName : fileNames) {
+        String fileUrl = bzip2FolderUrl + "/" + fileName;
+        if (parent.isVerbose()) {
+          System.err.println("Retrieving data from : " + fileUrl);
+        }
+        HttpGet request = new HttpGet(fileUrl);
+        try (CloseableHttpResponse response = client.execute(request)) {
+          HttpEntity entity = response.getEntity();
+          if (null == entity) {
+            throw new IOException("Empty response body for " + fileUrl);
+          }
+          long s = System.currentTimeMillis();
+          String digest = copyAndDigest(entity.getContent(), dfile);
+          System.err.println("Retrieved " + fileName + " [" + (System.currentTimeMillis() - s) + " ms]");
+          String expected = checksums.get(fileName);
+          if (!digest.equalsIgnoreCase(expected)) {
+            throw new IOException("Checksum mismatch for " + fileName + ": expected " + expected + " but got " + digest);
+          }
+        }
       }
     }
-    return res;
+  }
+
+  private Map<String, String> getChecksums(String bzip2FolderUrl, CloseableHttpClient client) throws IOException {
+    Map<String, String> checksums = new LinkedHashMap<>();
+    HttpGet request = new HttpGet(bzip2FolderUrl + "/SHA256SUMS");
+    try (CloseableHttpResponse response = client.execute(request)) {
+      HttpEntity entity = response.getEntity();
+      if (null == entity) {
+        return checksums;
+      }
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), StandardCharsets.UTF_8))) {
+        String line;
+        while (null != (line = reader.readLine())) {
+          line = line.trim();
+          if (line.isEmpty()) {
+            continue;
+          }
+          String[] parts = line.split("\\s+", 2);
+          if (parts.length == 2) {
+            String fileName = parts[1].trim();
+            if (fileName.startsWith("*")) {
+              fileName = fileName.substring(1);
+            }
+            checksums.put(fileName, parts[0].trim());
+          }
+        }
+      }
+    }
+    return checksums;
+  }
+
+  private String copyAndDigest(InputStream in, OutputStream out) throws IOException {
+    try (in) {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] buffer = new byte[8192];
+      int len;
+      while ((len = in.read(buffer)) != -1) {
+        digest.update(buffer, 0, len);
+        out.write(buffer, 0, len);
+      }
+      StringBuilder sb = new StringBuilder();
+      for (byte b : digest.digest()) {
+        sb.append(String.format("%02x", b));
+      }
+      return sb.toString();
+    } catch (NoSuchAlgorithmException e) {
+      throw new IOException("SHA-256 algorithm not available", e);
+    }
   }
 
   private LanguageConfiguration uncompressRetrievedDump(LanguageConfiguration conf) {

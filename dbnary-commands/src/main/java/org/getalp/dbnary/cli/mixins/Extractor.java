@@ -42,6 +42,7 @@ public class Extractor {
   protected Integer setupHandlers(String tdbDir) throws NoWiktionaryExtractorException {
     we = null;
 
+    wi.setLanguage(lm.getLanguage());
     wdh = WiktionaryDataHandlerFactory.getDataHandler(lm.getLanguage(), tdbDir);
     we = WiktionaryExtractorFactory.getExtractor(lm.getLanguage(), wdh);
 

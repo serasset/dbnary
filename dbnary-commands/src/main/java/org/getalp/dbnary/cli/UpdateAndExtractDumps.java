@@ -189,7 +189,10 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   public void updateAndExtract() {
     List<LanguageConfiguration> confs = Arrays.stream(languages).distinct().sequential().map(this::retrieveLastDump).collect(Collectors.toList());
     confs = confs.stream().parallel().map(this::uncompressRetrievedDump).toList();
-    confs.stream().map(this::checkLock).map(this::extract).map(this::removeOldDumps).map(this::releaseLock)
+    confs.stream().map(this::checkLock)   //
+        .map(this::extract)    //
+        .map(this::removeOldDumps)    //
+        .map(this::releaseLock)    //
         .forEach(this::linkToLatestExtractedFiles);
   }
 
@@ -508,8 +511,8 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       return null;
     }
 
-    return dirs.reversed().stream().filter(dir -> vpat.matcher(dir).matches()).filter(d -> isDumpComplete(d, languageDumpFolder, client))
-        .findFirst().orElse(null);
+    return dirs.reversed().stream().filter(dir -> vpat.matcher(dir).matches()).filter(d -> isDumpComplete(d, languageDumpFolder, client)).findFirst()
+        .orElse(null);
   }
 
   private boolean isDumpComplete(String dir, String languageDumpFolder, CloseableHttpClient client) {

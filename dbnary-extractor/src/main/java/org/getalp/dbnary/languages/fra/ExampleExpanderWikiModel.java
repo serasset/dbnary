@@ -115,7 +115,8 @@ public class ExampleExpanderWikiModel extends ExpandAllWikiModel {
       }
     } else if (templateName.equals("nom langue") || templateName.endsWith(":nom langue")) {
       // intercept this template as it leads to a very inefficient Lua Script.
-      String langCode = parameterMap.get("1").trim();
+      String lgParam = parameterMap.get("1");
+      String langCode = lgParam != null ? lgParam.trim() : null;
       String lang = ISO639_3.sharedInstance.getLanguageNameInFrench(langCode);
       if (null != lang) {
         writer.append(lang);

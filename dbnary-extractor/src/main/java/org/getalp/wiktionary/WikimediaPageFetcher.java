@@ -67,6 +67,7 @@ class WikimediaPageFetcher implements AutoCloseable {
    *         and callers must not cache it as such.
    */
   String fetchPageXml(String title) throws IOException {
+    log.trace("Fetching Wikimedia page with title {} as it is missing in dump.", title);
     long backoff = initialBackoffMillis;
     IOException lastError = null;
     for (int attempt = 1; attempt <= maxAttempts; attempt++) {

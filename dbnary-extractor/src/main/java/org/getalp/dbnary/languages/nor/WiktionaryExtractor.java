@@ -11,7 +11,6 @@ import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Template;
 import org.getalp.dbnary.wiki.WikiText.Token;
-import org.getalp.iso639.ISO639_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -28,14 +27,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected final static String languageSectionPatternString = "={1,2}([^=]+)={2}\\n";
   protected final static String blockPatternString = "={3,4}([^=]+)={3,4}";
-  protected final static String posPatternString = "\\{{2}([^\\}]*)\\}{2}\n";
+  protected final static String posPatternString = "\\{{2}([^}]*)}{2}\n";
   protected final static String defPatternString = "#\\s*([^:=#]+)";
-  protected final static String examplePatternString = "#:\\s*([^=#-]+)|\\*\\s*([^\\*\n]+)";
-  protected final static String tradPatternString = "\\*\\s*\\{*([^:\\}]+)\\}*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}([^\\}]*)[^:]*\\}{2}";
+  protected final static String examplePatternString = "#:\\s*([^=#-]+)|\\*\\s*([^*\n]+)";
+  protected final static String tradPatternString = "\\*\\s*\\{*([^:}]+)}*:\\s*\\[{2}([^]]+)]{2}|\\{{2}([^}]*)[^:]*}{2}";
   protected final static String nymPatternString = "([^\\[,\\]]+)";
   protected final static String writtenRepPatternString = "([^\\[,\\]]+)";
-  protected final static String pronPatternString = "\\{{2}([^\\}]+)\\}{2}";
-  protected final static String abbrevPatternString = "\\[{2}([^\\]]+)\\]{2}";
+  protected final static String pronPatternString = "\\{{2}([^}]+)}{2}";
+  protected final static String abbrevPatternString = "\\[{2}([^]]+)]{2}";
 
   protected final static Pattern languageSectionPattern;
   protected final static Pattern blockPattern;
@@ -86,7 +85,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     NOBLOCK, IGNOREPOS, DEFBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK, ABBREVIATIONBLOCK, MORPHOBLOCK, WRITTENREP, EXAMPLEBLOCK
   }
 
-  protected static LinkedHashMap<String, Block> blockValue = new LinkedHashMap<>();
+  private static final LinkedHashMap<String, Block> blockValue = new LinkedHashMap<>();
 
   static {
     blockValue.put("Faste uttrykk", Block.NOBLOCK); // Derivations ?
@@ -466,7 +465,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     int startSample = start;
     if (m.find()) {
-      dwdh.addPOSinfo(m.group(1).replaceAll("\\{\\}", ""));
+      dwdh.addPOSinfo(m.group(1).replaceAll("\\{}", ""));
     }
 
     m = defPattern.matcher(pageContent);
@@ -500,13 +499,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (exampleMatcher.find()) {
       if (exampleMatcher.group(1) != null) {
         ex = exampleMatcher.group(1).trim();
-        ex = ex.substring(2, ex.length());
-        ex = ex.replaceAll("\'", "");
+        // ex = ex.substring(2, ex.length());
+        ex = ex.replace("'", "");
       } else if (exampleMatcher.group(2) != null) {
         ex = exampleMatcher.group(2).trim();
-        ex = ex.replaceAll("\'", "");
+        ex = ex.replace("'", "");
       }
-      if (ex != null) {
+      if (ex != null && !ex.isEmpty()) {
         if (ex.contains("Se også")) {
           return;
         }

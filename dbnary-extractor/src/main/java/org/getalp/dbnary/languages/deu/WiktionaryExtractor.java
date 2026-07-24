@@ -249,6 +249,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     for (Pair<String, List<Token>> languageSection : languageSections) {
       List<Token> section = languageSection.getRight();
+      if (languageSection.getLeft() == null || languageSection.getLeft().isEmpty())
+        continue;
       extractLanguageData(languageSection.getLeft(), section.get(0).getBeginIndex(), section.get(section.size() - 1).getEndIndex());
     }
 

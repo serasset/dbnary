@@ -17,7 +17,6 @@ import org.codehaus.stax2.XMLInputFactory2;
 import org.codehaus.stax2.XMLStreamReader2;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.cli.utils.NoWiktionaryExtractorException;
-import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.wiktionary.WiktionaryIndexer;
 import org.getalp.wiktionary.WiktionaryIndexerException;
 import org.getalp.dbnary.cli.mixins.BatchExtractorMixin;

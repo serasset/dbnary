@@ -80,6 +80,7 @@ public class CheckWiktionaryQuality {
       spec.commandLine().getErr().println(String.format("Could not find a structure checker for %s. Exiting.", lm.getLanguage()));
       return -1;
     }
+    wi.setLanguage(lm.getLanguage());
     structureChecker.setWiktionaryIndex(wi);
 
     return check(this::struct);

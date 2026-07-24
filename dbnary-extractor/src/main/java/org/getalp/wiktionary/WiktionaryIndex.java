@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.getalp.LangTools;
 import org.getalp.dbnary.OffsetValue;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.wiki.WikiPatterns;
@@ -49,6 +50,10 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   HashMap<String, OffsetValue> map;
   SeekableByteChannel xmlf;
 
+  private final boolean fallbackToLiveWiki;
+  private MissingPageCache missingPageCache;
+  private WikimediaPageFetcher pageFetcher;
+
   /**
    * returns Path of the index file corresponding to passed dump.
    *
@@ -60,18 +65,58 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   }
 
   /**
-   * Creates a WiktionaryIndex for the wiktionary dump whose path is passed as a parameter
+   * returns Path of the persisted live-API fallback cache file corresponding to passed dump.
+   *
+   * @param dump Path refering to the dump file.
+   * @return the Path refering to the cache file.
+   */
+  public static Path apiCacheFile(Path dump) {
+    return dump.resolveSibling(dump.getFileName() + ".apicache.json");
+  }
+
+  /**
+   * Creates a WiktionaryIndex for the wiktionary dump whose path is passed as a parameter. The live
+   * MediaWiki API fallback is disabled.
    *
    * @param dump the path to file containing the wiktionary dump.
    * @throws WiktionaryIndexerException thrown if any error occur during index initialization
    */
   public WiktionaryIndex(Path dump) throws WiktionaryIndexerException {
+    this(dump, null, false);
+  }
+
+  /**
+   * Creates a WiktionaryIndex for the wiktionary dump whose path is passed as a parameter.
+   *
+   * <p>
+   * MediaWiki's XML export is known to occasionally omit pages that do exist on the live wiki. If
+   * {@code fillMissingPages} is set, a title missing from the dump index is looked up on the live
+   * MediaWiki API instead of being reported as non existent; the outcome (found or confirmed missing)
+   * is cached in a file next to the dump so a title is never queried more than once, across runs.
+   * </p>
+   *
+   * @param dump the path to file containing the wiktionary dump.
+   * @param lang the language edition of the dump (used to reach the corresponding wiktionary API when
+   *        {@code fillMissingPages} is set); may be {@code null} if {@code fillMissingPages} is
+   *        {@code false}.
+   * @param fillMissingPages whether to fall back to the live MediaWiki API for titles missing from
+   *        the dump.
+   * @throws WiktionaryIndexerException thrown if any error occur during index initialization
+   */
+  public WiktionaryIndex(Path dump, String lang, boolean fillMissingPages) throws WiktionaryIndexerException {
     this.dump = dump;
     index = indexFile(dump);
     if (this.isAValidIndexFile()) {
       this.loadIndex();
     } else {
       this.initIndex();
+    }
+    this.fallbackToLiveWiki = fillMissingPages && null != lang;
+    if (this.fallbackToLiveWiki) {
+      this.missingPageCache = new MissingPageCache(apiCacheFile(dump));
+      this.pageFetcher = new WikimediaPageFetcher(LangTools.getShortCode(lang));
+    } else if (fillMissingPages) {
+      log.warn("Live MediaWiki API fallback was requested but no language was specified; disabling it.");
     }
     try {
       xmlf = FileChannel.open(dump, READ);
@@ -106,6 +151,8 @@ public class WiktionaryIndex implements WiktionaryPageSource {
         xmlf.close();
       if (null != map)
         map.clear();
+      if (null != pageFetcher)
+        pageFetcher.close();
     } catch (IOException ignored) {
 
     }
@@ -236,7 +283,7 @@ public class WiktionaryIndex implements WiktionaryPageSource {
   public String get(String key) {
     OffsetValue ofs = map.get(key);
     if (ofs == null) {
-      return null;
+      return fallbackToLiveWiki ? getFromLiveWiki(key) : null;
     }
     String res;
     try {
@@ -251,6 +298,28 @@ public class WiktionaryIndex implements WiktionaryPageSource {
       res = null;
     }
     return res;
+  }
+
+  /**
+   * Called only for titles absent from the dump index. Consults the persisted cache first so a title
+   * already resolved (or confirmed missing) on a previous run never triggers a network call;
+   * otherwise queries the live MediaWiki API once and persists the outcome.
+   */
+  private String getFromLiveWiki(String key) {
+    if (missingPageCache.has(key)) {
+      return missingPageCache.get(key);
+    }
+    try {
+      String pageXml = pageFetcher.fetchPageXml(key);
+      missingPageCache.put(key, pageXml);
+      return pageXml;
+    } catch (IOException e) {
+      // Transient failure (network, or the API stayed lagged/unavailable): not evidence that the
+      // page is missing, so don't cache anything -- just fall back to today's behavior for this
+      // one lookup.
+      log.warn("Could not resolve '{}' via the live MediaWiki API; treating it as unavailable for this run: {}", key, e.getLocalizedMessage());
+      return null;
+    }
   }
 
   private static final List<String> redirects = Arrays.asList("#REDIRECT", "#WEITERLEITUNG", "#REDIRECCIÓN");

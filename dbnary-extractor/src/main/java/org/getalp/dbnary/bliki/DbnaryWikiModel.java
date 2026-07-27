@@ -70,6 +70,12 @@ public class DbnaryWikiModel extends WikiModel {
       return result;
     }
 
+    // Media are not included in dump, so do not try to retriev them as it may hit the API for nothing
+    // Also ignore non usefull namespaces
+    if (parsedPagename.namespace.isType(NamespaceCode.MEDIA_NAMESPACE_KEY) || parsedPagename.namespace.isType(NamespaceCode.FILE_NAMESPACE_KEY)) {
+      return null;
+    }
+
     // Fix a bug in some wiktionary where a lua script import "Module:page" by specifying
     // the namepace, while the wiktionary edition uses a localized namespace.
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)

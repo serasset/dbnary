@@ -26,12 +26,12 @@ public class VersionProvider implements IVersionProvider {
     return DBnary.class.getPackage().getImplementationVersion();
   }
 
-  private static final Pattern DUMP_VERSION_PATTERN = Pattern.compile("(20\\d\\d\\d{4}|20\\d\\d_\\d{2}_\\d{2})");
+  private static final Pattern DUMP_VERSION_PATTERN = Pattern.compile("(20\\d\\d)[-_]?(\\d{2})[-_]?(\\d{2})");
 
   public static String getDumpVersion(String dumpFileName) {
     Matcher m = DUMP_VERSION_PATTERN.matcher(dumpFileName);
     if (m.find()) {
-      return m.group();
+      return m.group(1) + m.group(2) + m.group(3);
     } else {
       return dumpFileName;
     }

@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -136,7 +137,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    expander = new ExpandAllWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
+    DbnaryWikiModel turkishModel = new TurkishModulesPatcherWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
+    expander = new ExpandAllWikiModel(turkishModel, wi, Locale.forLanguageTag("tr"), "/images", "/link");
   }
 
   public void extractData() {

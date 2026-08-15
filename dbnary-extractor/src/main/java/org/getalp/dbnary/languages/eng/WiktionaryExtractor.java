@@ -713,8 +713,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // TODO : handle translations that are links to other entries (maybe keep those links)
           wdh.registerTranslation(lang, currentGloss.get(), usage, word.toString());
         }
-      } else if (tName.equals("trans-top") || tName.equals("trans-top-also")) {
+      } else if (tName.equals("trans-top") || tName.equals("trans-top-also") || tName.equals("trans-top-see")) {
         // Get the gloss that should help disambiguate the source acception
+        // TODO: trans-top-also and trans-top-see links to other entries with same meaning/translations
         WikiContent g2 = t.getArgs().get("1");
         // Ignore gloss if it is a macro
         if (g2 != null) {

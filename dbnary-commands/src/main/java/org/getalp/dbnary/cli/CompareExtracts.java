@@ -192,6 +192,14 @@ public class CompareExtracts implements Callable<Integer> {
         a.clear();
         if (parent.isVerbose())
           a.add("-v");
+        if (maxDiffs < Integer.MAX_VALUE) {
+          a.add("-d");
+          a.add(maxDiffs.toString());
+        }
+        if (maxTriples < Integer.MAX_VALUE) {
+          a.add("-t");
+          a.add(maxTriples.toString());
+        }
         a.add(String.valueOf(to));
         a.add(String.valueOf(from));
         a.add(String.valueOf(gain));

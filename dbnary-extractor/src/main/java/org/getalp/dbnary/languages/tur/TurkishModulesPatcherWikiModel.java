@@ -21,7 +21,7 @@ public class TurkishModulesPatcherWikiModel extends DbnaryWikiModel {
     String pagename = parsedPagename.pagename.toLowerCase();
     if (parsedPagename.namespace.isType(NamespaceCode.MODULE_NAMESPACE_KEY)) {
       switch (pagename) {
-        case "Kaynak/KB1":
+        case "kaynak/kb1":
           // This module contains too many locals and hits the 200 local per chunk limit of Lua.
           // This is problematic here as we compile lua code (hence the limit, while interpreted lua
           // seems not to bear the same issue)

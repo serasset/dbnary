@@ -13,7 +13,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.graph.GraphUtil;
 import org.apache.jena.graph.Node;

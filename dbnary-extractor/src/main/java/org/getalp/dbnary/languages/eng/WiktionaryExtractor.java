@@ -88,7 +88,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
     wikiExpander = new ExpandAllWikiModel(wi, Locale.ENGLISH, "--DO NOT USE IMAGE BASE URL FOR DEBUG--", "");
-    combinedExpander = new CombinedWikiModel(this.ewdh, this.wi, new Locale("en"), "/${image}", "/${title}");
+    combinedExpander = new CombinedWikiModel(this.ewdh, this.wi, Locale.ENGLISH, "/${image}", "/${title}");
 
     wikisaurusExtractor = new WikisaurusExtractor(this.ewdh);
   }
@@ -235,8 +235,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private static final ClassBasedSequenceFilter linkResolver = new ClassBasedSequenceFilter();
 
   private static List<Token> getMyTemplateContent(WikiText.Token t) {
-    if (t instanceof WikiText.Template) {
-      WikiText.Template tt = (WikiText.Template) t;
+    if (t instanceof Template tt) {
       if (tt.getName().equals("vern") || tt.getName().equals("w") || tt.getName().equals("pedlink") || tt.getName().equals("what someone said")) {
         return tt.getArgs().get("1").tokens();
       } else if (tt.getName().equals("l")) {

@@ -277,21 +277,17 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractDefinitions(WikiContent wk) {
     WikiEventsSequence indentationsOrTemplates = wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
-    label:
-    for (Token indent : indentationsOrTemplates) {
+    label: for (Token indent : indentationsOrTemplates) {
       switch (indent) {
         case NumberedListItem numberedListItem -> {
           // Do not extract numbered list items that begin with ":" as they are indeed examples.
-          String additionalPrefix = numberedListItem.getListPrefix()
-              .substring(numberedListItem.getLevel());
+          String additionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
           if (additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*")) {
-            String expandedExample = expander.expandAll(
-                numberedListItem.getContent().getText().trim(), null);
+            String expandedExample = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
             expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
             wdh.registerExample(expandedExample, null);
           } else {
-            String expandedDefinition = expander.expandAll(
-                numberedListItem.getContent().getText().trim(), null);
+            String expandedDefinition = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
             expandedDefinition = CONTROL_CHAR.matcher(expandedDefinition).replaceAll("");
             wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
           }
@@ -303,8 +299,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             wdh.registerNewDefinition(def.substring(m.end()), m.group(1));
           } else {
             // TODO: it's usually an example given after a definition.
-            String expandedExample = expander.expandAll(
-                indentation.getContent().getText().trim(), null);
+            String expandedExample = expander.expandAll(indentation.getContent().getText().trim(), null);
             expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
             wdh.registerExample(expandedExample, null);
           }
@@ -319,8 +314,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
         default ->
           // TODO: test and handle these !
-            log.debug("Unhandled indented item in def[{}]: {}", getWiktionaryPageName(),
-                indent);
+          log.debug("Unhandled indented item in def[{}]: {}", getWiktionaryPageName(), indent);
       }
     }
   }

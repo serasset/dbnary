@@ -51,8 +51,7 @@ public class EnglishLikeModulesPatcherWikiModel extends DbnaryWikiModel {
         case "audio":
           return getAndPatchModule(parsedPagename, map, t -> t.replace("return stylesheet .. text .. categories", "return text .. categories"));
         case "quote":
-          // The quote module contains too many locals and hits the 200 local per chunk limit of
-          // Lua.
+          // The quote module contains too many locals and hits the 200 local per chunk limit of Lua.
           // This is problematic here as we compile lua code (hence the limit, while interpreted lua
           // seems not to bear the same issue)
           // we fix it by a hack that replace the local functions with global functions

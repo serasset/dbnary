@@ -336,12 +336,25 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
   private SortedSet<String> getAvailableDumpsVersions(String lang) {
     SortedSet<String> versions;
     try (Stream<Path> files = Files.list(prefs.getDumpDir(lang))) {
-      versions = files.filter(Files::isDirectory).map(Path::getFileName).map(Path::toString).collect(Collectors.toCollection(TreeSet::new));
+      versions = files.filter(Files::isDirectory).map(Path::getFileName).map(Path::toString)
+          .collect(Collectors.toCollection(() -> new TreeSet<>(new DumpVersioningComparator())));
     } catch (IOException e) {
       System.err.println("IOException while getting available dump versions: " + e.getLocalizedMessage());
       return new TreeSet<>();
     }
     return versions;
+  }
+
+  private static class DumpVersioningComparator implements Comparator<String> {
+    @Override
+    public int compare(String o1, String o2) {
+      if (o1 == null || o2 == null) {
+        throw new NullPointerException("Attenpt to compare null versions.");
+      }
+      o1 = o1.replace("-", "").replace("_", "").replace(" ", "");
+      o2 = o2.replace("-", "").replace("_", "").replace(" ", "");
+      return o1.compareTo(o2);
+    }
   }
 
 
@@ -364,6 +377,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     Path dump = prefs.expandedDump(lang, dir);
     deleteSilently(dump, "Deleting expanded dump: ");
     deleteSilently(WiktionaryIndex.indexFile(dump), "Deleting expanded dump: ");
+    deleteSilently(WiktionaryIndex.apiCacheFile(dump), "Deleting api cache for dump: ");
   }
 
   private void deleteSilently(Path dump, String message) {
@@ -659,6 +673,7 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
       deleteSilently(compressedDump, "Removing faulty compressed file: ");
       deleteSilently(expandedDump, "Removing faulty uncompressed file: ");
       deleteSilently(WiktionaryIndex.indexFile(expandedDump), "Removing faulty index file: ");
+      deleteSilently(WiktionaryIndex.apiCacheFile(expandedDump), "Removing faulty API cache file: ");
       status = false;
     }
     return status;

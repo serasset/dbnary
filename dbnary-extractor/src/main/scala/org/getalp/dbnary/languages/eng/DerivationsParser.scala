@@ -97,8 +97,10 @@ class DerivationsParser(page: String) extends WikiRegexParsers {
 
   protected def derivationAsPlainText: Parser[List[Derivation]] = wikiCharSequenceMatching(("[^" + WikiPattern.RESERVED + "(<]+").r) ^^ (
     s => {
-      logger.debug("Derivation Value (Plain Text): {} || {}", s.getSourceContent, pagename)
-      List(Derivation(s.getSourceContent, null))
+      s.getSourceContent.split(",").map(_.trim).filter(_.nonEmpty).map(v => {
+        logger.debug("Derivation Value (Plain Text): {} || {}", v, pagename)
+        Derivation(v, null)
+      }).toList
     })
 
   protected def derivationLinkAsTemplate: Parser[List[Derivation]] =

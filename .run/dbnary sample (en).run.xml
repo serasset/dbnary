@@ -2,8 +2,8 @@
   <configuration default="false" name="dbnary sample (en)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
-    <option name="PROGRAM_PARAMETERS" value="sample --trace=org.getalp.dbnary --trace=info.bliki -l en --endolex=ontolex --exolex=ontolex enwkt-2026-07-01.xml &quot;শুক্রবার&quot;" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/en/2026-07-01" />
+    <option name="PROGRAM_PARAMETERS" value="sample --trace=org.getalp.dbnary --trace=info.bliki -l en --endolex=ontolex --exolex=ontolex --fill-missing-pages enwkt-2026-08-01.xml &quot;book&quot;" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../../wiktionary/dumps/en/2026-08-01" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

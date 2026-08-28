@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
+import org.getalp.dbnary.bliki.DbnaryWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
-  private Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
+  private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString = "^={2}\\s*([^=]+)\\s*={2}";
 
@@ -136,7 +137,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    expander = new ExpandAllWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
+    DbnaryWikiModel turkishModel = new TurkishModulesPatcherWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
+    expander = new ExpandAllWikiModel(turkishModel, wi, Locale.forLanguageTag("tr"), "/images", "/link");
   }
 
   public void extractData() {
@@ -275,41 +277,44 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractDefinitions(WikiContent wk) {
     WikiEventsSequence indentationsOrTemplates = wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
-    for (Token indent : indentationsOrTemplates) {
-      if (indent instanceof NumberedListItem) {
-        // Do not extract numbered list items that begin with ":" as they are indeed examples.
-        NumberedListItem numberedListItem = indent.asNumberedListItem();
-        String additionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
-        if (additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*")) {
-          String expandedExample = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
-          expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
-          wdh.registerExample(expandedExample, null);
-        } else {
-          String expandedDefinition = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
-          expandedDefinition = CONTROL_CHAR.matcher(expandedDefinition).replaceAll("");
-          wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
+    label: for (Token indent : indentationsOrTemplates) {
+      switch (indent) {
+        case NumberedListItem numberedListItem -> {
+          // Do not extract numbered list items that begin with ":" as they are indeed examples.
+          String additionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
+          if (additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*")) {
+            String expandedExample = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
+            expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
+            wdh.registerExample(expandedExample, null);
+          } else {
+            String expandedDefinition = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
+            expandedDefinition = CONTROL_CHAR.matcher(expandedDefinition).replaceAll("");
+            wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
+          }
         }
-      } else if (indent instanceof Indentation) {
-        String def = indent.asIndentation().getContent().toString();
-        Matcher m = senseNumPattern.matcher(def);
-        if (m.lookingAt()) {
-          wdh.registerNewDefinition(def.substring(m.end()), m.group(1));
-        } else {
-          // TODO: it's usually an example given after a definition.
-          String expandedExample = expander.expandAll(indent.asIndentation().getContent().getText().trim(), null);
-          expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
-          wdh.registerExample(expandedExample, null);
+        case Indentation indentation -> {
+          String def = indentation.getContent().toString();
+          Matcher m = senseNumPattern.matcher(def);
+          if (m.lookingAt()) {
+            wdh.registerNewDefinition(def.substring(m.end()), m.group(1));
+          } else {
+            // TODO: it's usually an example given after a definition.
+            String expandedExample = expander.expandAll(indentation.getContent().getText().trim(), null);
+            expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
+            wdh.registerExample(expandedExample, null);
+          }
         }
-      } else if (indent instanceof Template) {
-        String tname = indent.asTemplate().getName();
-        if ("Resmi Adı".equals(tname) || "Resmî Adı".equals(tname)) {
-          break;
-        } else {
-          log.debug("In Def[{}] - got template {}", getWiktionaryPageName(), tname);
+        case Template template -> {
+          String tname = template.getName();
+          if ("Resmi Adı".equals(tname) || "Resmî Adı".equals(tname)) {
+            break label;
+          } else {
+            log.debug("In Def[{}] - got template {}", getWiktionaryPageName(), tname);
+          }
         }
-      } else {
-        // TODO: test and handle these !
-        log.debug("Unhandled indented item in def[{}]: {}", getWiktionaryPageName(), indent.toString());
+        default ->
+          // TODO: test and handle these !
+          log.debug("Unhandled indented item in def[{}]: {}", getWiktionaryPageName(), indent);
       }
     }
   }

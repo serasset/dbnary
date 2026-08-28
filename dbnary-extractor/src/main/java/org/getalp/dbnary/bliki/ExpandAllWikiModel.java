@@ -1,6 +1,8 @@
 package org.getalp.dbnary.bliki;
 
+import info.bliki.wiki.filter.ParsedPageName;
 import info.bliki.wiki.filter.PlainTextConverter;
+import info.bliki.wiki.model.WikiModelContentException;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 public class ExpandAllWikiModel extends DbnaryWikiModel {
   private static final Logger log = LoggerFactory.getLogger(ExpandAllWikiModel.class);
   protected Set<String> templates = null;
+  protected DbnaryWikiModel delegate = null;
 
   public ExpandAllWikiModel(Locale locale, String imageBaseURL, String linkBaseURL) {
     this((WiktionaryPageSource) null, locale, imageBaseURL, linkBaseURL);
@@ -19,6 +22,19 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
 
   public ExpandAllWikiModel(WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
     super(wi, locale, imageBaseURL, linkBaseURL);
+  }
+
+  public ExpandAllWikiModel(DbnaryWikiModel delegate, WiktionaryPageSource wi, Locale locale, String imageBaseURL, String linkBaseURL) {
+    super(wi, locale, imageBaseURL, linkBaseURL);
+    this.delegate = delegate;
+  }
+
+  @Override
+  public void setPageName(String pageTitle) {
+    super.setPageName(pageTitle);
+    if (delegate != null) {
+      delegate.setPageName(pageTitle);
+    }
   }
 
   /**
@@ -47,4 +63,12 @@ public class ExpandAllWikiModel extends DbnaryWikiModel {
     super.substituteTemplateCall(templateName, parameterMap, writer);
   }
 
+  @Override
+  public String getRawWikiContent(ParsedPageName parsedPagename, Map<String, String> map) throws WikiModelContentException {
+    if (delegate != null) {
+      return delegate.getRawWikiContent(parsedPagename, map);
+    } else {
+      return super.getRawWikiContent(parsedPagename, map);
+    }
+  }
 }

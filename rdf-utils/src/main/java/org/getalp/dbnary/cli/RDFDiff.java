@@ -35,6 +35,13 @@ public final class RDFDiff extends VerboseCommand {
   private final TreeMap<String, String> anodes2id = new TreeMap<>();
   public static final Resource me = ResourceFactory.createResource("#me");
   public static final Property diffRate = ResourceFactory.createProperty("http://kaiko.getalp.org/dbnary/diffs/", "diffRate");
+  private Integer maxDiffs = Integer.MAX_VALUE;
+  private Integer maxTriples = Integer.MAX_VALUE;
+
+  static {
+    options.addOption("d", true, "Stop after detecting this maximum number of differences (0 means all differences will be computed). ");
+    options.addOption("t", true, "Stop after checking this maximum number of triples (0 means all differences will be computed). ");
+  }
 
   public RDFDiff(String[] args) {
     this.loadArgs(args);
@@ -46,6 +53,17 @@ public final class RDFDiff extends VerboseCommand {
       printUsage();
       System.exit(1);
     }
+    try {
+      if (cmd.hasOption("d"))
+        this.maxDiffs = Integer.valueOf(cmd.getOptionValue("d"));
+      if (cmd.hasOption("t"))
+        this.maxTriples = Integer.valueOf(cmd.getOptionValue("t"));
+    } catch (NumberFormatException e) {
+      System.err.println(e.getMessage());
+      printUsage();
+      System.exit(1);
+    }
+
   }
 
   @Override
@@ -256,13 +274,13 @@ public final class RDFDiff extends VerboseCommand {
     return key;
   }
 
-  private Model difference(Model from, Model to, Model diff) {
+  private void difference(Model from, Model to, Model diff) {
     ExtendedIterator<Triple> iter = null;
     int nbprocessed = 0;
     int nbdiffs = 0;
     try {
       iter = GraphUtil.findAll(from.getGraph());
-      while (iter.hasNext()) {
+      while (iter.hasNext() && nbprocessed < maxTriples && nbdiffs < maxDiffs) {
         final Triple triple = iter.next();
         nbprocessed++;
         if (triple.getSubject().isBlank() && triple.getObject().isBlank()) {
@@ -326,8 +344,6 @@ public final class RDFDiff extends VerboseCommand {
 
     // Add statistics about the diff
     diff.add(diff.createStatement(me, diffRate, diff.createTypedLiteral(nbdiffs / (double) nbprocessed)));
-
-    return diff;
   }
 
 

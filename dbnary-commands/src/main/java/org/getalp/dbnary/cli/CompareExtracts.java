@@ -61,6 +61,13 @@ public class CompareExtracts implements Callable<Integer> {
       description = "Specify the date of the target dump. If unspecified, latest dump will be used.")
   private String toDate = null;
 
+  @Option(names = {"--max_diffs", "--diffs"}, paramLabel = "123", required = false, description = "Stop diff computation after finding max_diffs differences")
+  private Integer maxDiffs = Integer.MAX_VALUE;
+
+  @Option(names = {"--max_triples", "--triples"}, paramLabel = "123", required = false,
+      description = "Stop diff computation after checking max_triples triples")
+  private Integer maxTriples = Integer.MAX_VALUE;
+
   @Option(names = {"-o", "--output"}, paramLabel = "DIR", defaultValue = ".", description = "create files in DIR (default: ${DEFAULT-VALUE})")
   private Path output = Path.of(".");
 
@@ -169,6 +176,14 @@ public class CompareExtracts implements Callable<Integer> {
         ArrayList<String> a = new ArrayList<>();
         if (parent.isVerbose())
           a.add("-v");
+        if (maxDiffs < Integer.MAX_VALUE) {
+          a.add("-d");
+          a.add(maxDiffs.toString());
+        }
+        if (maxTriples < Integer.MAX_VALUE) {
+          a.add("-t");
+          a.add(maxTriples.toString());
+        }
         a.add(String.valueOf(from));
         a.add(String.valueOf(to));
         a.add(String.valueOf(lost));
@@ -177,6 +192,14 @@ public class CompareExtracts implements Callable<Integer> {
         a.clear();
         if (parent.isVerbose())
           a.add("-v");
+        if (maxDiffs < Integer.MAX_VALUE) {
+          a.add("-d");
+          a.add(maxDiffs.toString());
+        }
+        if (maxTriples < Integer.MAX_VALUE) {
+          a.add("-t");
+          a.add(maxTriples.toString());
+        }
         a.add(String.valueOf(to));
         a.add(String.valueOf(from));
         a.add(String.valueOf(gain));

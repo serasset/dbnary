@@ -227,6 +227,7 @@ iso3Lang[ca]="cat"
 iso3Lang[ga]="gle"
 iso3Lang[da]="dan"
 iso3Lang[cs]="ces"
+iso3Lang[et]="est"
 
 
 SAVETMPDIR=$TMPDIR
@@ -293,7 +294,6 @@ fi
     ## TODO: expand Disambiguated translations + foreign data ? + etymology
     pushd "$DATASETDIR"
     # Decompress in parallel
-    #bunzip2 ./*.ttl.bz2
     find ./*.ttl.bz2 -print0 | xargs -0 -n 1 -P 6 bunzip2
   fi
 )

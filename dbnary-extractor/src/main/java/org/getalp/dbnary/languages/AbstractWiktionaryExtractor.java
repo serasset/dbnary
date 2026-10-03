@@ -226,6 +226,7 @@ public abstract class AbstractWiktionaryExtractor implements IWiktionaryExtracto
     return null;
   }
 
+  @Deprecated
   public static String cleanUpMarkup(String group) {
     return cleanUpMarkup(group, false);
   }

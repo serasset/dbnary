@@ -1,8 +1,12 @@
 package org.getalp.dbnary.languages.ind;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.Pair;
+import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.slf4j.Logger;
@@ -16,12 +20,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^\\}=]+)=*\\}{2}\\s*={2}|\\{{2}\\s*-([^-]+)-\\s*\\}{2}|={2}\\s*([^=]+)={2}\n";
-  protected final static String blockPatternString = "\n\\{{2}([^\\}]+)\\}{2}|={3}\\s*([^=]+)={3}\n";
-  protected final static String tradPatternString = "\\{{2}([^\\\\}]+)\\}{2}\\s*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}(t[^\\|][^\\}]+)\\}{2}";
-  protected final static String nymsPatternString = "\\{{2}([^\\}]+)\\}{2}";
-  protected final static String defPatternString = "#\\s*([^\\n]+)|\\'{5}Definisi\\'{5}\\s*:\\s*([^\\n]+)";
-  protected final static String examplePatternString = "\\*\\s*([^\n]+)\n";
+  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^}=]+)=*}{2}\\s*={2}|={2}\\s*([^=]+)={2}\n";
+  protected final static String blockPatternString = "\n"
+      + "\\{{2}([^}]+)}{2}|={3}\\s*([^=]+)={3}\n";
+  protected final static String tradPatternString = "\\{{2}([^\\\\}]+)}{2}\\s*:\\s*\\[{2}([^]]+)]{2}|\\{{2}(t[^|][^}]+)}{2}";
+  protected final static String nymsPatternString = "\\{{2}([^}]+)}{2}";
+  protected final static String defPatternString = "#\\s*([^\\n]+)|'{5}Definisi'{5}\\s*:\\s*([^\\n]+)";
+  protected final static String examplePatternString = "(?:\\*|#:)\\s*([^\n]+)\n";
 
   protected final static Pattern languageSectionPattern;
   protected final static Pattern blockPattern;
@@ -39,6 +44,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     examplePattern = Pattern.compile(examplePatternString);
   }
 
+  private ExpandAllWikiModel defExpander;
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
   }
@@ -56,8 +62,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         nextLang = languageFilter.group(1);
       } else if (languageFilter.group(2) != null) {
         nextLang = languageFilter.group(2);
-      } else if (languageFilter.group(3) != null) {
-        nextLang = languageFilter.group(3);
       }
       if (nextLang != null) {
         nextLang = nextLang.replaceAll("[=-]", "").trim();
@@ -74,11 +78,23 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizePageExtraction();
   }
 
+  @Override
+  public void setWiktionaryIndex(WiktionaryPageSource wi) {
+    super.setWiktionaryIndex(wi);
+    defExpander = new ExpandAllWikiModel(wi, Locale.of("id"), "img", "link");
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    defExpander.setPageName(wiktionaryPageName);
+  }
+
   private enum Block {
     NOBLOCK, IGNOREPOS, POSBLOCK, EXAMPLEBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK
   }
 
-  protected static HashMap<String, Block> blockValue = new HashMap<>();
+  private static final HashMap<String, Block> blockValue = new HashMap<>();
 
   static {
     blockValue.put("", Block.NOBLOCK); // noblock
@@ -334,37 +350,38 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     Matcher m = blockPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    String blockString = "";
-    Block block = Block.IGNOREPOS;
-    int start = startOffset;
+    int start = endOffset;
 
-    if (m.find()) {
+    Pair<String, Block> blockPair = null;
+    while (m.find() && ((blockPair = isBlock(m)) == null)) ;       // find first effective block
+
+    if (blockPair != null) {
       start = m.start();
-      if (m.group(1) != null) {
-        blockString = m.group(1).trim();
-      } else if (m.group(2) != null) {
-        blockString = m.group(2).trim();
-      }
-      block = getBlock(blockString);
-      extractDefinitions(startOffset, start);
     }
-    while (m.find()) {
-      extractDataBlock(start, m.start(), block, blockString);
-      start = m.end();
-      if (m.group(1) != null) {
-        blockString = m.group(1).trim();
-      }
-      if (m.group(2) != null) {
-        blockString = m.group(2).trim();
-      }
-      block = getBlock(blockString);
+    extractDefinitions(startOffset, start);
+    while (blockPair != null) {
+      Pair<String, Block> nextBlock = null;
+      while (m.find() && (nextBlock = isBlock(m)) == null); // find next effective block
+      int end = (nextBlock != null) ? m.start() : endOffset;
+      extractDataBlock(start, end, blockPair.getRight(), blockPair.getLeft());
+      blockPair = nextBlock;
     }
 
-    extractDataBlock(start, endOffset, block, blockString);
     wdh.finalizeLanguageSection();
   }
 
-  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
+  private Pair<String, Block> isBlock(Matcher m) {
+    String blockString ="";
+    if (m.group(1) != null) {
+      blockString = m.group(1).trim();
+    } else if (m.group(2) != null) {
+      blockString = m.group(2).trim();
+    }
+    Block block = getBlock(blockString);
+    return (block == Block.NOBLOCK) ? null : Pair.of(blockString, block);
+  }
+
+  private void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
     switch (currentBlock) {
       case NOBLOCK:
       case IGNOREPOS:
@@ -467,7 +484,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return;
       }
       if (!tmp.equals("")) {
-        dwdh.addNewDefinition(cleanUpMarkup(tmp), "" + senseNum);
+        tmp = defExpander.expandAll(tmp.trim(), null);
+        dwdh.addNewDefinition(tmp, "" + senseNum);
         senseNum++;
       }
     }

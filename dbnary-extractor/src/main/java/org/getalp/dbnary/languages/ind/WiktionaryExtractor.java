@@ -81,7 +81,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   @Override
   public void setWiktionaryIndex(WiktionaryPageSource wi) {
     super.setWiktionaryIndex(wi);
-    defExpander = new ExpandAllWikiModel(wi, Locale.of("id"), "img", "link");
+    IndonesianModulesPatcherWikiModel indonesianWikiModel = new IndonesianModulesPatcherWikiModel(wi, Locale.forLanguageTag("id"), "/images", "/link");
+    defExpander = new ExpandAllWikiModel(indonesianWikiModel, wi, Locale.forLanguageTag("id"), "/images", "/link");
   }
 
   @Override
@@ -216,6 +217,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockValue.put("Lihat pula", Block.IGNOREPOS); // see also
     blockValue.put("Kata terkait", Block.IGNOREPOS); // see also
     blockValue.put("terkait", Block.IGNOREPOS); // see also
+    blockValue.put("bacaan", Block.IGNOREPOS); // see also
 
     blockValue.put("Negara", Block.IGNOREPOS);
     blockValue.put("alt", Block.IGNOREPOS);
@@ -364,6 +366,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       while (m.find() && (nextBlock = isBlock(m)) == null); // find next effective block
       int end = (nextBlock != null) ? m.start() : endOffset;
       extractDataBlock(start, end, blockPair.getRight(), blockPair.getLeft());
+      start = end;
       blockPair = nextBlock;
     }
 

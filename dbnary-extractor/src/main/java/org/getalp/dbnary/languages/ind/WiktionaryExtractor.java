@@ -21,8 +21,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
   protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^}=]+)=*}{2}\\s*={2}|={2}\\s*([^=]+)={2}\n";
-  protected final static String blockPatternString = "\n"
-      + "\\{{2}([^}]+)}{2}|={3}\\s*([^=]+)={3}\n";
+  protected final static String blockPatternString = "\n" + "\\{{2}([^}]+)}{2}|={3}\\s*([^=]+)={3}\n";
   protected final static String tradPatternString = "\\{{2}([^\\\\}]+)}{2}\\s*:\\s*\\[{2}([^]]+)]{2}|\\{{2}(t[^|][^}]+)}{2}";
   protected final static String nymsPatternString = "\\{{2}([^}]+)}{2}";
   protected final static String defPatternString = "#\\s*([^\\n]+)|'{5}Definisi'{5}\\s*:\\s*([^\\n]+)";
@@ -45,6 +44,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private ExpandAllWikiModel defExpander;
+
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
   }
@@ -355,7 +355,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     int start = endOffset;
 
     Pair<String, Block> blockPair = null;
-    while (m.find() && ((blockPair = isBlock(m)) == null)) ;       // find first effective block
+    while (m.find() && ((blockPair = isBlock(m)) == null)); // find first effective block
 
     if (blockPair != null) {
       start = m.start();
@@ -374,7 +374,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private Pair<String, Block> isBlock(Matcher m) {
-    String blockString ="";
+    String blockString = "";
     if (m.group(1) != null) {
       blockString = m.group(1).trim();
     } else if (m.group(2) != null) {

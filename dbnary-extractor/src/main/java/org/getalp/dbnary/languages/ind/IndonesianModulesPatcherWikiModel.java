@@ -24,6 +24,11 @@ public class IndonesianModulesPatcherWikiModel extends DbnaryWikiModel {
         case "table/getunprotectedmetatable":
           // This module uses debug, which is undefined in our Lua Engine
           return getAndPatchModule(parsedPagename, map, t -> t.replace("local _getmetatable = debug.getmetatable", "local _getmetatable = nil"));
+        case "parameters/track":
+          return getAndPatchModule(parsedPagename, map,
+              t -> t.replace("local traceback = debug.traceback", "local traceback = function() \n" + "    return \"\"\n" + "end"));
+        case "quote":
+          return getAndPatchModule(parsedPagename, map, t -> t.replace("\nlocal function ", "\nfunction "), t -> t.replace("\nlocal ", "\n"));
       }
     }
     return super.getRawWikiContent(parsedPagename, map);

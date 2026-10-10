@@ -1,7 +1,14 @@
 package org.getalp.dbnary.languages.ind;
 
+import static org.getalp.dbnary.model.NymRelation.ANTONYM;
+import static org.getalp.dbnary.model.NymRelation.HYPERNYM;
+import static org.getalp.dbnary.model.NymRelation.HYPONYM;
+import static org.getalp.dbnary.model.NymRelation.SYNONYM;
+
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.tuple.Pair;
@@ -9,6 +16,17 @@ import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.model.NymRelation;
+import org.getalp.dbnary.wiki.ClassBasedFilter;
+import org.getalp.dbnary.wiki.WikiEventFilter;
+import org.getalp.dbnary.wiki.WikiEventFilter.Action;
+import org.getalp.dbnary.wiki.WikiEventsSequence;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +114,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   private static final HashMap<String, Block> blockValue = new HashMap<>();
+  private static final HashMap<String, String> nymTemplates = new HashMap<>();
 
   static {
     blockValue.put("", Block.NOBLOCK); // noblock
@@ -152,7 +171,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockValue.put("part", Block.POSBLOCK); // particle
 
     blockValue.put("syn", Block.NYMBLOCK);
+    blockValue.put("sinonim", Block.NYMBLOCK);
     blockValue.put("ant", Block.NYMBLOCK);
+    blockValue.put("antonim", Block.NYMBLOCK);
 
     blockValue.put("terjemahan", Block.TRADBLOCK);
     blockValue.put("kotak mulai", Block.TRADBLOCK); // top
@@ -218,11 +239,19 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockValue.put("Kata terkait", Block.IGNOREPOS); // see also
     blockValue.put("terkait", Block.IGNOREPOS); // see also
     blockValue.put("bacaan", Block.IGNOREPOS); // see also
+    blockValue.put("rujukan", Block.IGNOREPOS); // References
 
     blockValue.put("Negara", Block.IGNOREPOS);
     blockValue.put("alt", Block.IGNOREPOS);
     blockValue.put("Unsur kimia", Block.IGNOREPOS); // chemical elements
     blockValue.put("Angka", Block.IGNOREPOS);
+
+    nymTemplates.put("syn", "syn");
+    nymTemplates.put("sinonim", "syn");
+    nymTemplates.put("antonim", "ant");
+    nymTemplates.put("hipernim", "hyper");
+    nymTemplates.put("hiponim", "hypo");
+    nymTemplates.put("etimologi", null);
   }
 
   private Block getBlock(String blockString) {
@@ -358,7 +387,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     while (m.find() && ((blockPair = isBlock(m)) == null)); // find first effective block
 
     if (blockPair != null) {
-      start = m.start();
+      start = m.end();
     }
     extractDefinitions(startOffset, start);
     while (blockPair != null) {
@@ -472,6 +501,61 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   }
 
   protected void extractDefinitions(int start, int end) {
+    WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
+    WikiText text = new WikiText(pageContent.substring(start, end));
+    WikiEventFilter lis = (new ClassBasedFilter()).allowIndentedItem();
+    int senseNum = 1;
+
+    for (Token tok : text.filteredTokens(lis)) {
+      switch (tok) {
+        case NumberedListItem nli:
+          String source = nli.getContent().getText().trim();
+          if (nli.getListPrefix().endsWith("*")) {
+            String def = defExpander.expandAll(source, null);
+            wdh.registerExample(def, null);
+          } else if (nli.getListPrefix().endsWith("#")) {
+            String def = defExpander.expandAll(source, null);
+            dwdh.addNewDefinition(def, "" + senseNum);
+            senseNum++;
+          } else if (nli.getListPrefix().endsWith(":")) {
+            Optional<Template> nymt = nli.getContent().wikiTokensStream()
+                .filter(t -> t instanceof Template).map(Token::asTemplate)
+                .filter(t -> nymTemplates.containsKey(t.getName()))
+                .findFirst();
+            if (nymt.isPresent()) {
+              // we are dealing with a nym line, decode it
+              for (Token t : nli.getContent().templates()) {
+                Template tmpl = t.asTemplate();
+                String nym = nymTemplates.get(tmpl.getName());
+                if (null != nym) {
+                  for (Map.Entry<String, String> e : tmpl.getParsedArgs().entrySet()) {
+                    try {
+                      int n = Integer.parseInt(e.getKey());
+                      if (n > 1) {
+                        dwdh.registerNymRelationOnCurrentSense(e.getValue(), nym);
+                      }
+                    } catch (NumberFormatException ex) {
+                      // Silently ignored
+                    }
+                  }
+                }
+              }
+            } else {
+              String def = defExpander.expandAll(source, null);
+              wdh.registerExample(def, null);
+            }
+          } else {
+            log.trace("Ignoring strange definition --> {} || {}", tok, wiktionaryPageName);
+          }
+          break;
+        default:
+          log.trace("Ignoring unknown definition --> {} || {}", tok, wiktionaryPageName);
+          break;
+      }
+    }
+  }
+
+  protected void extractDefinitionsOld(int start, int end) {
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
     Matcher m = defPattern.matcher(pageContent);
     m.region(start, end);

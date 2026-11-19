@@ -35,7 +35,10 @@ import org.getalp.iso639.ISO639_3;
 
 /**
  * Created by serasset on 12/04/17.
+ *
+ * @deprecated Enhancement is now run in-process by the extractor (ENHANCEMENT feature).
  */
+@Deprecated
 public class DBnaryEnhancer {
 
   protected static final String RDF_FORMAT_OPTION = "f";

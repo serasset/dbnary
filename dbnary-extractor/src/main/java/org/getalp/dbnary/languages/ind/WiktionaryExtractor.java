@@ -518,10 +518,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             dwdh.addNewDefinition(def, "" + senseNum);
             senseNum++;
           } else if (nli.getListPrefix().endsWith(":")) {
-            Optional<Template> nymt = nli.getContent().wikiTokensStream()
-                .filter(t -> t instanceof Template).map(Token::asTemplate)
-                .filter(t -> nymTemplates.containsKey(t.getName()))
-                .findFirst();
+            Optional<Template> nymt = nli.getContent().wikiTokensStream().filter(t -> t instanceof Template).map(Token::asTemplate)
+                .filter(t -> nymTemplates.containsKey(t.getName())).findFirst();
             if (nymt.isPresent()) {
               // we are dealing with a nym line, decode it
               for (Token t : nli.getContent().templates()) {

@@ -48,7 +48,8 @@ public class WiktionaryExtractorTest {
     assertEquals(2, m.listStatements(null, DBnaryOnt.synonym, (org.apache.jena.rdf.model.RDFNode) null).toList().size());
   }
 
-  // Translation lines taken from bg.wiktionary entries забележка, плавник, чума, храня and алчен
+  // Translation lines taken from bg.wiktionary entries забележка, плавник, чума, храня, алчен,
+  // торизация, амоняк, бозайник, вкъщи, Щутгарт and лук
   private static final String TRANSLATIONS_PAGE = """
       {{-bg-}}
       {{Съществително нарицателно име|
@@ -62,6 +63,14 @@ public class WiktionaryExtractorTest {
       * немски: die {{п|de|Flosse}}
       * руски: {{п|ru| жа́дный, а́лчный}}
       * френски: {{п|fr|nourrir}}, {{п|fr|alimenter}}
+      * английски: {{п|en|authorization}} (алтерн. {{п|en|authorisation}})
+      * немски: das{{п|de|Ammoniak}}
+      * словенски: {{п|sl|sesalec}} м. {{п|sl|sesalec}}
+      * английски: at&nbsp;{{п|en|home}}
+      * испански: {{п|es|Estútgart}} или {{п|es|Estucardia}}
+      * китайски: {{п|zh|洋蔥}} / {{п|zh|洋葱}} (yángcōng)
+      * испански: {{п|es|lleno}} {{п|es|relleno}}
+      * японски: {{п|ja|テーブル}} /tēburu/
       }}
       """;
 
@@ -80,8 +89,13 @@ public class WiktionaryExtractorTest {
     we.extractData("тест", TRANSLATIONS_PAGE);
     Model m = wdh.getEndolexFeatureBox(org.getalp.dbnary.ExtractionFeature.MAIN);
 
-    assertEquals(Set.of("plague", "pestilence", "black death", "foot-note / под черта"), translations(m, "eng"));
-    assertEquals(Set.of("Flosse / prefix=die"), translations(m, "deu"));
+    assertEquals(Set.of("plague", "pestilence", "black death", "foot-note / под черта", "authorization", "authorisation / алтерн.", "home / prefix=at"),
+        translations(m, "eng"));
+    assertEquals(Set.of("Flosse / prefix=die", "Ammoniak / prefix=das"), translations(m, "deu"));
+    assertEquals(Set.of("sesalec / м.", "sesalec"), translations(m, "slv"));
+    assertEquals(Set.of("Estútgart", "Estucardia", "lleno", "relleno"), translations(m, "spa"));
+    assertEquals(Set.of("洋蔥", "洋葱 / (yángcōng)"), translations(m, "zho"));
+    assertEquals(Set.of("テーブル / /tēburu/"), translations(m, "jpn"));
     assertEquals(Set.of("жа́дный", "а́лчный"), translations(m, "rus"));
     assertEquals(Set.of("nourrir", "alimenter"), translations(m, "fra"));
     assertEquals(Set.of(), translations(m, "bel"));

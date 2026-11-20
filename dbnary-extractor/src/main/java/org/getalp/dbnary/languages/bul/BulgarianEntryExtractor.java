@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import org.apache.commons.text.StringEscapeUtils;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
 import org.getalp.dbnary.api.WiktionaryPageSource;
 import org.getalp.dbnary.wiki.ClassBasedFilter;
@@ -91,6 +92,8 @@ public class BulgarianEntryExtractor {
       } else if (section.contains("ПРЕВОД")) {
         String sectionContent = value.getText().replaceAll("\\[\\[:[^:]*:[^\\|]*\\|\\s*\\(?[^\\)\\]]*\\)?\\s*\\]\\]", "");
         sectionContent = sectionContent.replaceAll("\\[\\[\\s*\\]\\]", "");
+        // decode html entities (at&nbsp;{{п|en|home}}), the parser does not consider nbsp as a space
+        sectionContent = StringEscapeUtils.unescapeHtml4(sectionContent).replace('\u00A0', ' ');
         // TODO: use a shared instance of the translation parser.
         TranslationsParser tp = new TranslationsParser();
         tp.extractTranslations(sectionContent, delegate);

@@ -50,10 +50,14 @@ class TranslationsParser extends RegexParsers with PackratParsers {
     }
   }
 
-  def translationTemplate: Parser[Translation] = matching(TranslationTemplate) ^^ {
-    case TranslationTemplate(lg, wf, null) => Translation(lg, wf, "", "")
-    case TranslationTemplate(lg, anchor, wf) => Translation(lg, wf, "", "")
+  // A translation template may contain several comma separated forms: {{п|en|plague, pestilence}}
+  def translationTemplate: Parser[List[Translation]] = matching(TranslationTemplate) ^^ {
+    case TranslationTemplate(lg, wf, null) => templateForms(lg, wf)
+    case TranslationTemplate(lg, anchor, wf) => templateForms(lg, wf)
   }
+
+  private def templateForms(lg: String, wf: String): List[Translation] =
+    Option(wf).toList.flatMap(_.split("[,;]")).map(_.trim).filter(_.nonEmpty).map(Translation(lg, _, "", ""))
 
   def links: Parser[String] = link.+ ^^ {
     case list => list filter {
@@ -84,31 +88,33 @@ class TranslationsParser extends RegexParsers with PackratParsers {
     } mkString ("")
   }
 
-  lazy val simpleTranslationValue: PackratParser[Translation] = links ~ opt(usageValue) ^^ {
-    case "" ~ u => null
-    case l ~ Some(u) => Translation("", l, u, "")
-    case l ~ None => Translation("", l, "", "")
-  } | translationTemplate ~ opt(usageValue) ^^ {
-    case t ~ None => t
-    case t ~ Some(s) => {
-      t.usage = s
-      t
-    }
+  def usagePrefix: Parser[String] = parens <~ opt("""[-–]""".r) ^^ { p => p.substring(1, p.length - 1).trim }
+
+  /*
+  * немски: die {{п|de|Flosse}}  ==> Flosse, with usage prefix=die
+  * английски: (под черта) - {{п|en|foot-note}}  ==> foot-note, with usage под черта
+   */
+  lazy val simpleTranslationValue: PackratParser[List[Translation]] = links ~ opt(usageValue) ^^ {
+    case "" ~ u => Nil
+    case l ~ Some(u) => List(Translation("", l, u, ""))
+    case l ~ None => List(Translation("", l, "", ""))
+  } | opt(usagePrefix) ~ simpleStrings ~ translationTemplate ~ opt(usageValue) ^^ {
+    case before ~ prefix ~ trans ~ after =>
+      val usage = (before.toList ++ Option(prefix).filter(_.nonEmpty).map("prefix=" + _) ++ after.map(_.trim))
+        .filter(_.nonEmpty).mkString("|")
+      trans.foreach(_.usage = usage)
+      trans
   } | simpleStrings ~ opt(usageValue) ^^ {
-    case "" ~ u => null
-    case l ~ Some(u) => Translation("", l, u, "")
-    case l ~ None => Translation("", l, "", "")
+    case "" ~ u => Nil
+    case l ~ Some(u) => List(Translation("", l, u, ""))
+    case l ~ None => List(Translation("", l, "", ""))
   }
 
   /*
   * испански: [[ciudad]]
    */
   lazy val simpleTranslationValues: PackratParser[List[Translation]] = simpleTranslationValue ~ rep( """,|;""".r ~> simpleTranslationValue) ^^ {
-    case trans ~ moreTrans => {
-      trans :: moreTrans filter {
-        _ != null
-      }
-    }
+    case trans ~ moreTrans => trans ::: moreTrans.flatten
   }
 
   /*

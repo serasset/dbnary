@@ -1,0 +1,105 @@
+{{bakınız|yakin|яҡын}}
+==Türkçe==
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||ya|kın}}
+
+===Köken 1===
+{{k|dil=tr|otk}} {{z|otk|yak}}, {{z|otk|yağu}}.
+
+===Ön ad===
+{{tr-ön ad}}
+[[File:Gün batımına yakın poz vermek isteyen güzel canlılar.jpg|küçükresim|Birbirlerine çok '''yakın''' duran iki hayvan. (1)]]
+[[File:20th century catalogue of supplies for watchmakers, jewelers and kindred trades (1899) (14783826582).jpg|küçükresim|Birbirine çok '''yakın''' görünen aletler. (2). Aletlerin tamamı da [[cımbız|cımbıza]] çok '''yakınlar.''' (4)]]
+[[File:Gaspıralı İsmail Bey ailesi ve yakın dostları ile.jpg|küçükresim|{{mana|ön ad}} Adam, ailesi '''yakın''' arkadaşları ile birlikte. (3){{mana|ad}} Bu fotoğrafı da '''yakınlarıyla''' beraber çektirmiş. (2)]]
+# {{t|dil=tr|zaman|yer}}  Az bir ara ile ayrılmış olan.
+#* {{zıt anlamlılar|tr|uzak}}
+# Küçük, önemsiz değişikliklerle birbirinden ayrılan.
+#*      "İklim ile toprağın bereketi ve insanın faaliyeti arasında yakın bir münasebet vardır." - Cemil Meriç
+# Aralarında sıkı ilgi bulunan.
+#*      Her birinin muhakkak bir yakın arkadaşı vardır.
+# Benzeyen, andıran, yaklaşan.
+#*      "Beş dönüme yakın bahçesi bir ormanı andırırdı." - Ömer Seyfettin  
+# {{t|dil=tr|zaman}} Erişmesi, olması zaman bakımından yaklaşmış olan.
+#*      "Elli yaşında adam, ellisine yakın kadın..." - Sait Faik Abasıyanık
+
+===Ad===
+{{tr-ad}}
+
+#  Uzak olmayan yer. 
+#* {{örnek|dil=tr|'''Yakınımızda''' otururlar.}} 
+#Aralarında sıkı ilişki olan arkadaş, dost veya akraba.
+#* {{örnek|dil=tr|En '''yakınlarından''' başlayarak herkese hayatı cehennem ettiği de doğrudur.|Murathan Mungan|M. Mungan}}
+
+====Çekimleme====
+{{tr-ad-tablo}} 
+
+===Belirteç===
+{{tr-belirteç}}
+
+# Uzak olmadan.
+#* {{örnek|dil=tr|Gelin, bana '''yakın''' oturun lütfen.}}
+
+===Köken 2===
+
+===Eylem===
+{{başlık başı|tr|çekimli eylem}}
+
+# {{fiil|yak|ın}} 
+
+====Çekimleme====
+{{tr-eylem-tablo}}
+
+====Atasözleri==== 
+* [[ağızdan burun yakın, kardeşten karın]], 
+* [[akçanın iyisi kesede duran, bahçanın iyisi eve yakın olan]], 
+* [[göte yakın yerden et yememeli]], 
+* [[karıkoca bir sözle yakın, bir sözle uzaktır]], 
+* [[sıçılacak ağız göte yakın gelir]], 
+* [[tarlanın iyisi suya yakın, daha iyisi eve yakın]], 
+* [[yakın dost hayırsız hısımdan yeğdir]]
+
+====Türetilmiş kavramlar====
+[[yakın akraba]], [[yakın anlamlı]], [[yakın benzeşme]], [[yakın benzeşmezlik]], [[Yakın Çağ]], [[Yakın Doğu]], [[yakın dost]], [[yakın koruma]], [[yakın sesli]], [[Yakın Şark]], [[yakın takip]], [[akla yakın]], [[cana yakın]], [[fırtınaya yakın rüzgâr]]
+
+====Çeviriler====
+{{Üst|ad|tip=çeviriler}}
+* Almanca: {{ç|de|Anverwandter|m}}, {{ç|de|Anverwandte|f}}; {{ç|de|Nahestehender|m}}, {{ç|de|Nahestehende|f}}
+* Fince: {{ç|fi|lähistö}}, {{ç|fi|läheinen}}
+* İngilizce: {{ç|en|close person}}; {{ç|en|relative}}
+* İsveççe: {{ç|sv|närstående|c}}
+{{Alt}}
+{{üst|uzak olmadan|tip=çeviriler}}
+* Almanca: {{ç|de|nahe}}
+* Fince: {{ç|fi|läheisesti}}
+* İngilizce: {{ç|en|closeby}}, {{ç|en|nearby}}
+* İtalyanca: {{ç|it|qui vicino}}
+* Özbekçe: {{ç|uz|qariyb}}, {{ç|uz|yaqin}}
+{{Alt}}
+{{Üst|yakın|tip=çeviriler}}
+* Abazaca: {{ç|abq|aргваны}}
+* Almanca: {{ç|de|nahe}}
+* Arapça: {{ç|ar|قَرِيب}}
+* Azerice: {{ç|az|yaxın}}
+* Fince: {{ç|fi|läheinen}}
+* Fransızca: {{ç|fr|prochain}}
+* Gagavuzca: {{ç|gag|yakın}}
+* İngilizce: {{ç|en|akin}}, {{ç|en|closer}}, {{ç|en|near}}, {{ç|en|proximate}}
+* İspanyolca: {{ç|es|cerca}}
+* İsveççe: {{ç|sv|närstående}}
+* İtalyanca: {{ç|it|vicino}}
+* Karaçay-Balkarca: {{ç|krc|cuvuk}}
+* Macarca: {{ç|hu|rokon}}
+* Özbekçe: {{ç|uz|yaqin}}
+* Rusça: {{ç|ru|близкий}}, {{ç|ru|ближний}}
+* Tatarca: {{ç|tt|menä genä}}, {{ç|tt|yaqın}}
+* Türkçe:
+* : Eski Türkçe: {{ç|otk|tutaşı}}, {{ç|otk|tutşı}}, {{ç|otk|yaguk}}
+* Türkmence: {{ç|tk|ýakyyn}}, {{ç|tk|golaý}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}

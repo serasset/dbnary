@@ -1,0 +1,223 @@
+{{Haftanın kelimesi|32|2007}}
+==Türkçe== 
+
+===Söyleniş===
+* {{IPA|dil=tr|/ca.ˈdɯn/}}
+* {{ses|dil=tr|Tr_tr_kadın.ogg}}
+* {{h|dil=tr||ka|dın}}
+
+===Ad===
+{{tr-ad}}
+[[Dosya:Woman surface diagram ahead-behind.svg|küçükresim|Bir kadın çizimi (1)]]
+[[File:Body female realistic by Dan Ulrich (CC0).stl|thumb|Bir kadının 3 boyutlu modeli]]
+# {{t|dil=tr|kadın}} erişkin dişi insan.
+#* {{eş anlamlılar|tr|hatun|hatun kişi|bayan|karı|nisa|zen   }} 
+#* {{mt|dil=tr|yıl=1935|yazar=Sait Faik Abasıyanık |başlık=Meserret Oteli|sayı=45|dergi=Varlık |tanıklık=Otelci ikinci defa çıktıktan sonra '''kadın''', yol arkadaşlarına İsviçre' de tanıdığı bu ressam kızın macerasını anlatmak istedi.}} 
+#  {{t|dil=tr|evlilik}} Bu cinsten olup evlenmiş veya bir erkekle beraber olmuş kimse.
+#* {{zıt anlamlılar|tr|bakire }}
+#* {{eş anlamlılar|tr|avrat }}
+#* {{kt|dil=tr|başlık=Yaralısın|yazar=Erdal Öz|yayıncı=Can Sanat Yayınları|yıl=1983|baskı=10|
+sayfa=193    
+|tanıklık= Birgün de nasıl olmuşsa ol­muş, kızı '''kadın''' yapıvermiş Nuri.    
+}}
+# {{t|dil=tr|mecaz}} Ev işlerinde çalışan bayan.
+#* {{kt|dil=tr|başlık=Huzur|yazar=Ahmet Hamdi TANPINAR|yayıncı=Dergâh Yayınları|yıl=2022|baskı=39|sayfa=98|tanıklık=Sümbül Hanım, Mümtaz'ın Emirgân'daki işlerini gören '''kadındı'''.}}
+#“Hanım, bayan” anlamında kullanılan seslenme sözü.
+#* {{kt|başlık=Acı Lokma|yazar=Fahri ERDİNÇ|yayıncı=Yordam Kitap |yıl=2006|sayfa=61|tanıklık=«Ah, sizin ananız;» der, «hiç de ölecek kadın değildi '''kadın''' Şükriye'm.|dil=tr}}
+
+===Çekimleme===
+{{tr-ad-tablo}}
+
+===Ön ad===
+{{tr-ön ad}}
+# Analık veya ev yönetimi bakımından gereken erdemleri, becerileri olan.
+
+===Ad===
+{{başlık başı|tr|çekimli ad}}
+# {{tr-çekim|kadı|söz=ad}}
+
+===Atasözleri===
+* [[erkeğin şeytanı kadın]]
+* [[erkek sel, kadın göl]]
+* [[gece yağar gündüz açar, yıl düzgünlüğü; erkek söyler kadın susar, ev düzgünlüğü]]
+* [[halayıktan kadın olmaz, gül ağacından odun olmaz]]
+* [[ıhlamurdan odun olmaz, beslemeden kadın olmaz]]
+* [[kadın kocasını isterse vezir, isterse rezil eder]]
+* [[kadının fendi, erkeği yendi]]
+* [[kadının yüzünün karası erkeğin elinin kınası]]
+
+===Deyimler===
+[[kadın olmak]] 
+
+===Türetilmiş kavramlar===
+[[kadınana]], [[kadın avcısı]], [[kadın başına]], [[kadın berberi]], [[kadınbudu]], [[kadındüğmesi]], [[kadınefendi]], [[kadınevi]], [[kadıngöbeği]], [[kadın hareketi]], [[kadın hastalıkları]], [[kadın kadına]], [[kadın kadıncık]], [[kadın milleti]], [[kadınnine]], [[kadın otu]], [[kadın terzisi]], [[kadın ticareti]], [[kadıntuzluğu]], [[kadınlar hamamı]], [[kadınlar mahfili]], [[kadınlar matinesi]], [[ana kadın]], [[ayşekadın]], [[balkadın]], [[başkadın]], [[bohçacı kadın]], [[kötü kadın]], [[malkadın]], [[temizlikçi kadın]], [[yazıcı kadın]], [[bilim kadını]], [[ev kadını]], [[hayat kadını]], [[iş kadını]], [[Osmanlı kadını]], [[salon kadını]], [[sokak kadını]]
+
+===İlgili  kavramlar===
+[[abla]], 
+[[anneanne]], 
+[[avrat]], 
+[[babaanne]], 
+[[bacı]], 
+[[başkadın]], 
+[[bayan]], 
+[[büyükanne]], 
+[[cadı]], 
+[[cariye]], 
+[[eksik etek]],
+[[elti]], 
+[[gacı]], 
+[[gelin]], 
+[[hala]], 
+[[hanım]], 
+[[hanımefendi]], 
+[[kadınana]], 
+[[kadınefendi]], 
+[[kız]], 
+[[kocakarı]], 
+[[kraliçe]], 
+[[kuzin]], 
+[[muallime]], 
+[[müdüre]], 
+[[nine]], 
+[[odalık]], 
+[[prenses]], 
+[[saçıbuçuk]],
+[[teyze]], 
+[[yenge]] 
+[[jinekolog]], 
+[[jinekoloji]]
+
+===Çeviriler===
+{{Üst|tip=çeviriler}}
+*Afrikaanca: {{ç|af|vrou}}
+*Almanca: {{ç|de|Frau|f}}, {{ç|de|Weib|n}}
+*Altayca: {{ç|alt|келин}}
+*Amharca: {{ç|am|ሴት}}
+*Aragonca: {{ç|an|muller}}
+*Arapça: {{ç|ar|اِمْرَأَة|f}}
+*Arnavutça: {{ç|sq|grua}}
+*Asturyasça: {{ç|ast|muyer}}
+*Aymaraca: {{ç|ay|warmi}}
+*Azerice: {{ç|az|qadın}}
+*Baskça: {{ç|eu|emakume}}
+*Bengalce: {{ç|bn|মিহলা}}
+*Bretonca: {{ç|br|maouez}}, {{ç|br|plac'h}}
+*Bulgarca: {{ç|bg|жена|f}}, {{ç|bg|госпожа|f}} {{şerh|kibarca ve resmî olarak}}*Başkurtça: {{ç|ba|}}
+*Calo dili: {{ç|rmq|gachí}}
+*Çağatayca: {{ç|chg|imkan}}
+*Çeçence: {{ç|ce|zuda}}
+*Çekçe: {{ç|cs|žena}}
+*Çince: {{ç|zh|女人}}
+*Danca: {{ç|da|kvinde}}
+*Endonezce: {{ç|id|perempuan}}, {{ç|id|wanita}}
+*Ersya dili: {{ç|myv|ава}}
+*Esperanto: {{ç|eo|virino}}
+*Estonca: {{ç|et|naine}}
+*Evenki dili: {{ç|evn|аси}}
+*Faroe dili: {{ç|fo|kvinna}}
+*Farsça: {{ç|fa|زن}}, {{ç|fa|زنانگی}}, {{ç|fa|مونث}}
+*Felemenkçe: {{ç|nl|vrouw}}
+*Fiji dili: {{ç|fj|marama}}
+*Fince: {{ç|fi|nainen}}
+*Fransızca: {{ç|fr|femme}}
+*Frizce: {{ç|fy|frou}}
+*Gagavuzca: {{ç|gag|}}
+*Galce: {{ç|cy|benyw}}, {{ç|cy|dynes}} {{ç|cy|gwraig}}, {{ç|cy|menyw}}
+*Galiçyaca: {{ç|gl|muller}}
+*Guarani dili: {{ç|gn|kuña}}
+*Gucaratça: {{ç|gu|સ્ત્રી}}, {{ç|gu|ઓરત}}
+*Gürcüce: {{ç|ka|}}
+*Hausaca: {{ç|ha|mace}}
+*Hawaii dili: {{ç|haw|wahine}}
+*Hintçe: {{ç|hi|स्त्री}}, {{ç|hi|औरत}}, {{ç|hi|महिला}}
+*İbranice: {{ç|he|אישה}}
+*İngilizce: {{ç|en|woman}}
+*İrlandaca: {{ç|ga|bean}}
+*İspanyolca: {{ç|es|mujer}}
+*İsveççe: {{ç|sv|dam|c}}, {{ç|sv|kvinna|c}}
+*İsviçre Almancası: {{ç|de|Frau|f}}
+*İtalyanca: {{ç|it|donna}}
+*İzlandaca: {{ç|is|kona}}
+*Japonca: {{ç|ja|女の人}}, {{ç|ja|女|tr=おんな, onna}}, {{ç|ja|女性|tr=じょせい}}
+*Karaçay Balkarca: {{ç|krc|}}
+*Katalanca: {{ç|ca|dona}}
+*Kazakça: {{ç|kk|}}
+*Keçuva dili: {{ç|qu|warmi}}
+*Kırgızca: {{ç|ky|}}
+*Kırım Tatarcası: {{ç|crh|bike}}, {{ç|crh|qadın}}, {{ç|crh|qısqaayaq}}
+*Korece: {{ç|ko|여자}}, {{ç|ko|여성}}
+*Korsikaca: {{ç|co|donna}}
+*Kürtçe: {{ç|ku|afret}}, {{ç|ku|kulfet}}, {{ç|ku|jin}}, {{ç|ku|pîrek}}
+*Ladince: {{ç|lld|ëra}}
+*Latince: {{ç|la|femina}}, {{ç|la|mulier}}
+*Lehçe: {{ç|pl|kobieta}}
+*Letonca: {{ç|lv|sieviete}}
+*Lingala: {{ç|ln|mwasi}}
+*Limburgca: {{ç|li|vrów}}
+*Litvanca: {{ç|lt|moteris}}
+*Maasai dili: {{ç|mas|enkitok}}
+*Macarca: {{ç|hu|nő}}
+*Makedonca: {{ç|mk|жена}}
+*Malayca: {{ç|ms|perempuan}}
+*Malgaşça: {{ç|mg|vady}}, {{ç|mg|vavy}}, {{ç|mg|vehivavy}}
+*Marathi dili: {{ç|mr|स्त्री}}
+*Manksça: {{ç|gv|ben}}
+*Maorice: {{ç|mi|kui}}, {{ç|mi|uha}}
+*Moğolca: {{ç|mn|эм}}, {{ç|mn|эхнэр}}
+*Norveççe: {{ç|no|dame|f}}, {{ç|no|kvinne|f}}
+*Oksitanca: {{ç|oc|frema}}
+*Osmanlı Türkçesi: {{ç|ota|}}
+*Özbekçe: {{ç|uz|ayol}}*Portekizce: {{ç|pt|}}
+*Pencapça: {{ç|pa|ਅਬਲਾ|f}}
+*Portekizce: {{ç|pt|mulher|f}}
+*Rapanui dili: {{ç|rap|vi'e}}
+*Romanşça: {{ç|rm|dunna}}
+*Rumence: {{ç|ro|femeie}}
+*Rusça: {{ç|ru|женщина}}
+*Ruanda dili: {{ç|rw|umugore}}
+*Samoaca: {{ç|sm|fafine}}
+*Sanskritçe: {{ç|sa|स्त्री|f}}
+*Sırp-Hırvatça: {{ç|sh|жена}}, {{ç|sh|žena}}
+*Sicilyaca: {{ç|scn|fimmina}}
+*Slovakça: {{ç|sk|}} 
+*Slovence: {{ç|sl|}}
+*Somalice: {{ç|so|haweeney}}, {{ç|so|naag}}
+*Svahili dili: {{ç|sw|mwanamke}}
+*Şona dili: {{ç|sn|vakadzi}}
+*Tabasaran dili: {{ç|tab|}}
+*Tacikçe: {{ç|tg|}}
+*Tagalogca: {{ç|tl|babae}}
+*Tatarca: {{ç|tt|хатын}}
+*Tayca: {{ç|th|ผู้หญิง}}
+*Türkmence: {{ç|tk|aýaal}}, {{ç|tk|gelin gyyz}}, {{ç|tk|heleý}}, {{ç|tk|zenaan}}, {{ç|tk|хелей}}
+*Ukraynaca: {{ç|uk|жінка}}
+*Urduca: {{ç|ur|عورت|f|tr=aurat}}
+*Uygurca: {{ç|ug|ayal}}, {{ç|ug|h̡otun}}
+*Venedikçe: {{ç|vec|femena}}, {{ç|vec|dona}}
+*Yahudi Almancası: {{ç|yi|froy}}
+*Yakutça: {{ç|sah|дьахтар}}*Yunanca: {{ç|el|γυναίκα|f}}
+*Zuluca: {{ç|zu|uhlobo lomuthi}}
+{{Alt}}
+
+===Çeviriler===
+{{Üst|analık|tip=çeviriler}}
+* Almanca: {{ç|de|weiblich}}
+* Bulgarca: {{ç|bg|женско}}
+* Estonca: {{ç|et|naissoost}}
+* Felemenkçe: {{ç|nl|vrouwelijk}}
+* Fince: {{ç|fi|naispuolinen}}
+* Fransızca: {{ç|fr|féminin}}
+* İbranice: {{ç|he|אישה|tr=isha}}
+* İngilizce: {{ç|en|female}}
+* İsveççe: {{ç|sv|kvinnlig}}
+* Macarca: {{ç|hu|nőstény}}
+* Norveççe: {{ç|no|kvinnelig}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}

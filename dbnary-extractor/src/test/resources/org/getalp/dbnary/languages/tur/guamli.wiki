@@ -1,0 +1,54 @@
+==Türkçe==
+
+===Köken===
+{{ek|dil=tr|Guam|lı}}
+
+===Söyleniş===
+* {{IPA|dil=tr|/ˈɡu.am.ˈlɯ/}}
+* {{h|dil=tr||Gu|am|lı}}
+
+===Ön ad===
+{{tr-ön ad}}
+ 
+# [[Guam]]la [[alakalı]].
+# [[köken|Kökeni]] [[Guam]] [[olan]].
+
+====Zıt anlamlılar====
+* {{mânâ|Guamla alakalı}} [[Guamsız]]
+
+====Çeviriler====
+{{Üst|Guamlı|tip=çeviriler}}
+* İngilizce: {{ç|en|Guamanian}}
+{{Alt}}
+
+===Özel ad===
+{{tr-özel ad|a=1}}{{özel çoğul|tr}}{{sahiplik|sı|1}}
+ 
+# [[köken|Kökeni]] [[Guam]] [[olan]] [[kimse]].
+
+====Çekimleme====
+{{tr-ad-tablo|a=1}}
+
+====Üst kavramlar====
+* [[Mikronezyalı]]
+
+====Türetilmiş kavramlar====
+{{sütun|4|
+* [[Guamlı'ca]], 
+* [[Guamlı'yken]], 
+* [[Guamlı'yla]], 
+* [[Guamlı'ysa]], 
+* [[Guamlıcı]], 
+* [[Guamlıcık]], 
+* [[Guamlılı]], 
+* [[Guamlılık]], 
+* [[Guamlısız]]
+}}
+
+====Çeviriler====
+{{Üst|Guamlı|tip=çeviriler}}
+* İngilizce: {{ç|en|Guamanian}}
+{{Alt}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}

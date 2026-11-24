@@ -1,0 +1,84 @@
+==Türkçe==
+
+===Farklı yazılışlar===
+* {{alter|tr|fasulya|fasülye}} {{belirtici|yaygın yazım yanlışı}}
+
+===Köken===
+{{devralınan|tr|ota|فاصولیه|ç=fasulye, fasulya}}, {{kökenli|tr|el|φασόλι}}, {{köken|dil=tr|gkm}} {{b|grc|φασόλιν}} sözcüğünden, {{köken|dil=tr|grc-koi}} {{b|grc|φασίολος}} sözcüğünden, {{kökenli|tr|la|phaseolus}}, {{kökenli|tr|grc|φάσηλος}}.
+
+===Söyleniş===
+* {{tr-IPA|fa'sulye|fasülye|q2=konuşma dili}}
+* {{h|dil=tr||fa|sul|ye}}
+
+===Ad===
+{{tr-ad}}
+[[File:Phaseolus vulgaris 01.jpg|küçükresim|Fasulye (1)]]
+[[File:Pinto Beans Seeds.jpg|küçükresim|Fasulye (2)]]
+
+# {{t|dil=tr|baklagiller}} Fasulyegillerden; [[barbunya]], [[çalı]], [[ayşekadın]], [[horoz]], [[dermason]] vb. türleri bulunan bitki. {{belirtici|[[Phaseolus vulgaris]]}}
+# {{t|dil=tr|yiyecekler}} Bu bitkinin sebze olarak yararlanılan yeşil ürünü ve kuru tohumları.
+# {{t|dil=tr|argo}} Hap biçimli uyuşturucu maddelerin hepsi.
+#* {{tanıklık|dil=tr|yazar=Mehmet KARTAL|makale=Bir Köpek ve Bİr İnsan|dergi=Öküz|sayı=39|yıl=1997|sayfa=45|tanıklık=
+Astronot adayımız da yarım kutu '''fasulye''' yutup Ay Dede diye lunaparkların dönme dolabında turalıyor olacaktı garibim.}}
+#* {{tanıklık|dil=tr|yazar=Mehmet KARTAL|başlık=Gece.. Şafak.. ve Gölgeler|dergi=Öküz|sayı=45|yıl=1998|sayfa=34|tanıklık=Ve.. yine gece başlamak üze­redir. Optalidon cinsi pembe renkli '''fasulyeler'''.. }}
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+====Eş anlamlılar====
+* {{anlam|bitki|yiyecek}} [[lobya]] {{belirtici|halk ağzı}}
+
+====Türetilmiş kavramlar====
+* [[boncuk fasulye]]
+* [[çalı fasulyesi]]
+* [[fasulye gibi kendini nimetten saymak]]
+* [[fasulye pilakisi]]
+* [[fasulye piyazı]]
+* [[fasulye sırığı gibi]]
+* [[horoz fasulyesi]]
+* [[kuru fasulye]]
+* [[sırık fasulyesi]]
+* [[soya fasulyesi]]
+* [[şeker fasulyesi]]
+* [[taze fasulye]]
+* [[yeşil fasulye]]
+
+====Çeviriler====
+{{üst|tip=çeviriler|fasulye}}
+* Almanca: {{ç|de|Bohne|d}}, {{ç|de|Fisole|d}} {{belirtici|Avusturya}}, {{ç|de|Gartenbohne|d}}
+* Arapça: {{ç|ar|فَاصُولِيَاء|d}}
+* Azerice: {{ç|az|lobya}}
+* Ermenice: {{ç|hy|լոբի}}
+* Esperanto dili: {{ç|eo|fabo}}
+* Estonca: {{ç|et|uba}}
+* Fince: {{ç|fi|papu}}, {{ç|fi|tarhapapu}}
+* Fransızca: {{ç|fr|haricot|e}}
+* Gürcüce: {{ç|ka|ლობიო}}
+* Hintçe: {{ç|hi|सेम|d}}
+* İbranice: {{ç|he|שְׁעוּעִית|d|ç=sh'u'ít}}
+* İngilizce: {{ç|en|bean}}, {{ç|en|common bean}}
+* İspanyolca: {{ç|es|haba|d}}
+* İsveççe: {{ç|sv|böna|g}}
+* İtalyanca: {{ç|it|fagiolo|e}}
+* İzlandaca: {{ç|is|fagiolo|d}}
+* Kırım Tatarcası: {{ç|crh|baqla}}, {{ç|crh|paqla}}
+* Kürtçe:
+*: Kuzey Kürtçe: {{ç|kmr|fasûlî|e}}
+* Lehçe: {{ç|pl|fasola|d}}
+* Letonca: {{ç|lt|pupa|d}}
+* Macarca: {{ç|hu|bab}}
+* Portekizce: {{ç|pt|feijão|e}}
+* Rusça: {{ç|ru|фасо́ль|d}}
+* Ukraynaca: {{ç|uk|квасо́ля|d}}
+* Uygurca: {{ç|ug|پۇرچاق}}
+* Yunanca: {{ç|el|φασόλι|n}} {{belirtici|ürün}}, {{ç|el|φασολιά|d}} {{belirtici|bitki}}
+{{alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}
+* {{proje bağlantısı|vikitür|Phaseolus vulgaris}}

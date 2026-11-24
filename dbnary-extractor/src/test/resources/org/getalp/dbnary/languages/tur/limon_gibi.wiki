@@ -1,0 +1,6 @@
+==Türkçe==
+===Deyim===
+{{tr-deyim|baş=[[limon]] [[gibi]]}}
+#{{t|dil=tr|renkler}} [[sapsarı]]
+===Kaynakça===
+* {{KYK:TDK}}

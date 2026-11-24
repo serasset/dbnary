@@ -1,0 +1,71 @@
+==Türkçe==
+
+===Ön ad===
+{{tr-ön ad}}
+
+[[File:Kashgari map.jpg|küçükresim|{{mana|ön ad}} Bu tek harita Türklerin bir zamanlar yaşadığı coğrafyayı gösteriyor. (1)]]
+
+[[File:Ilgaz Mountain National Park, Çankırı-Kastamonu, Turkey - Murat Özsoy 2.jpg|küçükresim|{{mana|ön ad}} Tek dikilmiş bir flama (4)]]
+#Eşi, benzeri olmayan; [[vahit]], [[biricik]], [[yegâne]]
+#*''Hamit, biliyorsunuz edebiyatımızın tek dâhisidir.'' - Y. Z. Ortaç
+# {{t|dil=tr|ölçü birimleri}}  Kadeh içinde belirli ölçüde olan içki.
+# Hiç, hiçbir
+#*    "Tek kelime konuşmadan bu yokuşu indik." - Refik Halit Karay
+#Yalnız başına.
+#*      "Mezarlıkta Süleyman Ağa’nın taşı tek kalmazdı..." - Memduh Şevket Esendal
+# {{t|dil=tr|matematik}} İki ile bölünemeyen sayı.
+#*      Üç, beş, yedi ... tek sayılardır.
+#Sessiz, hareketsiz, uslu olan.
+
+====Deyimler==== 
+[[tek dalmak]], [[tek geçmek]], [[tek kale oynamak]], [[tek kürekle mehtaba çıkmak]], [[tek sıra olmak]], [[tek durmak]], [[tek durmamak]]
+
+====Sözcük birliktelikleri==== 
+[[tek adam]], [[tek anlamlılık]], [[tek başına]], [[tekbenci]], [[tek biçim]], [[tek bilek]], [[tek çekirdekli]], [[tek çenekli]], [[tek delikliler]], [[tek ders imtihanı]], [[tek ders sınavı]], [[tek duvar mutfak]], [[tekdüze]], [[tek elden]], [[tek erkçi]], [[tek erklik]], [[tek eşli]], [[tek evli]], [[tek fazlı]], [[tekgövde]], [[tek heceli dil]], [[tek hücreli]], [[tek kişilik]], [[tek liste]], [[tek örnek]], [[tek parmaklılar]], [[tek partili]], [[tek pas]], [[tek renkli]], [[tek sayı]], [[tek seçici]], [[tek sesli]], [[tek tabanca]], [[tek tanrıcı]], [[tek tanrılı]], [[tek taraflı]], [[tektaş]], [[tek tırnak işareti]], [[tek tırnaklılar]], [[tek tip]], [[tek tük]], [[tek vücut]], [[tek yanlı]], [[tek yön]], [[tek yumurta ikizi]], [[tek yürek]], [[teker teker]], [[ikitek]], [[iki tek]], [[dörttek]], [[sekiztek]], [[teke tek]]
+
+===Ad===
+{{tr-ad}}
+[[File:Surgical gloves 13.JPG|küçükresim|{{mana|ad}} Adam, eldivenin tekini giyiyor. (1)]]
+# Birbirini tamamlayan veya aynı türden olan nesnelerden her biri.
+#*      "Garsona umutsuzca bir göz attıktan sonra eldiveninin sol tekini çıkardı." - Rıfat Ilgaz
+
+===Belirteç===
+{{tr-belirteç}}
+#Önüne getirildiği cümleye istek ve özlem kavramı katar.
+#*      "Versinler de ne verirlerse versinler birader, tek versinler." - Aziz Nesin
+#  yalnızca.
+#*      Bunun için tek bir yol var. 
+
+====Çeviriler====
+{{üst|ad|tip=çeviriler}}
+*Estonca: {{ç|et|ainuke}}
+*Fince: {{ç|fi|ainokainen}}
+{{alt}}
+
+====Çeviriler====
+{{üst|belirteç|tip=çeviriler}}
+*Bulgarca: {{ç|bg|тек}}
+*Fince: {{ç|fi|yksin}}
+{{alt}}
+
+====Çeviriler====
+{{üst|ön ad|tip=çeviriler}}
+*Almanca: {{ç|de|einzeln}}, {{ç|de|einzig}}
+*Arapça: {{ç|ar|واحد}}
+*Azerice: {{ç|az|tek}}
+*Bulgarca: {{ç|bg|тек}}
+*Felemenkçe: {{ç|nl|enkel}}
+*Fince: {{ç|fi|ainoa}}, {{ç|fi|yksittäinen}}, {{ç|fi|yksi-}}
+*Gagavuzca: {{ç|gag|tek}}
+*İngilizce: {{ç|en|single}}, {{ç|en|sole}} {{ç|en|unique}} 
+*Kürtçe: {{ç|ku|tek}}
+{{alt}}
+
+===Kaynakça===
+* {{kaynak-TDK}}
+
+==Kuzey Kürtçe==
+
+===Ön ad===
+{{kmr-ön ad}}
+# tek, [[bir]], [[biricik]]

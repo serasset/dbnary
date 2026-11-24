@@ -1,0 +1,76 @@
+==Türkçe==
+
+===Köken===
+{{nakledilen|tr|fr|athéiste}}.
+
+===Söyleniş===
+* {{audio|dil=tr|LL-Q256 (tur)-ToprakM-ateist.wav|Audio}}
+* {{h|dil=tr||a|te|ist}}
+
+===Ad===
+{{tr-ad|istisna=yumuşama}}
+
+# {{t|dil=tr|din|felsefe}} [[Tanrı]]'nın varlığını [[inkâr etmek|inkâr eden]] [[kimse]].
+#: {{eş anlamlılar|tr|ate|tanrıtanımaz}}
+#: {{zıt anlamlılar|tr|teist|tanrıtanır}}
+
+====Çekimleme====
+{{tr-ad-tablo|istisna=yumuşama}}
+
+====Türetilmiş kavramlar====
+{{sütun|4|
+* [[ateistçe]], 
+* [[ateistçi]], 
+* [[ateistçik]], 
+* [[ateistken]], 
+* [[ateistle]], 
+* [[ateistli]], 
+* [[ateistse]], 
+* [[ateistsiz]]
+}}
+
+===Ön ad===
+{{tr-ön ad}}
+
+# {{t|dil=tr|din|felsefe}} [[Tanrı]]'nın varlığını [[inkâr etmek|inkâr eden]]
+#: {{eş anlamlılar|tr|ate|tanrıtanımaz}}
+#: {{zıt anlamlılar|tr|teist|tanrıtanır}}
+
+===Ayrıca bakınız===
+* [[ateizm]]
+
+===Kaynakça===
+* {{Kaynak-TDK}}
+
+==İsveççe==
+
+===Söyleniş===
+* {{h|dil=sv||a|te|ist}}
+
+===Ön ad===
+{{başlık başı|sv|ön ad}}
+
+# {{t|dil=sv|din|felsefe}} {{b|tr|ateist}}
+
+==Norveççe==
+
+===Söyleniş===
+* {{h|dil=no||a|te|ist}}
+
+===Ön ad===
+{{başlık başı|no|ön ad}}
+
+# {{t|dil=no|din|felsefe}} {{b|tr|ateist}}
+
+==Sırp-Hırvatça==
+
+===Farklı yazılışlar===
+* {{farklı yazılışlar|sh|атеист}} {{şerh|Kiril}}
+
+===Söyleniş===
+* {{h|dil=sh||a|te|ist}}
+
+===Ad===
+{{başlık başı|sh|ad}}
+
+# {{ağız|dil=sh|Sırp}} {{b|tr|ateist}}

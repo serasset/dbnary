@@ -1,0 +1,108 @@
+==Türkçe==
+
+===Köken===
+{{k|ota|dil=tr}} {{z|ota|ياراصه}}
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h||ya|ra|sa|dil=tr}}
+
+===Ad===
+{{tr-ad}}
+[[Dosya:Desmo-boden_(cropped).jpg|küçükresim|Bir tür yarasa.]]
+# {{t|memeliler|dil=tr}}  Yarasalardan, ön ayakları perdeli kanat biçiminde gelişmiş, vücudu yumuşak sık kıllarla kaplı, iskeletleri hafif yapılı, uçabilen memeli hayvan.
+#* {{eş anlamlılar|tr| gece kuşu|vatvat  }}
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+===Eylem===
+{{başlık başı|tr|çekimli eylem}}
+
+====Çeviriler====
+{{üst|memeli hayvan|tip=çeviriler}}
+*Afrikanca: {{ç|af|vlêrmuis}}
+*Almanca: {{ç|de|Fledermaus|f}}
+*Arapça: {{ç|ar|وَطْوَاط|m}}, {{ç|ar|خُفَاش|m}}
+*Arnavutça: {{ç|sq|lakuriq}}, {{ç|sq|nate}}
+*Azerice: {{ç|az|yarasa}}
+*Beyaz Rusça: {{ç|be|лятучая мыш|f}}, {{ç|be|кажан|m}}
+*Boşnakça: {{ç|sh|slijepi miš|m}}, {{ç|sh|šišmiš|m}}
+*Bulgarca: {{ç|bg|прилеп}}
+*Cava dili: {{ç|jv|kalong}}
+*Çekçe: {{ç|cs|netopýr|m}}
+*Çemehuevi: [['paaca?ac]](i)
+*Çerokice: {{ç|csh|ᏞᎺᎭ}} [tlemeha]
+*Çince: {{ç|zh|蝙蝠}} [biănfú]
+*Danca: {{ç|da|flagermus}}
+*Ermenice: {{ç|hy|kelelawar}}, {{ç|hy|kelawar}}
+*Ersya dili: {{ç|myv|кедь нимилав}}
+*Eski Türkçe: {{ç|etr|aya yersgü}}, {{ç|etr|yarısa}}
+*Esperanto dili: {{ç|eo|vesperto}}
+*Estonca: {{ç|et|nahkhiir}}
+*Farsça: {{ç|fa|خفاش}} [khefâsh]
+*Felemenkçe: {{ç|nl|vleermuis|f}}
+*Fince: {{ç|fi|lepakko}}
+*Fransızca: {{ç|fr|chauve-souris|f}}
+*Frizce: {{ç|fy|flearmûs|f}}, {{ç|fy|flogmús|f}}
+*Galiçyaca: {{ç|gl|morcego|m}}
+*Galce: {{ç|cy|ystlum|m}}
+*Hırvatça: {{ç|sh|šišmiš|m}}
+*İbranice: {{ç|he|עטלף}} [atalef]
+*İngilizce: {{ç|en|bat}}
+*İnterlingua: {{ç|ia|vespertilion}}
+*İnuktitut dili: [[anaullaut]]
+*İspanyolca: {{ç|es|murciélago|m}}
+*İsveççe: {{ç|av|fladdermus}}
+*İtalyanca: {{ç|it|pipistrello|m}}
+*İzlandaca: {{ç|is|leðurblaka|f}}
+*Japonca: {{ç|ja|蝙蝠}}, {{ç|ja|こうもり}} [kōmori]
+*Katalanca: {{ç|ca|muricec}}, {{ç|ca|rat penat}}
+*Kazakça: {{ç|kk|жарғанат}}
+*Korece: {{ç|ko|박쥐}}
+*Kuzey Lapça: {{ç|se|girdisáhpán}}
+*Kürtçe: {{ç|ku|شه‌مشه‌مه‌ کوێره}} [shamshama kwera], {{ç|ku|şevrevînk}}, {{ç|ku|pelçemok}}, {{ç|ku|baçermok}}, {{ç|ku|çilîçilî}}, {{ç|ku|şevşevok}}, {{ç|ku|şevşevik}}, {{ç|ku|çekçekûle}}, {{ç|ku|şibşibênek}}, {{ç|ku|pirçemek}}, {{ç|ku|bacemok}}, {{ç|ku|baçimêlk}}, {{ç|ku|balçimok}}, {{ç|ku|çeqçeqole}}, {{ç|ku|berçemik}}, {{ç|ku|gaperçêvk}}, {{ç|ku|dûvmesas}}, {{ç|ku|şebşebok}}, {{ç|ku|şevekur}}, {{ç|ku|şîvînek}}, {{ç|ku|perçîmek}}, {{ç|ku|balçimk}}, {{ç|ku|pêrçêm}}, {{ç|ku|pêrçenk}}, {{ç|ku|çil}}
+*Lao dili: {{ç|lo|ເຈຍ}}
+*Latince: [[vespertilio]] {{m}}
+*Lehçe: {{ç|pl|nietoperz|m}}
+* [[Lenape]]: [[pipisilunkòn]]
+*Litvanca: {{ç|lt|šikšnosparnis|m}}
+*Macarca: {{ç|hu|denevér}}
+*Makedonca: {{ç|mk|лилjак}}
+*Maltaca: {{ç|mt|farfett il-lejl}}
+*Manchu: {{ç|mnc|ashangga singgeri}}
+*Maori: {{ç|mi|pekapeka}}
+*Maricopa dili: {{ç|mrc|qmpanyq}}
+*Moğolca: {{ç|mn|сарисан багваахай}}
+*Nahuatl dili: {{ç|nah|tzohnaka}}, {{ç|nah|tzinaka}}
+*Norveççe: {{ç|no|flaggermus}}
+*O'odham: {{ç|ood|nanakmel}}
+*Oksitanca: {{ç|oc|rata penada}}
+*Osmanlı Türkçesi: {{ç|ota|ياراصه}} ،{{ç|ota|خفاش}}
+*Polinezyaca: * [[peka]]
+*Portekizce: {{ç|pt|morcego|m}}
+*Rumence: {{ç|ro|liliac|m}}
+*Rusça: {{ç|ru|летучая мышь|f}}
+*Sardunyaca: {{ç|sc|alibedde}}, {{ç|sc|ragabedde}}, {{ç|sc|tzintzimurreddu|m}}
+*Sırpça: {{ç|sh|слепи миш|m}}, ({{ç|sh|slepi miš|m}}), {{ç|sh|netopir|m}}, {{ç|sh|šišmiš|m}}
+*Slovakça: {{ç|sk|netopier|m}}
+*Slovence: {{ç|sl|netopir|m}}
+*Sümerce: {{ç|sux|sutinnu}}
+*Tatarca: {{ç|tt|yarqanat}}
+*:Kırım Tatarcası: {{ç|crh|carğana}}, {{ç|crh|yelqanat}}
+*Tayca: {{ç|th|ค้างคาว}} (kang kaw)
+*Telugu: {{ç|te|గబ్బిలం}}
+*Tibetçe: {{ç|bo|pha wang}}
+*Ukraynaca: {{ç|uk|кажан|m}}
+*Uygurca: {{ç|ug|şäpäräk}}, {{ç|ug|şäpiräñ}}, {{ç|ug|şipäräk}}
+*Volapük: {{ç|vo|flitamug}}
+*Yunanca: {{ç|el|νυχτερίδα|f}}
+{{alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}

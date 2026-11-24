@@ -1,0 +1,182 @@
+{{Haftanın kelimesi|42|2007}}
+{{bakınız|aýak}}
+==Türkçe== 
+
+===Köken===
+{{köken|dil=tr|otk}} {{b|otk|ç=adak|anlam=ayak}} sözcüğünden.
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||a|yak}}
+
+===Ad===
+{{tr-ad}} 
+[[File:Foot Jewelry.jpg|küçükresim|'''Ayak''' (1)]]
+[[File:Chernobyl_Duga_radar_(38155644344).jpg|küçükresim|Bir radarın ayakları. (2)]]
+[[File:Blue Textured Skater Skirt, Star Trek Graphic Tank Top, and Silver Chunky Heels (21361827922).jpg|küçükresim|Kadın '''ayağına''' mavi bir etek giymiş. (3)]]
+
+# {{t|dil=tr|anatomi}} Bacakların bilekten aşağıda bulunan ve yere basan bölümü.
+#* {{tanıklık|dil=tr|yazar=Ümit Yaşar OĞUZCAN|başlık=Acılar Denizi|yıl=1997|yayıncı=Özgür Yayınları|baskı=10
+|sayfa=120
+|tanıklık=Gelir gelmez '''ayaklarına''' bakardım / Küçük harikulâde ayaklarına / Geçmiş gecelerin aydınlığı içinde / '''Ayakların''' bir beyaz güvercine benzerdi}}
+# Birtakım şeylerin yerden yüksekçe durmasını sağlayan dayak, destek veya bunlardan her biri.
+#* {{kt|başlık=Gölgeli Konak|yazar=Nalân KİRAZ|yayıncı=Alakarga Sanat Yayınları|yıl=2014|sayfalar=61-62|tanıklık=Yoksa şimdi üzerinden yıllar geçmişken, oturmuşken her şey, hatta senelerce evde yerinden oynatılmamış mobilyalar gibi, '''ayakları''' zeminin üzerinde iz yapmış da bilinmemiş ki.|dil=tr}}
+# {{t|dil=tr|anatomi}} Vücudun belden aşağı bölümü.
+#* {{eş anlamlılar|tr|bacak}}
+#*'''''Ayağına''' bir pantolon çekti.'' 
+# yürüyüşün ağırlık veya çabukluk derecesi.
+#* {{örnek|dil=tr|Senin '''ayağınla''' köye akşama kadar varamayız.}}
+# {{eş anlamlı|dil=tr|basamak  }}
+#* {{kt|dil=tr|başlık=Huzur|yazar=Ahmet Hamdi TANPINAR|yayıncı=Dergâh Yayınları|yıl=2022|baskı=39|sayfa=23|tanıklık=İki yandan beş ayak merdivenle kapısına çıkılıyordu.}}
+#* {{mt|dergi=Sözcükler|sayı=118|yıl=2025|yazar=Cevat Çapan|başlık=Sabahattin Eyuboğlu|sayfa=26|tanıklık=Yani çeviri bürosu Sabahattin Eyuboğlu'nun bir parçası olduğu Anadolu Rönesansı'nın en önemli '''ayaklarından''' biri.|dil=tr}}
+# {{t|dil=tr|ayak giyimi}} {{eş anlamlı|dil=tr|ayakkabı  }}
+#* {{kt|dil=tr|yıl=1983|yazar=Pınar KÜR|başlık=Asılacak Kadın|yayıncı=Yazarlar ve Çevirmenler Yayın Üretim Kooperatifi|baskı=3|sayfa=10
+|tanıklık=Nasıl da tertemiz. Yerlerde halılar. '''Ayağını''' çıkar da öyle gir.
+}}
+# {{t|dil=tr|müzik}} [[maya|Mayalardan]] önce, [[makam|makama]] uygun olarak çalınan veya söylenen beste.
+# {{t|dil=tr|ölçü birimleri}} Yarım arşın veya 30,5 santimetre uzunluğundaki ölçü birimi.
+#* {{eş anlamlılar|tr|kadem|fit|fut}}
+# {{t|dil=tr|hidroloji}} {{eş anlamlı|dil=tr|göl ayağı  }}
+# {{t|dil=tr|şiir sanatı}} halk edebiyatında koşuklarda kısa yedekli dizeler .
+# {{t|dil=tr|şiir sanatı}} Halk edebiyatında uyak
+#* {{kt|başlık=İstanbul'da Semai Kahveleri ve Meydan Şairleri|vikikaynak=İstanbul'da Semai Kahveleri ve Meydan Şairleri|yazar=Osman Cemal KAYGILI|yayıncı=Merkez Kitapçılık|yıl=2007|tanıklık=Çabuk, demiş, hiç durmadan şunu '''ayak''' yap (kafiye yap), bir mani söyle, yoksa denizde alırsın soluğu.|sayfa=49|dil=tr}}
+# {{t|dil=tr|geometri}} bir doğrunun başka bir doğruyu veya bir düzlemi kestiği nokta
+#* {{örnek|dil=tr|Dikme '''ayağını''' kırmıza tebeşirle çizdi.}}  
+# {{t|dil=tr|spor}} karakucak ve yağlı güreşte pehlivanların ayrıldıkları beş dereceden biri
+# {{t|dil=tr|spor}} altılı ganyanda yer alan her bir koşu
+# {{t|dil=tr|madencilik}} kömür ocaklarında kömürün çıkarıldığı galeri.
+# {{t|dil=tr|mecaz}}  Bir düşüncenin, bir yapının olmazsa olmazı sayılan, temelini oluşturduğu düşünülen şeylerin her biri.
+# {{t|dil=tr|argo}} {{eş anlamlı|dil=tr|hile  }}
+# {{t|dil=tr|argo}} {{eş anlamlı|dil=tr|rol yapmak  }}
+#* {{tanıklık|dil=tr|yazar=Oktay Güzeloğlu|başlık=Yüzyılın Dolandırıcısı Selçuk Parsadan|yıl=2006|yayıncı=+1 Kitap
+|sayfa=44
+|tanıklık=Tahsilata asker olarak gittiniz...Asker olarak, kafalar asker traşı. Orduya Hizmet Eden Asker Aileleri Yardım Cemiyeti '''ayağına'''.
+}}
+# {{t|dil=tr|argo}} {{eş anlamlı|dil=tr|ilişki  }}
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+====Atasözleri====
+* [[ayağında donu yok, fesleğen ister başına]] 
+* [[ayağında donu yok, fesleğen takar başına]] 
+* [[ayağını yorganına göre uzat]]
+* [[ayak almadık taş olmaz, başa gelmedik iş olmaz]]
+* [[ayaklar baş, başlar ayak oldu]]
+* [[ayda bir gel dostuna, kalksın ayak üstüne; günde bir gel dostuna, yatsın sırtı üstüne]]
+* [[baş nereye giderse, ayak da oraya gider]]
+* [[gezen ayağa taş değer]]
+* [[merdiven ayak ayak çıkılır]]
+* [[seyrek git sen dostuna, kalksın ayak üstüne]]
+
+====Deyimler====
+[[ayağa düşmek]], [[ayağa fırlamak]], [[ayağa kaldırmak]], [[ayağa kalkmak]], [[ayağı dolaşmak]], [[ayakları dolaşmak]], [[ayağı suya ermek]], [[ayakları suya ermek]], [[ayağı alışmak]], [[ayağı almak]], [[ayağı düşmek]], [[ayağı düze basmak]], [[ayağı gitmemek]], [[ayağı ile gelmek]], [[ayağına dolanmak]], [[ayaklarına dolanmak]], [[ayağına dolaşmak]], [[ayaklarına dolaşmak]], [[ayağına kapanmak]], [[ayaklarına kapanmak]], [[ayağına bağ olmak]], [[ayağına bağ vurmak]], [[ayağına çağırmak]], [[ayağına çelme takmak]], [[ayağına düşmek]], [[ayağına geçirmek]], [[ayağına gelmek]], [[ayağına getirmek]], [[ayağına gitmek]], [[ayağına ip takmak]], [[ayağına kira istemek]], [[ayağına sıkmak]], [[ayağına üşenmemek]], [[ayağını altına almak]], [[ayaklarını altına almak]], [[ayağını öpeyim]], [[ayaklarını öpeyim]], [[ayağını sürümek]], [[ayaklarını sürümek]], [[ayağını alamamak]], [[ayağını bağlamak]], [[ayağını çekmek]], [[ayağını denk almak]], [[ayağını denk basmak]], [[ayağını giymek]], [[ayağını kaydırmak]], [[ayağını kesmek]], [[ayağının altında]], [[ayaklar altında]], [[ayağının altına almak]], [[ayağının altına karpuz kabuğu koymak]], [[ayağının bağını çözmek]], [[ayağının pabucunu başına giymek]], [[ayağının pabucu olamamak]], [[ayağının tozu ile]], [[ayağının tozunu silmeden]], [[ayağının türabı olmak]], [[ayağını tek almak]], [[ayağını vurmak]], [[ayağı yerden kesilmek]], [[ayak açmak]], [[ayak vermek]],  [[ayak almak]], [[ayak atmak]], [[ayak atmamak]], [[ayak ayak üstüne atmak]], [[ayak basmak]], [[ayak basmamak]], [[ayak çekmek]], [[ayak değiştirmek]], [[ayak diremek]], [[ayaklar altına almak]], [[ayaklar baş, başlar ayak olmak]], [[ayakları geri geri gitmek]], [[ayaklarına kara su inmek]], [[ayağına kara su inmek]], [[ayaklarına kara sular inmek]], [[ayağına kara sular inmek]], [[ayaklarının ucuna basmak]], [[ayağının ucuna basmak]], [[ayakları üstünde durmak]], [[ayakları yerden kesilmek]], [[ayakları yere değmemek]], [[ayak sürümek]], [[ayak tutmak]], [[ayak uydurmak]], [[ayak üstünde olmak]], [[ayak yapmak]]
+
+====Türetilmiş kavramlar====
+[[ayakaltı]], [[ayak atışı]], [[ayak ayası]], [[ayak bağı]], [[ayak banyosu]], [[ayakbastı]], [[ayak bileği]], [[ayak divanı]], [[ayak hatası]], [[ayak havlusu]], [[ayak işi]], [[ayak izi]], [[ayakkabı]], [[ayak keseri]], [[ayak kirası]], [[ayak oyunu]], [[ayak perde]], [[ayak satıcısı]], [[ayak tabanı]], [[ayaktakımı]], [[ayak tarağı]], [[ayak tenisi]], [[ayak teri]], [[ayak topu]], [[ayakucu]], [[ayak ucu]], [[ayaküstü]], [[ayaküzeri]], [[ayakyolu]], [[ayağı bağlı]], [[ayağı karıncalı]], [[ayağı uğurlu]], [[ayağı üzengide]], [[ayağına çabuk]], [[ayaktan hasta]], [[ağırayak]], [[altıncı ayak]], [[arka ayak]], [[beşinci ayak]], [[bir ayak evvel]], [[birinci ayak]], [[çatal ayak]], [[dördüncü ayak]], [[dört ayak]], [[düzayak]], [[giderayak]], [[gömme ayak]], [[ikinci ayak]], [[kırkayak]], [[önayak]], [[ön ayak]], [[sacayak]], [[takma ayak]], [[üçayak]], [[üçüncü ayak]], [[yalancı ayak]], [[yalın ayak]], [[yarım ayak]], [[tepeden ayağa]], [[danaayağı]], [[domuzayağı]], [[duvar ayağı]], [[eli ayağı düzgün]], [[göl ayağı]], [[horozayağı]], [[itayağı]], [[kazayağı]], [[kediayağı]], [[kurtayağı]], [[sacayağı]], [[tavşanayağı]], [[tavukayağı]], [[turnaayağı]], [[eline ayağına çabuk]], [[kanı ayaklı]]
+
+====Çeviriler====
+{{Üst|tip=çeviriler}}
+*Afrikaanca: {{ç|af|voet}}
+*Almanca: {{ç|de|Fuß|m}}
+*Aragonca: {{ç|an|piet}}
+*Arapça: {{ç|ar|}}
+*Arnavutça: {{ç|sq|këmbë}}
+*Asturyasça: {{ç|ast|pie}}
+*Aşağı Almanca: {{ç|nds|Fuß|m}}, {{ç|nds|Been}}
+*Aymaraca: {{ç|ay|kayu}}
+*Azerice: {{ç|az|ayaq}}*Almanca: {{ç|de|}}
+*Baskça: {{ç|eu|oin}}
+*Başkurtça: {{ç|ba|}}
+*Bretonca: {{ç|br|troad}}
+*Bulgarca: {{ç|bg|}}
+*Çekçe: {{ç|cs|chodidlo}}, {{ç|cs|noha}}
+*Çince: {{ç|zh|脚}}
+*Çuvaşça: {{ç|cv|ура}}
+*Danca: {{ç|da|fod}}
+*Endonezce: {{ç|id|kaki}}
+*Ersya dili: {{ç|myv|пильге}}
+*Esperanto: {{ç|eo|piedo}}
+*Eski Türkçe: {{ç|otk|𐰑𐰴|ç=adaq}}
+*Estonca: {{ç|et|jalalaba}}
+*Faroece: {{ç|fo|fótur}}
+*Farsça: {{ç|fa|پا}}
+*Felemenkçe: {{ç|nl|voet}}
+*Fince: {{ç|fi|jalkaterä}}, {{ç|fi|jalka}}, {{ç|fi|laskujoen lähtö}}
+*Fransızca: {{ç|fr|pied}}
+*Frizce: {{ç|fy|foet}}}
+*Gagavuzca: {{ç|gag|ayak}}
+*Galce: {{ç|cy|troed}}
+*Galiçyaca: {{ç|gl|pé}}
+*Guaranice: {{ç|gn|py}}
+*Gürcüce: {{ç|ka|}} 
+*Hausaca: {{ç|ha|ƙáfȁ}}
+*İngilizce: {{ç|en|foot}}
+*İrlandaca: {{ç|ga|cos}}
+*İskoçça: {{ç|gd|cas}}
+*İspanyolca: {{ç|es|pie}}
+*İsveççe: {{ç|sv|fot}}
+*İsviçre Almancası: {{ç|de|Fuss|m}}
+*İtalyanca: {{ç|it|piede}}, {{ç|it|piè}}
+*İzlandaca: {{ç|is|fótur}}
+*Japonca: {{ç|ja|足}}
+*Karakalpakça: {{ç|kaa|ayaq}}
+*Katalanca: {{ç|ca|peu}}, {{ç|ca|cos}}
+*Kazakça: {{ç|kk|аяқ}}
+*Keçuva dili: {{ç|qu|chaki}}
+*Kırgızca: {{ç|ky|ayak}}
+*Kırım Tatarcası: {{ç|crh|ayaq}}
+*Korece: {{ç|ko|발}}
+*Kürtçe: {{ç|ku|pê}}
+*Korece: {{ç|ko|}}
+*Kürtçe: {{ç|ku|}}
+*Ladince: {{ç|lld|pé}}
+*Latince: {{ç|la|pes}}
+*Lehçe: {{ç|pl|stopa}} 
+*Litvanca: {{ç|lt|pėda}}
+*Lingala: {{ç|ln|lokolo}}
+*Lüksemburgca: {{ç|lb|Fouss}}
+*Macarca: {{ç|hu|láb}}
+*Maorice: {{ç|mi|wae}}, {{ç|mi|waewae}}
+*Malayca: {{ç|ms|kaki}}
+*Malgaşça: {{ç|mg|tongotra}}
+*Maltaca: {{ç|mt|sieq}}
+*Mokşa dili: {{ç|mdf|пильге}}
+*Norveççe: {{ç|no|fot}}
+*Oksitanca: {{ç|oc|pè}}
+*Osmanlı Türkçesi: {{ç|ota|آیاق|}}
+*Özbekçe: {{ç|uz|oyoq}}
+*Portekizce: {{ç|pt|pé}}
+*Rapanui dili: {{ç|rap|va'e}}
+*Romanşça: {{ç|rm|pe}}
+*Rumence: {{ç|ro|picior}}
+*Rusça: {{ç|ru|}} 
+*Samoaca: {{ç|sm|vae}}
+*Sırp-Hırvatça: {{ç|sh|stopalo}}
+*Slovakça: {{ç|sk|}} 
+*Slovence: {{ç|sl|}}
+*Somalice: {{ç|so|majin}}
+*Svahili: {{ç|sw|mguu}}
+*Şorca: {{ç|cjs|азақ}}
+*Şona dili: {{ç|sn|tsoka}}
+*Tabasaran dili: {{ç|tab|}}
+*Tacikçe: {{ç|tg|}}
+*Tagalogca: {{ç|tl|paa}}
+*Tatarca: {{ç|tt|ayaq}}
+*Türkmence: {{ç|tk|aýak}}
+*Ukraynaca: {{ç|uk|}} 
+*Venedikçe: {{ç|vec|piè}}, {{ç|vec|feta}}
+*Yahudi Almancası: {{ç|yi|fus}}
+*Yorubaca: {{ç|yo|ẹsẹ̀}}
+*Xhosa dili: {{ç|xh|umlinganiselo weenyawo}}
+*Yunanca: {{ç|el|}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}
+* {{KYK:Aktunç, Hulki-BAS-2001}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}

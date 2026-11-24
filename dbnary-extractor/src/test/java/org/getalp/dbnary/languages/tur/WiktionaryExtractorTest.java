@@ -119,8 +119,6 @@ public class WiktionaryExtractorTest {
 
   // Nyms given in the definitions belong to their sense. Senses are tur:__ws_<n>_<entry>.
 
-  @Disabled("#*/#: {{eş anlamlılar|tr|..}} / {{zıt anlamlılar|tr|..}} are stored as examples (\"eş anlamlısı: fasıla\") "
-      + "instead of nyms of the sense they follow")
   @Test
   public void extractsNymsGivenAfterTheDefinitionOnTheirSense() throws IOException {
     Model m = extract("aralik", "aralık");
@@ -148,7 +146,6 @@ public class WiktionaryExtractorTest {
         nyms(m, DBnaryOnt.antonym));
   }
 
-  @Disabled("a definition made of {{eş anlamlı|dil=tr|X}} only yields the text \"X kelimesinin eş anlamlısı\", no synonym X")
   @Test
   public void extractsSynonymOnlyDefinitionsOnTheirSense() throws IOException {
     // The sense (and its definition text) is kept; X becomes a synonym of that sense.
@@ -169,7 +166,6 @@ public class WiktionaryExtractorTest {
   // Nyms given in their own ====Eş/Karşıt/Zıt anlamlılar==== / ====Üst/Alt kavramlar==== section
   // belong to the entry of the PoS section holding them.
 
-  @Disabled("nym sections are only logged (\"Nym section .. ignored\"); Zıt anlamlılar (650 sections) is not even recognised")
   @Test
   public void extractsNymSectionsOnTheirEntry() throws IOException {
     Model m = extract("empati", "empati");
@@ -179,11 +175,14 @@ public class WiktionaryExtractorTest {
     // Guamlı: ====Zıt anlamlılar==== under Ön ad, ====Üst kavramlar==== under Özel ad.
     m = extract("guamli", "Guamlı");
     assertEquals(java.util.Map.of("Guamlı__Ön_ad__1", Set.of("Guamsız")), nyms(m, DBnaryOnt.antonym));
-    assertEquals(java.util.Map.of("Guamlı__Özel_ad__1", Set.of("Mikronezyalı")), nyms(m, DBnaryOnt.hypernym));
+    // Özel ad has a single sense: OntolexBasedRDFDataHandler.promoteNymProperties moves entry nyms to
+    // it.
+    assertEquals(java.util.Map.of("__ws_1_Guamlı__Özel_ad__1", Set.of("Mikronezyalı")), nyms(m, DBnaryOnt.hypernym));
     // kırmızı: "* {{mânâ|mecâzî de olur}} [[ahmer]] {{şerh|eskimiş}}" and a comma separated link list.
     m = extract("kirmizi", "kırmızı");
-    assertEquals(java.util.Map.of("kırmızı__Ad__1", Set.of("ahmer")), nyms(m, DBnaryOnt.synonym));
-    assertEquals(java.util.Map.of("kırmızı__Ad__1", Set.of("ışık", "renk", "tayf")), nyms(m, DBnaryOnt.hypernym));
+    // kırmızı Ad has a single sense: nyms promoted to it (see Guamlı Özel ad).
+    assertEquals(java.util.Map.of("__ws_1_kırmızı__Ad__1", Set.of("ahmer")), nyms(m, DBnaryOnt.synonym));
+    assertEquals(java.util.Map.of("__ws_1_kırmızı__Ad__1", Set.of("ışık", "renk", "tayf")), nyms(m, DBnaryOnt.hypernym));
   }
 
   // --------------------------------------------------------------------------------------------
@@ -444,11 +443,12 @@ public class WiktionaryExtractorTest {
     }
   }
 
-  @Disabled("nym sections are skipped, so {{mânâ}}/{{anlam}}/{{mana}} glosses and {{şerh}}/{{belirtici}} usages are lost")
   @Test
   public void glossesNymsWithManaTemplates() throws IOException {
     // "* {{mânâ|mecâzî de olur}} [[ahmer]] {{şerh|eskimiş}}"
-    assertContains(java.util.Map.of("kırmızı__Ad__1 -> ahmer", "mecâzî de olur | eskimiş"), nymDetails(extract("kirmizi", "kırmızı"), DBnaryOnt.synonym));
+    // Single sense entry: the nym and its gloss/usage are promoted to the sense.
+    assertContains(java.util.Map.of("__ws_1_kırmızı__Ad__1 -> ahmer", "mecâzî de olur | eskimiş"),
+        nymDetails(extract("kirmizi", "kırmızı"), DBnaryOnt.synonym));
     // "* {{mânâ|Guamla alakalı}} [[Guamsız]]"
     assertContains(java.util.Map.of("Guamlı__Ön_ad__1 -> Guamsız", "Guamla alakalı | "), nymDetails(extract("guamli", "Guamlı"), DBnaryOnt.antonym));
     // {{anlam}} alias, 2 meanings, {{belirtici}}: "* {{anlam|bitki|yiyecek}} [[lobya]] {{belirtici|halk

@@ -5,11 +5,13 @@ package org.getalp.dbnary.languages.tur;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.jena.rdf.model.Resource;
 import org.getalp.LangTools;
 import org.getalp.dbnary.bliki.DbnaryWikiModel;
@@ -21,8 +23,11 @@ import org.getalp.dbnary.wiki.ClassBasedFilter;
 import org.getalp.dbnary.wiki.WikiEventsSequence;
 import org.getalp.dbnary.wiki.WikiText;
 import org.getalp.dbnary.wiki.WikiText.Indentation;
+import org.getalp.dbnary.wiki.WikiText.IndentedItem;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
 import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
 import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Text;
 import org.getalp.dbnary.wiki.WikiText.Token;
 import org.getalp.dbnary.wiki.WikiText.WikiContent;
 import org.getalp.dbnary.wiki.WikiText.WikiSection;
@@ -110,6 +115,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     nymMarkerToNymName.put("Eş anlamlılar", "syn");
     nymMarkerToNymName.put("Karşıt Anlamlılar", "ant");
     nymMarkerToNymName.put("Karşıt anlamlılar", "ant");
+    nymMarkerToNymName.put("Zıt anlamlılar", "ant");
+    nymMarkerToNymName.put("Zıt kavramlar", "ant");
     nymMarkerToNymName.put("Alt Kavramlar", "hypo");
     nymMarkerToNymName.put("Alt kavramlar", "hypo");
     nymMarkerToNymName.put("Üst Kavramlar", "hyper");
@@ -194,8 +201,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if ("Söyleniş".equals(h4)) {
               extractPron(ws.getContent());
             } else if (nymMarkerToNymName.containsKey(h4)) {
-              // Nym block
-              log.debug("Nym section {} ignored in {}", h4, getWiktionaryPageName());
+              extractNymSection(ws.getContent(), nymMarkerToNymName.get(h4));
             } else if ("Deyimler".equals(h4) || "Atasözleri".equals(h4)) {
               // Idioms or proverbs
             } else if ("Köken".equals(h4)) {
@@ -283,6 +289,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           // Do not extract numbered list items that begin with ":" as they are indeed examples.
           String additionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
           if (additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*")) {
+            Template nymList = soleNymTemplate(numberedListItem.getContent());
+            if (null != nymList) {
+              registerNymTemplate(nymList);
+              continue;
+            }
             String expandedExample = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
             expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
             wdh.registerExample(expandedExample, null);
@@ -290,6 +301,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             String expandedDefinition = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
             expandedDefinition = CONTROL_CHAR.matcher(expandedDefinition).replaceAll("");
             wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));
+            // "# {{eş anlamlı|dil=tr|X}}": the definition is a synonym of the sense.
+            for (Token t : numberedListItem.getContent().templates()) {
+              if (nymTemplates.containsKey(t.asTemplate().getName().trim())) {
+                registerNymTemplate(t.asTemplate());
+              }
+            }
           }
         }
         case Indentation indentation -> {
@@ -319,4 +336,99 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
+  // {{eş anlamlılar|tr|a|b}} / {{zıt anlamlılar|tr|a}} list items from arg 2, {{eş anlamlı|dil=tr|a}}
+  // from arg 1.
+  private static final Map<String, String> nymTemplates = Map.of("eş anlamlılar", "syn", "zıt anlamlılar", "ant", "eş anlamlı", "syn", "zıt anlamlı", "ant");
+  // {{anlam|meaning..}} (aliases mânâ, mana) gives the meaning of the nyms of its line.
+  private static final Set<String> meaningTemplates = Set.of("anlam", "mânâ", "mana");
+  private static final Set<String> qualifierTemplates = Set.of("şerh", "belirtici");
+
+  /** The nym template if it is the only (non blank) content of the item, else null. */
+  private static Template soleNymTemplate(WikiContent content) {
+    Template found = null;
+    for (Token t : content.tokens()) {
+      if (t instanceof Text && t.getText().isBlank()) {
+        continue;
+      }
+      if (found != null || !(t instanceof Template tpl) || !nymTemplates.containsKey(tpl.getName().trim())) {
+        return null;
+      }
+      found = tpl;
+    }
+    return found;
+  }
+
+  /** Registers the items of a nym template on the current sense (or entry if there is none). */
+  private void registerNymTemplate(Template template) {
+    String name = template.getName().trim();
+    Map<String, String> args = template.getParsedArgs();
+    String usage = args.getOrDefault("not", args.get("şerh"));
+    int first = name.endsWith("lar") ? 2 : 1;
+    for (Map.Entry<String, WikiContent> arg : template.getArgs().entrySet()) {
+      if (arg.getKey().matches("\\d+") && Integer.parseInt(arg.getKey()) >= first) {
+        String target = nymTarget(arg.getValue());
+        if (!target.isEmpty()) {
+          wdh.registerNymRelationOnCurrentSense(target, nymTemplates.get(name), null, usage);
+        }
+      }
+    }
+  }
+
+  /** The link target if the value is a single link, else its text without markup. */
+  private static String nymTarget(WikiContent value) {
+    List<Token> nonBlank = value.tokens().stream().filter(t -> !(t instanceof Text && t.getText().isBlank())).toList();
+    if (nonBlank.size() == 1 && nonBlank.get(0) instanceof InternalLink l) {
+      return l.getTargetText().trim();
+    }
+    return cleanUpMarkup(value.getText(), true).trim();
+  }
+
+  /**
+   * Nym section of a PoS: nyms of the entry. A {{Üst|gloss}}..{{Alt}} block glosses its items, a
+   * leading {{anlam|..}} glosses the items of its line, {{şerh|..}} qualifies the preceding item.
+   */
+  private void extractNymSection(WikiContent content, String nymType) {
+    String blockGloss = null;
+    for (Token t : content.wikiTokens()) {
+      if (t instanceof Template tpl) {
+        String name = tpl.getName().trim();
+        if ("Üst".equals(name) || "üst".equals(name)) {
+          String g = tpl.getParsedArgs().get("1");
+          blockGloss = null == g || g.isBlank() ? null : g.trim();
+        } else if ("Alt".equals(name) || "alt".equals(name)) {
+          blockGloss = null;
+        }
+      } else if (t instanceof IndentedItem item) {
+        extractNymLine(item.getContent().tokens(), nymType, blockGloss);
+      } else if (t instanceof InternalLink) {
+        extractNymLine(List.of(t), nymType, blockGloss);
+      }
+    }
+  }
+
+  private void extractNymLine(List<Token> tokens, String nymType, String gloss) {
+    String target = null;
+    String usage = null;
+    for (Token t : tokens) {
+      if (t instanceof Template tpl && meaningTemplates.contains(tpl.getName().trim())) {
+        gloss = tpl.getArgs().entrySet().stream().filter(a -> a.getKey().matches("\\d+")).map(a -> cleanUpMarkup(a.getValue().getText(), true).trim())
+            .filter(a -> !a.isEmpty()).collect(Collectors.joining(", "));
+      } else if (t instanceof Template tpl && qualifierTemplates.contains(tpl.getName().trim())) {
+        String u = tpl.getParsedArgs().get("1");
+        usage = null == u ? null : cleanUpMarkup(u, true).trim();
+      } else if (t instanceof InternalLink l) {
+        registerSectionNym(target, nymType, gloss, usage);
+        target = l.getTargetText().trim();
+        usage = null;
+      }
+    }
+    registerSectionNym(target, nymType, gloss, usage);
+  }
+
+  private void registerSectionNym(String target, String nymType, String gloss, String usage) {
+    if (null != target && !target.isEmpty()) {
+      Resource glossResource = null == gloss || gloss.isEmpty() ? null : wdh.createGlossResource(gloss);
+      wdh.registerNymRelation(target, nymType, glossResource, usage);
+    }
+  }
 }

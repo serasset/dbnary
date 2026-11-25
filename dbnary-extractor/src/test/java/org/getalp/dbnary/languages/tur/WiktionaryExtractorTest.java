@@ -317,7 +317,6 @@ public class WiktionaryExtractorTest {
     assertEquals(java.util.Map.of("üç__Ön_ad__1", 6L, "üç__Ön_ad__2", 98L), attachments(extract("uc", "üç")));
   }
 
-  @Disabled("an at-end Çeviriler section is attached to the last PoS instead of the page")
   @Test
   public void attachesAtEndTranslationsToThePage() throws IOException {
     // aralık: Ad, Ön ad, Belirteç; glosses "aylar" (Ad) and "yarı açık" (Ön ad) name no PoS.
@@ -326,7 +325,6 @@ public class WiktionaryExtractorTest {
     assertEquals(java.util.Map.of("yarasa", 114L), attachments(extract("yarasa", "yarasa")));
   }
 
-  @Disabled("an at-end Çeviriler section is attached to the last PoS even when the gloss names another PoS")
   @Test
   public void attachesAtEndTranslationsToTheEntryNamedByTheGloss() throws IOException {
     assertEquals(java.util.Map.of("ad -> ağır__Ad__1", 9L, "ön ad -> ağır__Ön_ad__1", 20L, "belirteç -> ağır__Belirteç__1", 9L),
@@ -339,7 +337,6 @@ public class WiktionaryExtractorTest {
     assertEquals(java.util.Map.of("ad -> abanoz", 6L, "ön ad -> abanoz__Ön_ad__1", 4L), glossAttachments(extract("abanoz", "abanoz")));
   }
 
-  @Disabled("lowercase {{üst|gloss}} (twice as frequent as {{Üst}}) is not recognised: gloss lost, block attached to the last PoS")
   @Test
   public void attachesAtEndTranslationsWithLowercaseUstToTheEntryNamedByTheGloss() throws IOException {
     assertEquals(java.util.Map.of("ad -> tek__Ad__1", 2L, "belirteç -> tek__Belirteç__1", 2L, "ön ad -> tek__Ön_ad__1", 14L),
@@ -359,7 +356,6 @@ public class WiktionaryExtractorTest {
   // A level 3 ===Çeviriler=== is a sibling of the PoS sections, hence page level wherever it is:
   // same rule as the at-end layout (single PoS -> entry, gloss naming one PoS -> entry, else page).
 
-  @Disabled("level 3 ===Çeviriler=== sections are dropped (\"Unexpected header\"): no translation at all")
   @Test
   public void extractsLevel3TranslationSections() throws IOException {
     // ocak: single Ad, lowercase {{üst}} glosses.
@@ -378,7 +374,6 @@ public class WiktionaryExtractorTest {
   // ===Çeviriler===: single PoS -> entry, gloss naming the PoS of exactly one entry -> entry, else
   // page.
 
-  @Disabled("a ====Çeviriler==== under a non-PoS level 3 section is ignored: no translation at all")
   @Test
   public void extractsTranslationSectionsUnderNonPosSections() throws IOException {
     // şemsiye: ===Ad=== then ===Kaynakça=== / ====Çeviriler==== (105 translations in 2026-09-01).

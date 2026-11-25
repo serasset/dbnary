@@ -187,18 +187,24 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private void extractTurkishData(int startOffset, int endOffset) {
     WikiText txt = new WikiText(getWiktionaryPageName(), pageContent.substring(startOffset, endOffset));
     wdh.initializeLanguageSection("tr");
+    pendingTranslations.clear();
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
       // Numbered PoS (===Son ek 1===, ===Ad 2===) are their PoS.
       String header = section.getHeading().getContent().toString().trim().replaceFirst("\\s+\\d+$", "");
       // log.debug("Header = {}", header);
-      if (header.equals("Köken")) {
+      if ("Çeviriler".equals(header)) {
+        // Level 3 translations: page level
+        extractTranslations(section.getContent(), null);
+      } else if (header.equals("Köken")) {
         // Etymology
         log.debug("Etymology section ignored in {}", getWiktionaryPageName());
+        extractChildTranslationSections(section);
       } else if ("Yanlış".equals(header) || "Yanlış kullanım".equalsIgnoreCase(header)) {
         // Misspelling pages ({{mânâ|doğrusu}} [[correct form]]): not entries
       } else if ("Söyleniş".equals(header)) {
         extractPron(section.getContent());
+        extractChildTranslationSections(section);
       } else if (partOfSpeechMarkers.contains(header)) {
         // Part of speech
         wdh.initializeLexicalEntry(header);
@@ -209,7 +215,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             WikiSection ws = (WikiSection) wikiToken;
             String h4 = ws.getHeading().getContent().toString().trim();
             if ("Çeviriler".equals(h4)) {
-              extractTranslations(ws.getContent());
+              extractTranslations(ws.getContent(), turkishHandler().currentEntry());
             } else if ("Söyleniş".equals(h4)) {
               extractPron(ws.getContent());
             } else if (nymMarkerToNymName.containsKey(h4)) {
@@ -229,9 +235,48 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         }
       } else {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
+        // Kaynakça, Ek okumalar, Çekimleme..: a ====Çeviriler==== there is page level
+        extractChildTranslationSections(section);
       }
     }
+    attachPendingTranslations();
     wdh.finalizeLanguageSection();
+  }
+
+  private WiktionaryDataHandler turkishHandler() {
+    return (WiktionaryDataHandler) wdh;
+  }
+
+  /** A ====Çeviriler==== under a non-PoS level 3 section belongs to the page. */
+  private void extractChildTranslationSections(WikiSection section) {
+    for (Token t : section.getContent().wikiTokens()) {
+      if (t instanceof WikiSection ws && "Çeviriler".equals(ws.getHeading().getContent().toString().trim())) {
+        extractTranslations(ws.getContent(), null);
+      }
+    }
+  }
+
+  /** A parsed translation; owner is the entry of its PoS section, null for a page level section. */
+  private record PendingTranslation(Resource owner, String glossText, Resource gloss, String lang, String usage, String word) {}
+
+  private final List<PendingTranslation> pendingTranslations = new ArrayList<>();
+
+  /**
+   * Per-entry layout (Çeviriler under several PoS, or not under the last one): attach to the owner
+   * entry. At-end layout (all under the last PoS) and page level sections: the only entry, else the
+   * entry whose PoS the gloss names, else the page.
+   */
+  private void attachPendingTranslations() {
+    WiktionaryDataHandler tdh = turkishHandler();
+    Resource last = tdh.lastEntry();
+    boolean atEnd = pendingTranslations.stream().map(PendingTranslation::owner).filter(o -> null != o).allMatch(o -> o.equals(last));
+    for (PendingTranslation t : pendingTranslations) {
+      Resource target = null != t.owner() && !atEnd ? t.owner() : tdh.pageLevelTarget(t.glossText());
+      if (null != target) {
+        tdh.registerTranslationToEntity(target, t.lang(), t.gloss(), t.usage(), t.word());
+      }
+    }
+    pendingTranslations.clear();
   }
 
   /** A transliteration written after a translation: {{ç|ru|правда}} [pravda] (LRM marks allowed). */
@@ -244,8 +289,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
   private Resource translationGloss = null;
   private int translationGlossRank = 1;
 
-  public void extractTranslations(WikiContent wk) {
+  private Resource translationOwner = null;
+  private String translationGlossText = null;
+
+  public void extractTranslations(WikiContent wk, Resource owner) {
+    translationOwner = owner;
     translationGloss = null;
+    translationGlossText = null;
     translationGlossRank = 1;
     for (Token tok : wk.wikiTokens()) {
       if (tok instanceof IndentedItem item) {
@@ -261,9 +311,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     if ("Üst".equalsIgnoreCase(name)) {
       String g = template.getParsedArgs().get("1");
       translationGloss = null == g ? null : wdh.createGlossResource(g, translationGlossRank++);
+      translationGlossText = null == g || g.isBlank() ? null : g.trim();
       return true;
     } else if ("Alt".equalsIgnoreCase(name)) {
       translationGloss = null;
+      translationGlossText = null;
       return true;
     }
     return false;
@@ -330,7 +382,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       usage.add("lit=" + lit);
     }
     usage.addAll(qualifiers);
-    wdh.registerTranslation(lang, translationGloss, usage.isEmpty() ? null : String.join("|", usage), word);
+    pendingTranslations
+        .add(new PendingTranslation(translationOwner, translationGlossText, translationGloss, lang, usage.isEmpty() ? null : String.join("|", usage), word));
   }
 
   private static String firstNonBlank(String... values) {

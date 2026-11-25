@@ -18,7 +18,6 @@ import org.apache.jena.vocabulary.SKOS;
 import org.getalp.dbnary.DBnaryOnt;
 import org.getalp.dbnary.ExtractionFeature;
 import org.getalp.dbnary.OntolexOnt;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -108,14 +107,6 @@ public class WiktionaryExtractorTest {
   // --------------------------------------------------------------------------------------------
   // Missing elements (disabled until the extractor catches up with the current tr.wiktionary)
   // --------------------------------------------------------------------------------------------
-
-  @Disabled("{{tr-IPA}} (6k pages) is ignored: only {{IPA|..}} / {{Çeviri Yazı|..}} with an explicit arg are read")
-  @Test
-  public void extractsPronunciation() throws IOException {
-    for (String[] p : new String[][] {{"aralik", "aralık"}, {"uc", "üç"}, {"ayak", "ayak"}, {"gercek", "gerçek"}, {"yuvarlamak", "yuvarlamak"}}) {
-      assertFalse(strings(extract(p[0], p[1]), OntolexOnt.phoneticRep).isEmpty(), p[1] + " has no pronunciation");
-    }
-  }
 
   // Nyms given in the definitions belong to their sense. Senses are tur:__ws_<n>_<entry>.
 

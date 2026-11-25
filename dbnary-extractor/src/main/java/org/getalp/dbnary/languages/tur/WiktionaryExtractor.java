@@ -55,6 +55,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private static final Set<String> ignoreHeadings = new HashSet<>();
   private ExpandAllWikiModel expander;
+  private TurkishPronunciationWikiModel pronunciationModel;
 
   static {
 
@@ -155,11 +156,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     super.setWiktionaryIndex(wi);
     DbnaryWikiModel turkishModel = new TurkishModulesPatcherWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
     expander = new ExpandAllWikiModel(turkishModel, wi, Locale.forLanguageTag("tr"), "/images", "/link");
+    // Created once: initializing the Lua engine is costly; only its page name changes per page.
+    pronunciationModel = new TurkishPronunciationWikiModel(wi, Locale.forLanguageTag("tr"), "/images", "/link");
   }
 
   public void extractData() {
     wdh.initializePageExtraction(getWiktionaryPageName());
     expander.setPageName(getWiktionaryPageName());
+    pronunciationModel.setPageName(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
     while (languageFilter.find() && !languageFilter.group(1).equals("Türkçe")) {
@@ -454,6 +458,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       if ("Çeviri Yazı".equals(name) || "IPA".equals(name)) {
         String pron = template.getParsedArgs().get("1");
         if (null != pron && pron.trim().length() > 0) {
+          wdh.registerPronunciation(pron, "tur-fonipa");
+        }
+      } else if ("tr-IPA".equals(name.trim())) {
+        // Computed by Modül:tr-IPA (Lua) from the page name or the given respellings
+        for (String pron : pronunciationModel.pronunciations(template.getText())) {
           wdh.registerPronunciation(pron, "tur-fonipa");
         }
       }

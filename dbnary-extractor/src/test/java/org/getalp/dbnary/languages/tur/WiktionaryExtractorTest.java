@@ -204,7 +204,6 @@ public class WiktionaryExtractorTest {
     assertEquals(1, count(m, OntolexOnt.LexicalEntry));
   }
 
-  @Disabled("Türetilmiş kavramlar / Deyimler / Atasözleri sections are skipped: no derived terms are extracted")
   @Test
   public void extractsDerivedTermsIdiomsAndProverbs() throws IOException {
     Model m = extract("uc", "üç");
@@ -213,6 +212,32 @@ public class WiktionaryExtractorTest {
     m = extract("aralik", "aralık");
     Set<String> derived = m.listSubjectsWithProperty(DBnaryOnt.derivedFrom).toList().stream().map(Resource::getLocalName).collect(Collectors.toSet());
     assertTrue(derived.containsAll(Set.of("aralık_korozyonu", "hava_aralığı", "aralık_vermek")));
+  }
+
+  @Test
+  public void extractsSayiAdiAsNumeral() {
+    Model m = extractPage("dört", "==Türkçe==\n===Sayı adı===\n# [[üç]]ten sonra gelen sayı\n" + "====Türetilmiş kavramlar====\n[[dörtlü]]\n");
+    Resource e = m.getResource(TUR + "dört__Sayı_adı__1");
+    assertTrue(m.contains(e, org.getalp.dbnary.LexinfoOnt.partOfSpeech, org.getalp.dbnary.LexinfoOnt.numeral));
+    assertEquals(1, senseCount(m, "dört__Sayı_adı__1"));
+    assertTrue(m.contains(m.getResource(TUR + "dörtlü"), DBnaryOnt.derivedFrom, e));
+  }
+
+  @Test
+  public void extractsOtherPosHeadings() {
+    Model m = extractPage("x", "==Türkçe==\n===Sıral sayı===\n# a\n===Yardımcı eylem===\n# b\n===Ek eylem===\n# c\n"
+        + "===Ön Ad===\n# d\n===Önad===\n# e\n===Ad 2===\n# f\n===Birleşik ad===\n# g\n");
+    assertEquals(Set.of("x__Sıral_sayı__1", "x__Yardımcı_eylem__1", "x__Ek_eylem__1", "x__Ön_Ad__1", "x__Önad__1", "x__Ad__1", "x__Birleşik_ad__1"),
+        m.listSubjectsWithProperty(OntolexOnt.sense).toList().stream().map(r -> r.getURI().substring(TUR.length())).collect(Collectors.toSet()));
+    assertTrue(m.contains(m.getResource(TUR + "x__Sıral_sayı__1"), org.getalp.dbnary.LexinfoOnt.partOfSpeech, org.getalp.dbnary.LexinfoOnt.ordinalAdjective));
+    assertTrue(m.contains(m.getResource(TUR + "x__Ek_eylem__1"), org.getalp.dbnary.LexinfoOnt.partOfSpeech, org.getalp.dbnary.LexinfoOnt.copula));
+    assertTrue(m.contains(m.getResource(TUR + "x__Önad__1"), org.getalp.dbnary.LexinfoOnt.partOfSpeech, org.getalp.dbnary.LexinfoOnt.adjective));
+  }
+
+  @Test
+  public void skipsMisspellingSections() {
+    Model m = extractPage("Moldovya", "==Türkçe==\n===Yanlış===\n# {{mânâ|doğrusu}} [[Moldova]]\n");
+    assertEquals(0, count(m, OntolexOnt.LexicalEntry));
   }
 
   @Disabled("{{ç}} extra args are dumped as a Java map in usage (\"{3=m}\", \"{tr=sed}\", \"{ç=adaq}\", \"{3=}\") and the "

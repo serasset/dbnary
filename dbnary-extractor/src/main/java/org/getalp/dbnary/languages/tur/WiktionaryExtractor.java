@@ -79,6 +79,15 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     partOfSpeechMarkers.add("Özel Ad");
     partOfSpeechMarkers.add("Özel ad");
     partOfSpeechMarkers.add("Sayı");
+    partOfSpeechMarkers.add("Sayı adı");
+    partOfSpeechMarkers.add("Sıral sayı");
+    partOfSpeechMarkers.add("Yardımcı eylem");
+    partOfSpeechMarkers.add("Ek eylem");
+    partOfSpeechMarkers.add("Birleşik eylem");
+    partOfSpeechMarkers.add("Birleşik ad");
+    partOfSpeechMarkers.add("Ön Ad");
+    partOfSpeechMarkers.add("Önad");
+    partOfSpeechMarkers.add("ön ad");
     partOfSpeechMarkers.add("Son ek");
     partOfSpeechMarkers.add("Sözce");
     partOfSpeechMarkers.add("Ünlem");
@@ -134,7 +143,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     ignoreHeadings.add("Resmî adı"); // official name ...
     ignoreHeadings.add("İlgili sözcükler"); // related name ...
     ignoreHeadings.add("Sözcük birliktelikleri"); // word association ...
-    ignoreHeadings.add("Türetilmiş kavramlar"); // derivations ...
     ignoreHeadings.add("Çekimleme"); // morphology ...
     ignoreHeadings.add("Örnekler"); // examples ...
 
@@ -180,11 +188,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.initializeLanguageSection("tr");
     for (WikiText.Token evt : txt.headers(3)) {
       WikiSection section = evt.asHeading().getSection();
-      String header = section.getHeading().getContent().toString().trim();
+      // Numbered PoS (===Son ek 1===, ===Ad 2===) are their PoS.
+      String header = section.getHeading().getContent().toString().trim().replaceFirst("\\s+\\d+$", "");
       // log.debug("Header = {}", header);
       if (header.equals("Köken")) {
         // Etymology
         log.debug("Etymology section ignored in {}", getWiktionaryPageName());
+      } else if ("Yanlış".equals(header) || "Yanlış kullanım".equalsIgnoreCase(header)) {
+        // Misspelling pages ({{mânâ|doğrusu}} [[correct form]]): not entries
       } else if ("Söyleniş".equals(header)) {
         extractPron(section.getContent());
       } else if (partOfSpeechMarkers.contains(header)) {
@@ -201,9 +212,11 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             } else if ("Söyleniş".equals(h4)) {
               extractPron(ws.getContent());
             } else if (nymMarkerToNymName.containsKey(h4)) {
-              extractNymSection(ws.getContent(), nymMarkerToNymName.get(h4));
-            } else if ("Deyimler".equals(h4) || "Atasözleri".equals(h4)) {
-              // Idioms or proverbs
+              String nymType = nymMarkerToNymName.get(h4);
+              extractLinkList(ws.getContent(), (t, g, u) -> registerSectionNym(t, nymType, g, u), null);
+            } else if ("Türetilmiş kavramlar".equalsIgnoreCase(h4) || "Deyimler".equals(h4) || "Atasözleri".equals(h4)) {
+              // Derived terms, idioms and proverbs: the block gloss becomes the derivation note
+              extractLinkList(ws.getContent(), (t, g, u) -> wdh.registerDerivation(t, g), null);
             } else if ("Köken".equals(h4)) {
               // Etymology
             } else if (ignoreHeadings.contains(h4)) {
@@ -384,30 +397,51 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return cleanUpMarkup(value.getText(), true).trim();
   }
 
+  /** Receives each link of a link list section, with its gloss and usage (both may be null). */
+  private interface LinkSink {
+    void accept(String target, String gloss, String usage);
+  }
+
   /**
-   * Nym section of a PoS: nyms of the entry. A {{Üst|gloss}}..{{Alt}} block glosses its items, a
-   * leading {{anlam|..}} glosses the items of its line, {{şerh|..}} qualifies the preceding item.
+   * Link list section of a PoS (nyms, derived terms, idioms, proverbs). A {{Üst|gloss}}..{{Alt}}
+   * block glosses its items, a leading {{anlam|..}} glosses the items of its line, {{şerh|..}}
+   * qualifies the preceding item. Items are [[links]] or {{l|tr|..}}; {{sütun|N|..}} lists are
+   * entered.
    */
-  private void extractNymSection(WikiContent content, String nymType) {
-    String blockGloss = null;
+  private void extractLinkList(WikiContent content, LinkSink sink, String blockGloss) {
     for (Token t : content.wikiTokens()) {
       if (t instanceof Template tpl) {
         String name = tpl.getName().trim();
-        if ("Üst".equals(name) || "üst".equals(name)) {
+        if ("Üst".equalsIgnoreCase(name)) {
           String g = tpl.getParsedArgs().get("1");
           blockGloss = null == g || g.isBlank() ? null : g.trim();
-        } else if ("Alt".equals(name) || "alt".equals(name)) {
+        } else if ("Alt".equalsIgnoreCase(name)) {
           blockGloss = null;
+        } else if ("sütun".equals(name)) {
+          for (WikiContent arg : tpl.getArgs().values()) {
+            extractLinkList(arg, sink, blockGloss);
+          }
+        } else if (null != turkishLinkTarget(tpl)) {
+          extractLinkLine(List.of(t), sink, blockGloss);
         }
       } else if (t instanceof IndentedItem item) {
-        extractNymLine(item.getContent().tokens(), nymType, blockGloss);
+        extractLinkLine(item.getContent().tokens(), sink, blockGloss);
       } else if (t instanceof InternalLink) {
-        extractNymLine(List.of(t), nymType, blockGloss);
+        extractLinkLine(List.of(t), sink, blockGloss);
       }
     }
   }
 
-  private void extractNymLine(List<Token> tokens, String nymType, String gloss) {
+  /** The target of a {{l|tr|X}} template, null for any other template or language. */
+  private static String turkishLinkTarget(Template tpl) {
+    if (!"l".equals(tpl.getName().trim()) || !"tr".equals(tpl.getParsedArgs().get("1"))) {
+      return null;
+    }
+    String target = tpl.getParsedArgs().get("2");
+    return null == target || target.isBlank() ? null : target.trim();
+  }
+
+  private void extractLinkLine(List<Token> tokens, LinkSink sink, String gloss) {
     String target = null;
     String usage = null;
     for (Token t : tokens) {
@@ -417,19 +451,22 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
       } else if (t instanceof Template tpl && qualifierTemplates.contains(tpl.getName().trim())) {
         String u = tpl.getParsedArgs().get("1");
         usage = null == u ? null : cleanUpMarkup(u, true).trim();
-      } else if (t instanceof InternalLink l) {
-        registerSectionNym(target, nymType, gloss, usage);
-        target = l.getTargetText().trim();
+      } else if (t instanceof InternalLink || t instanceof Template tpl && null != turkishLinkTarget(tpl)) {
+        acceptLink(sink, target, gloss, usage);
+        target = t instanceof InternalLink l ? l.getTargetText().trim() : turkishLinkTarget((Template) t);
         usage = null;
       }
     }
-    registerSectionNym(target, nymType, gloss, usage);
+    acceptLink(sink, target, gloss, usage);
+  }
+
+  private static void acceptLink(LinkSink sink, String target, String gloss, String usage) {
+    if (null != target && !target.isEmpty()) {
+      sink.accept(target, null == gloss || gloss.isEmpty() ? null : gloss, usage);
+    }
   }
 
   private void registerSectionNym(String target, String nymType, String gloss, String usage) {
-    if (null != target && !target.isEmpty()) {
-      Resource glossResource = null == gloss || gloss.isEmpty() ? null : wdh.createGlossResource(gloss);
-      wdh.registerNymRelation(target, nymType, glossResource, usage);
-    }
+    wdh.registerNymRelation(target, nymType, null == gloss ? null : wdh.createGlossResource(gloss), usage);
   }
 }

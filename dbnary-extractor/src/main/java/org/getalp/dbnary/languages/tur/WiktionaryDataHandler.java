@@ -39,6 +39,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Ünlem", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
 
     posAndTypeValueMap.put("Soyadı", posAndTypeValueMap.get("Özel ad"));
+    posAndTypeValueMap.put("Sayı adı", posAndTypeValueMap.get("Sayı"));
+    posAndTypeValueMap.put("Sıral sayı", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Yardımcı eylem", posAndTypeValueMap.get("Eylem")); // auxiliary verb
+    posAndTypeValueMap.put("Ek eylem", new PosAndType(LexinfoOnt.copula, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Birleşik eylem", posAndTypeValueMap.get("Eylem")); // compound verb
+    posAndTypeValueMap.put("Birleşik ad", posAndTypeValueMap.get("Ad")); // compound noun
+    posAndTypeValueMap.put("Ön Ad", posAndTypeValueMap.get("Ön ad"));
+    posAndTypeValueMap.put("Önad", posAndTypeValueMap.get("Ön ad"));
+    posAndTypeValueMap.put("ön ad", posAndTypeValueMap.get("Ön ad"));
 
     // Excerpt taken from template "Şablon:İsim soylu kelime" in Turkish
     posAndTypeValueMap.put("Aile ismi", posAndTypeValueMap.get("Soyadı"));

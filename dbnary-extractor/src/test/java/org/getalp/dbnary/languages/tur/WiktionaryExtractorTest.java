@@ -240,8 +240,6 @@ public class WiktionaryExtractorTest {
     assertEquals(0, count(m, OntolexOnt.LexicalEntry));
   }
 
-  @Disabled("{{ç}} extra args are dumped as a Java map in usage (\"{3=m}\", \"{tr=sed}\", \"{ç=adaq}\", \"{3=}\") and the "
-      + "[transliteration] following the template is lost")
   @Test
   public void extractsTranslationGenderAndTransliteration() throws IOException {
     for (String[] p : new String[][] {{"aralik", "aralık"}, {"uc", "üç"}, {"ayak", "ayak"}, {"gercek", "gerçek"}}) {
@@ -250,6 +248,27 @@ public class WiktionaryExtractorTest {
     Model m = extract("gercek", "gerçek");
     Resource rus = m.listSubjectsWithProperty(DBnaryOnt.writtenForm, m.createLiteral("истина", "ru")).next();
     assertTrue(rus.hasProperty(DBnaryOnt.usage) && rus.getProperty(DBnaryOnt.usage).getString().contains("ístina"));
+    // {{ç|ru|истина|f}} [ístina]: gender then transliteration; {{ç|ru|правда}} [pravda].
+    assertEquals(Set.of("f|tr=ístina"), usagesOf(m, "истина", "ru"));
+    assertEquals(Set.of("tr=pravda"), usagesOf(m, "правда", "ru"));
+    // {{ç|ko|셋|tr=sed}}
+    assertEquals(Set.of("tr=sed"), usagesOf(extract("uc", "üç"), "셋", "ko"));
+    // {{ç|el|φασόλι|n}} {{belirtici|ürün}}, {{ç|el|φασολιά|d}} {{belirtici|bitki}}
+    Model f = extract("fasulye", "fasulye");
+    assertEquals(Set.of("n|ürün"), usagesOf(f, "φασόλι", "el"));
+    assertEquals(Set.of("d|bitki"), usagesOf(f, "φασολιά", "el"));
+  }
+
+  @Test
+  public void extractsCeviriTemplatesLikeC() {
+    Model m = extractPage("dogmatizm", "==Türkçe==\n===Ad===\n# a\n====Çeviriler====\n" + "*Almanca: {{ç|de|Dogmatismus|m}}, {{çeviri|de|Rechthaberei|f}}\n");
+    assertEquals(Set.of("m"), usagesOf(m, "Dogmatismus", "de"));
+    assertEquals(Set.of("f"), usagesOf(m, "Rechthaberei", "de"));
+  }
+
+  private static Set<String> usagesOf(Model m, String word, String lang) {
+    return m.listSubjectsWithProperty(DBnaryOnt.writtenForm, m.createLiteral(word, lang)).toList().stream()
+        .map(r -> r.hasProperty(DBnaryOnt.usage) ? r.getProperty(DBnaryOnt.usage).getString() : "").collect(Collectors.toSet());
   }
 
   // --------------------------------------------------------------------------------------------

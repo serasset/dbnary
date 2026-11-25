@@ -3,6 +3,7 @@
  */
 package org.getalp.dbnary.languages.tur;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -233,46 +234,112 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-  public void extractTranslations(WikiContent wk) {
-    // if (log.isDebugEnabled()) {
-    // ClassBasedFilter lis = new ClassBasedFilter().allowListItem();
-    // wk.filteredTokens(lis).stream().forEach(t -> log.debug("trad: {}", t.toString()));
-    // }
+  /** A transliteration written after a translation: {{ç|ru|правда}} [pravda] (LRM marks allowed). */
+  private static final Pattern bracketTransliteration = Pattern.compile("^\\s*\u200e?\\[([^\\[\\]]+?)\u200e?\\]");
 
-    Resource globalGlossResource = null;
-    String globalGloss = "";
-    int rank = 1;
-    for (Token tok : wk.templates()) {
-      Template template = (Template) tok;
-      Map<String, String> args = template.cloneParsedArgs();
-      if ("Üst".equalsIgnoreCase(template.getName())) {
-        if (template.getParsedArgs().get("1") != null) {
-          globalGloss = args.get("1");
-          globalGlossResource = wdh.createGlossResource(globalGloss, rank++);
-        } else {
-          globalGloss = "";
-          globalGlossResource = null;
+  /** {{ç}} is an alias (redirect) of {{çeviri}}. */
+  private static final Set<String> translationTemplates = Set.of("ç", "çeviri");
+
+  /** The block gloss of a translation section: {{Üst|gloss}} .. {{Alt}}. */
+  private Resource translationGloss = null;
+  private int translationGlossRank = 1;
+
+  public void extractTranslations(WikiContent wk) {
+    translationGloss = null;
+    translationGlossRank = 1;
+    for (Token tok : wk.wikiTokens()) {
+      if (tok instanceof IndentedItem item) {
+        extractTranslationLine(item.getContent().tokens());
+      } else if (tok instanceof Template template && !handleTranslationBlockTemplate(template)) {
+        extractTranslationLine(List.of(tok)); // a {{ç}} outside of a list item
+      }
+    }
+  }
+
+  private boolean handleTranslationBlockTemplate(Template template) {
+    String name = template.getName().trim();
+    if ("Üst".equalsIgnoreCase(name)) {
+      String g = template.getParsedArgs().get("1");
+      translationGloss = null == g ? null : wdh.createGlossResource(g, translationGlossRank++);
+      return true;
+    } else if ("Alt".equalsIgnoreCase(name)) {
+      translationGloss = null;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * A translation line: {{ç|lang|word|gender..|tr=..}} items, each optionally followed by a
+   * [transliteration] and/or a {{şerh|..}} qualifier, which go to its usage.
+   */
+  private void extractTranslationLine(List<Token> tokens) {
+    Template pending = null;
+    String translit = null;
+    List<String> qualifiers = new ArrayList<>();
+    for (Token t : tokens) {
+      if (t instanceof Template tpl && translationTemplates.contains(tpl.getName().trim())) {
+        registerTranslationTemplate(pending, translit, qualifiers);
+        pending = tpl;
+        translit = null;
+        qualifiers = new ArrayList<>();
+      } else if (t instanceof Template tpl && handleTranslationBlockTemplate(tpl)) {
+        registerTranslationTemplate(pending, translit, qualifiers);
+        pending = null;
+      } else if (null != pending && t instanceof Template tpl && qualifierTemplates.contains(tpl.getName().trim())) {
+        String q = tpl.getParsedArgs().get("1");
+        if (null != q && !q.isBlank()) {
+          qualifiers.add(cleanUpMarkup(q, true).trim());
         }
-      } else if ("Alt".equalsIgnoreCase(template.getName())) {
-        globalGloss = "";
-        globalGlossResource = null;
-      } else if ("Orta".equals(template.getName())) {
-        // ignore
-      } else if ("ç".equals(template.getName())) {
-        String lang = LangTools.getCode(args.get("1"));
-        String word = args.get("2");
-        args.remove("1");
-        args.remove("2");
-        String usage = null;
-        if (!args.isEmpty()) {
-          usage = args.toString();
-        }
-        if (null != lang && null != word && word.trim().length() > 0) {
-          wdh.registerTranslation(lang, globalGlossResource, usage, word);
+      } else if (null != pending && null == translit && qualifiers.isEmpty() && t instanceof Text text) {
+        Matcher m = bracketTransliteration.matcher(text.getText());
+        if (m.find()) {
+          translit = m.group(1).trim();
         }
       }
-
     }
+    registerTranslationTemplate(pending, translit, qualifiers);
+  }
+
+  private void registerTranslationTemplate(Template tpl, String translit, List<String> qualifiers) {
+    if (null == tpl) {
+      return;
+    }
+    Map<String, String> args = tpl.getParsedArgs();
+    String lang = LangTools.getCode(args.get("1"));
+    String word = args.get("2");
+    if (null == lang || null == word || word.isBlank()) {
+      return;
+    }
+    List<String> usage = new ArrayList<>();
+    String genders = args.entrySet().stream().filter(a -> a.getKey().matches("\\d+") && Integer.parseInt(a.getKey()) >= 3).map(a -> a.getValue().trim())
+        .filter(g -> !g.isEmpty() && !"?".equals(g)).collect(Collectors.joining(",")); // "?": unknown gender
+    if (!genders.isEmpty()) {
+      usage.add(genders);
+    }
+    String tr = firstNonBlank(args.get("tr"), args.get("ç"), translit);
+    if (null != tr) {
+      usage.add("tr=" + tr);
+    }
+    String alt = firstNonBlank(args.get("alt"));
+    if (null != alt) {
+      usage.add("alt=" + alt);
+    }
+    String lit = firstNonBlank(args.get("lit"), args.get("tam"));
+    if (null != lit) {
+      usage.add("lit=" + lit);
+    }
+    usage.addAll(qualifiers);
+    wdh.registerTranslation(lang, translationGloss, usage.isEmpty() ? null : String.join("|", usage), word);
+  }
+
+  private static String firstNonBlank(String... values) {
+    for (String v : values) {
+      if (null != v && !v.isBlank()) {
+        return v.trim();
+      }
+    }
+    return null;
   }
 
 

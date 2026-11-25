@@ -1,0 +1,93 @@
+{{vikipedi}}
+
+==Türkçe==
+
+===Ad===
+{{tr-ad}}
+
+# bir sapın üzerinde esnek tellere gerilmiş, açılıp kapanabilen, [[yağmur]] ve [[güneş]]ten korunmak için kullanılan, su geçirmez kumaştan yapılmış taşınabilir [[eşya]]
+
+===Kaynakça===
+{{kaynak-TDK}}
+
+====Çeviriler====
+{{üst|tip=çeviriler}}
+*Afrikanca: {{ç|af|sambreel}}
+*Almanca: {{ç|de|Parapluie|m}}, {{ç|de|Regenschirm|m}}
+*Aragonca: {{ç|an|bateaguas}}, {{ç|an|batiaguas}}
+*Arapça: {{ç|ar|مِظَلَّة}}
+*Arnavutça: {{ç|sq|çadër}}, {{ç|sq|ombrellë}}
+*Asturyasça: {{ç|ast|paragües}}
+*Azerice: {{ç|az|çətir}}
+*Baskça: {{ç|eu|euritako}}, {{ç|eu|aterki}}, {{ç|eu|goardasol}}, {{ç|eu|parasola}}
+*Bretonca: {{ç|br|disglavier}}, {{ç|br|paraplu}}
+*Bulgarca: {{ç|bg|омбрела|f}}, {{ç|bg|чадър|m}}
+*Çeçence: {{ç|ce|zontik}}
+*Çekçe: {{ç|cs|deštník}}
+*Çince: {{ç|zh|雨伞}}
+*Danca: {{ç|da|paraply}}
+*Endonezce: {{ç|id|payung}}
+*Esperanto dili: {{ç|eo|ombrelo}}
+*Estonca: {{ç|et|vihmavari}}
+*Faroe dili: {{ç|fo|skjól}}
+*Farsça: {{ç|fa|چتر}}
+*Felemenkçe: {{ç|nl|paraplu}}
+*Fince: {{ç|fi|sateenvarjo}} (yağmur şemsiyesi), {{ç|fi|aurinkovarjo}} (güneş şemsiyesi)
+*Fransızca: {{ç|fr|parapluie}}, {{ç|fr|pébroc}}, {{ç|fr|tom-pouce}}
+*Frizce: {{ç|fy|paraplu}}
+*Galce: {{ç|cy|ymbarél}}
+*Galiçyaca: {{ç|gl|paraugas}}
+*Guarani dili: {{ç|gn|ymo’ãha}}, {{ç|gn|amamo’ãha}}
+*Gucaratça: {{ç|gu|છત્રી}}
+*Hintçe: {{ç|hi|छाता}}
+*İbranice: {{ç|he|מטריה}}
+*İngilizce: {{ç|en|umbrella}}
+*İrlandaca: {{ç|ga|scáth fearthainne}}
+*İspanyolca: {{ç|es|paraguas}}
+*İsveççe: {{ç|sv|paraply}}, {{ç|sv|parasoll}}
+*İsviçre Almancası: [[Rägeschirm]]
+*İtalyanca: {{ç|it|ombrello}}, {{ç|it|ombrella}}
+*İzlandaca: {{ç|is|regnhlíf}}, {{ç|is|sólhlíf}}
+*Japonca: {{ç|ja|傘}}
+*Katalanca: {{ç|ca|paraigua}}
+*Keçuva dili: {{ç|qu|para achiwa}}
+*Korece: {{ç|ko|우산}}
+*Kürtçe: {{ç|ku|berbaran}}, {{ç|ku|چه تر}}, {{ç|ku|sîwan}}
+*Normanca: {{ç|nrf|ambrela}}
+*Latince: {{ç|la|umbella}}, {{ç|la|umbraculum}}
+*Lehçe: {{ç|pl|parasol}}, {{ç|pl|parasolka}}
+*Letonca: {{ç|lv|lietussargs}}
+*Lingala: {{ç|ln|longembu}}
+*Litvanca: {{ç|lt|skėtis}}
+*Lüksemburgca: {{ç|lb|Regenschirm}}
+*Maasai dili: {{ç|mas|emafuli}}
+*Macarca: {{ç|hu|esernyő}}, {{ç|hu|ernyő}}
+*Makedonca: {{ç|mk|чадор}}
+*Malgaşça: {{ç|mg|elo}}
+*Malayca: {{ç|ms|payung}}
+*Maorice: {{ç|mi|amarara}}
+*Marathi dili: {{ç|mr|छत्री}}
+*Moğolca: {{ç|mn|шүхэр}}
+*Norveççe: {{ç|no|paraply}}
+*Oksitanca: {{ç|oc|para-pluèja}}
+*Pencapça: {{ç|pa|ਛਤਰੀ}}, {{ç|pa|ਛਾਤਾ}}
+*Portekizce: {{ç|pt|umbrela}}, {{ç|pt|umbela}}, {{ç|pt|guarda-chuva}}
+*Reto Romanca: {{ç|rm|paraplievgia}}
+*Rumence: {{ç|ro|umbrelă}}
+*Rusça: {{ç|ru|зо́нтик|m}}
+*Samoaca: {{ç|sm|fa'amalu}}
+*Sanskritçe: {{ç|sa|छत्रम्}}
+*Sırp-Hırvatça: {{ç|sh|kišobran}}, {{ç|sh|suncobran}}
+*Şona dili: {{ç|sn|amburera}}
+*Savahili dili: {{ç|sw|mwavuli}}
+*Sırp-Hırvatça: {{ç|sh|кишобран}}
+*Sicilyaca: {{ç|scn|paracqua}}
+*Slovakça: {{ç|sk|dáždnik}}
+*Slovence: {{ç|sl|dežnik}}
+*Tatarca: {{ç|tt|şämsiä}}, {{ç|tt|zontik}}
+*Tayca: {{ç|th|ร่ม}}
+*Türkmence: {{ç|tk|saaýavaan}}, {{ç|tk|saýawan}}
+*Ukraynaca: {{ç|uk|парасолька}}
+*Venedikçe: {{ç|vec|ombrèa}}, {{ç|vec|onbrela}}
+*Yunanca: {{ç|el|ομπρέλα}}
+{{alt}}

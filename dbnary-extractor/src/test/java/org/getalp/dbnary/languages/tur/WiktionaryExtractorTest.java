@@ -328,6 +328,25 @@ public class WiktionaryExtractorTest {
     assertEquals(java.util.Map.of("kâfi -> kâfi", 2L), glossAttachments(extract("kafi", "kâfi")));
   }
 
+  // A level 4 ====Çeviriler==== after a non-PoS level 3 section (Kaynakça, Ek okumalar, Köken..)
+  // belongs to that section, not to a PoS: 3,497 pages in the 2026-11-01 dump, many created when
+  // CavlakBOT promoted ====Kaynakça==== to level 3 (Oct. 2026). It is page level, like a level 3
+  // ===Çeviriler===: single PoS -> entry, gloss naming the PoS of exactly one entry -> entry, else
+  // page.
+
+  @Disabled("a ====Çeviriler==== under a non-PoS level 3 section is ignored: no translation at all")
+  @Test
+  public void extractsTranslationSectionsUnderNonPosSections() throws IOException {
+    // şemsiye: ===Ad=== then ===Kaynakça=== / ====Çeviriler==== (105 translations in 2026-09-01).
+    assertEquals(java.util.Map.of(" -> şemsiye__Ad__1", 104L), glossAttachments(extract("semsiye", "şemsiye")));
+    // korgeneral: ===Ad=== then ===Köken=== / ====Çeviriler====.
+    assertEquals(java.util.Map.of(" -> korgeneral__Ad__1", 3L), glossAttachments(extract("korgeneral", "korgeneral")));
+    // bir: Ad, Ön ad, Belirteç then ===Ek okumalar=== / 2 x ====Çeviriler==== (206 lost translations).
+    // "sayı" names the Sayı PoS, absent from the page -> page.
+    assertEquals(java.util.Map.of("sembol -> bir", 10L, "insan, şey -> bir", 18L, "belirteç -> bir__Belirteç__1", 6L, "sayı -> bir", 172L),
+        glossAttachments(extract("bir", "bir")));
+  }
+
   // --------------------------------------------------------------------------------------------
   // {{Alt}} closes a gloss block: extractTranslations resets the gloss text but not the gloss
   // resource, so a translation after {{Alt}} keeps the previous block's gloss.

@@ -21,7 +21,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Atasözü", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Bağlaç", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Belirteç", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Deyim", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Deyim", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Emir", new PosAndType(LexinfoOnt.imperative, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Erkek adı", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry)); // Male name ?
     posAndTypeValueMap.put("Erkek ismi", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry)); // Male name ?

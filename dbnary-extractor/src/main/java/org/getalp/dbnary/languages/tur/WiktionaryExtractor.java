@@ -232,7 +232,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     for (Token tok : wk.templates()) {
       Template template = (Template) tok;
       Map<String, String> args = template.cloneParsedArgs();
-      if ("Üst".equals(template.getName())) {
+      if ("Üst".equalsIgnoreCase(template.getName())) {
         if (template.getParsedArgs().get("1") != null) {
           globalGloss = args.get("1");
           globalGlossResource = wdh.createGlossResource(globalGloss, rank++);
@@ -240,8 +240,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
           globalGloss = "";
           globalGlossResource = null;
         }
-      } else if ("Alt".equals(template.getName())) {
+      } else if ("Alt".equalsIgnoreCase(template.getName())) {
         globalGloss = "";
+        globalGlossResource = null;
       } else if ("Orta".equals(template.getName())) {
         // ignore
       } else if ("ç".equals(template.getName())) {

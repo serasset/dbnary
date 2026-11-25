@@ -195,12 +195,13 @@ public class WiktionaryExtractorTest {
     assertEquals(1, count(m, OntolexOnt.MultiWordExpression));
   }
 
-  @Disabled("Deyim (idiom) is mapped to ontolex:LexicalEntry in WiktionaryDataHandler, Atasözü/Sözce are MultiWordExpression")
   @Test
   public void typesIdiomsAsMultiWordExpressions() throws IOException {
     Model m = extract("limon_gibi", "limon gibi");
     assertEquals(1, count(m, OntolexOnt.MultiWordExpression));
-    assertEquals(0, count(m, OntolexOnt.LexicalEntry));
+    // Every entry is also typed ontolex:LexicalEntry
+    // (OntolexBasedRDFDataHandler.initializeLexicalEntry).
+    assertEquals(1, count(m, OntolexOnt.LexicalEntry));
   }
 
   @Disabled("Türetilmiş kavramlar / Deyimler / Atasözleri sections are skipped: no derived terms are extracted")
@@ -305,7 +306,6 @@ public class WiktionaryExtractorTest {
     assertEquals(java.util.Map.of("ad -> boğmak__Ad__1", 1L, "ön ad -> boğmak", 8L), glossAttachments(extract("bogmak", "boğmak")));
   }
 
-  @Disabled("lowercase {{üst|gloss}} is not recognised: translations of per-entry sections lose their gloss")
   @Test
   public void keepsLowercaseUstGlossesOnPerEntryTranslations() throws IOException {
     assertEquals(java.util.Map.of("kırmızı -> kırmızı__Ad__1", 98L, "kırmızı -> kırmızı__Ön_ad__1", 20L), glossAttachments(extract("kirmizi", "kırmızı")));
@@ -360,7 +360,6 @@ public class WiktionaryExtractorTest {
     }, Collectors.counting()));
   }
 
-  @Disabled("{{Alt}} does not reset the gloss resource: the translation after it is glossed \"birinci\"")
   @Test
   public void altClosesTheGlossBlock() {
     // Never seen alone in the 2026-11-01 dump (27,404 Türkçe Çeviriler sections), but see below.
@@ -377,7 +376,6 @@ public class WiktionaryExtractorTest {
     assertEquals(java.util.Map.of("birinci", 1L, "", 1L), glosses(m));
   }
 
-  @Disabled("{{Üst|g}} .. {{Alt}} {{üst|h}} ..: the stale gloss g leaks into the lowercase block (9 pages in the dump)")
   @Test
   public void altFollowedByLowercaseUstDoesNotKeepThePreviousGloss() throws IOException {
     // Cezayir: today all 23 are glossed "ülke", including the 8 "şehir" ones.

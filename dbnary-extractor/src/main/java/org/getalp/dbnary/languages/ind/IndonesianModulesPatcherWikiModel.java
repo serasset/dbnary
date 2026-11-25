@@ -28,7 +28,10 @@ public class IndonesianModulesPatcherWikiModel extends DbnaryWikiModel {
           return getAndPatchModule(parsedPagename, map,
               t -> t.replace("local traceback = debug.traceback", "local traceback = function() \n" + "    return \"\"\n" + "end"));
         case "quote":
-          return getAndPatchModule(parsedPagename, map, t -> t.replace("\nlocal function ", "\nfunction "), t -> t.replace("\nlocal ", "\n"));
+          // Too many locals for our compiled Lua: make top level local functions and assignments
+          // global. Only un-local assignments ("local x = ..." -> "x = ..."): a declaration-only
+          // "local a, b" would become the invalid statement "a, b".
+          return getAndPatchModule(parsedPagename, map, t -> t.replace("\nlocal function ", "\nfunction "), t -> t.replaceAll("\nlocal ([\\w, ]+=)", "\n$1"));
       }
     }
     return super.getRawWikiContent(parsedPagename, map);

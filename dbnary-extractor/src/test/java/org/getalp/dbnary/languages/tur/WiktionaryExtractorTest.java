@@ -440,7 +440,6 @@ public class WiktionaryExtractorTest {
     return m.getResource(TUR + entry).listProperties(OntolexOnt.sense).toList().size();
   }
 
-  @Disabled("PoS at level 4 under ===Köken N=== are not seen: gül and koyun have no entry")
   @Test
   public void extractsPosUnderNumberedEtymologies() throws IOException {
     // gül: Köken 1 / ====Ad==== (2 senses, =====Çeviriler===== at level 5).
@@ -461,7 +460,6 @@ public class WiktionaryExtractorTest {
     assertEquals(java.util.Map.of("__ws_1_" + bosom, Set.of("göğüs", "kucak", "sine")), nyms(m, DBnaryOnt.synonym));
   }
 
-  @Disabled("PoS at level 4 under ===Köken N=== are not seen at all, so inflected-only ones cannot be filtered yet")
   @Test
   public void skipsInflectedOnlyEntriesUnderNumberedEtymologies() throws IOException {
     // Definitions made only of {{tr-çekim}} / {{fiil}} (-> {{eylem-hâl}} -> {{tr-çekim}}) are

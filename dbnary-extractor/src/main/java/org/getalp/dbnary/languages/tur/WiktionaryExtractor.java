@@ -198,7 +198,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractTranslations(section.getContent(), null);
       } else if (header.equals("Köken")) {
         // Etymology
-        log.debug("Etymology section ignored in {}", getWiktionaryPageName());
+        extractNestedPosSections(section);
         extractChildTranslationSections(section);
       } else if ("Yanlış".equals(header) || "Yanlış kullanım".equalsIgnoreCase(header)) {
         // Misspelling pages ({{mânâ|doğrusu}} [[correct form]]): not entries
@@ -206,33 +206,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         extractPron(section.getContent());
         extractChildTranslationSections(section);
       } else if (partOfSpeechMarkers.contains(header)) {
-        // Part of speech
-        wdh.initializeLexicalEntry(header);
-        // Extract definitions
-        extractDefinitions(section.getContent());
-        for (Token wikiToken : section.getContent().wikiTokens()) {
-          if (wikiToken instanceof WikiSection) {
-            WikiSection ws = (WikiSection) wikiToken;
-            String h4 = ws.getHeading().getContent().toString().trim();
-            if ("Çeviriler".equals(h4)) {
-              extractTranslations(ws.getContent(), turkishHandler().currentEntry());
-            } else if ("Söyleniş".equals(h4)) {
-              extractPron(ws.getContent());
-            } else if (nymMarkerToNymName.containsKey(h4)) {
-              String nymType = nymMarkerToNymName.get(h4);
-              extractLinkList(ws.getContent(), (t, g, u) -> registerSectionNym(t, nymType, g, u), null);
-            } else if ("Türetilmiş kavramlar".equalsIgnoreCase(h4) || "Deyimler".equals(h4) || "Atasözleri".equals(h4)) {
-              // Derived terms, idioms and proverbs: the block gloss becomes the derivation note
-              extractLinkList(ws.getContent(), (t, g, u) -> wdh.registerDerivation(t, g), null);
-            } else if ("Köken".equals(h4)) {
-              // Etymology
-            } else if (ignoreHeadings.contains(h4)) {
-              // Just ignore
-            } else {
-              log.debug("Unhandled sub section {} in {}", h4, getWiktionaryPageName());
-            }
-          }
-        }
+        extractPosSection(section, header);
       } else {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
         // Kaynakça, Ek okumalar, Çekimleme..: a ====Çeviriler==== there is page level
@@ -243,15 +217,89 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
+  /** Inflection templates: a PoS whose definitions are only these is an inflected form (skipped). */
+  private static final Set<String> inflectionTemplates = Set.of("tr-çekim", "fiil");
+
+  /** A PoS section, at level 3 or at level 4 under ===Köken N===. */
+  private void extractPosSection(WikiSection section, String header) {
+    if (isInflectedOnly(section.getContent())) {
+      log.debug("Inflected form {} ignored in {}", header, getWiktionaryPageName());
+      extractChildTranslationSections(section); // at-end translations of the page may sit there
+      return;
+    }
+    wdh.initializeLexicalEntry(header);
+    // Extract definitions
+    extractDefinitions(section.getContent());
+    for (Token wikiToken : section.getContent().wikiTokens()) {
+      if (wikiToken instanceof WikiSection) {
+        WikiSection ws = (WikiSection) wikiToken;
+        String h4 = ws.getHeading().getContent().toString().trim();
+        if ("Çeviriler".equals(h4)) {
+          extractTranslations(ws.getContent(), turkishHandler().currentEntry());
+        } else if ("Söyleniş".equals(h4)) {
+          extractPron(ws.getContent());
+        } else if (nymMarkerToNymName.containsKey(h4)) {
+          String nymType = nymMarkerToNymName.get(h4);
+          extractLinkList(ws.getContent(), (t, g, u) -> registerSectionNym(t, nymType, g, u), null);
+        } else if ("Türetilmiş kavramlar".equalsIgnoreCase(h4) || "Deyimler".equals(h4) || "Atasözleri".equals(h4)) {
+          // Derived terms, idioms and proverbs: the block gloss becomes the derivation note
+          extractLinkList(ws.getContent(), (t, g, u) -> wdh.registerDerivation(t, g), null);
+        } else if ("Köken".equals(h4)) {
+          // Etymology
+        } else if (ignoreHeadings.contains(h4)) {
+          // Just ignore
+        } else {
+          log.debug("Unhandled sub section {} in {}", h4, getWiktionaryPageName());
+        }
+      }
+    }
+  }
+
+  /** True when every definition is a sole {{tr-çekim|..}} / {{fiil|..}} (punctuation allowed). */
+  private static boolean isInflectedOnly(WikiContent content) {
+    boolean any = false;
+    for (Token t : content.wikiTokens()) {
+      if (t instanceof NumberedListItem item && item.getListPrefix().length() == item.getLevel()) {
+        List<Token> significant =
+            item.getContent().tokens().stream().filter(x -> !(x instanceof Text && x.getText().replaceAll("[\\s.,;]", "").isEmpty())).toList();
+        if (significant.size() != 1 || !(significant.get(0) instanceof Template tpl) || !inflectionTemplates.contains(tpl.getName().trim())) {
+          return false;
+        }
+        any = true;
+      }
+    }
+    return any;
+  }
+
+  /** PoS headings at level 4 under an etymology (===Köken N=== / ====Ad====). */
+  private void extractNestedPosSections(WikiSection section) {
+    for (Token t : section.getContent().wikiTokens()) {
+      if (t instanceof WikiSection ws) {
+        String h = ws.getHeading().getContent().toString().trim().replaceFirst("\\s+\\d+$", "");
+        if (partOfSpeechMarkers.contains(h)) {
+          extractPosSection(ws, h);
+        }
+      }
+    }
+  }
+
   private WiktionaryDataHandler turkishHandler() {
     return (WiktionaryDataHandler) wdh;
   }
 
-  /** A ====Çeviriler==== under a non-PoS level 3 section belongs to the page. */
+  /**
+   * A Çeviriler section under a non-PoS section (Kaynakça, Köken N / ====Türetilmiş kavramlar====,
+   * ..) belongs to the page. PoS subsections are left to extractNestedPosSections.
+   */
   private void extractChildTranslationSections(WikiSection section) {
     for (Token t : section.getContent().wikiTokens()) {
-      if (t instanceof WikiSection ws && "Çeviriler".equals(ws.getHeading().getContent().toString().trim())) {
-        extractTranslations(ws.getContent(), null);
+      if (t instanceof WikiSection ws) {
+        String h = ws.getHeading().getContent().toString().trim();
+        if ("Çeviriler".equals(h)) {
+          extractTranslations(ws.getContent(), null);
+        } else if (!partOfSpeechMarkers.contains(h.replaceFirst("\\s+\\d+$", ""))) {
+          extractChildTranslationSections(ws);
+        }
       }
     }
   }

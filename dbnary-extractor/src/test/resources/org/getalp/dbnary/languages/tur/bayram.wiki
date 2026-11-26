@@ -1,0 +1,144 @@
+{{bakınız|Bayram}}
+==Türkçe==
+{{Haftanın kelimesi|43|2006}}
+
+===Köken===
+{{k|dil=tr|otk}} bayımak/baymak (varlıklı, mutlu, üstün ve etkili olmak anlamında) < bay (varlıklı, üstün, etkili).
+
+===Söyleniş===
+* {{IPA|dil=tr|/baj.ˈɾam/}}
+* {{ses|dil=tr|Tur-bayram.ogg|bayram}}
+* {{h|dil=tr||bay|ram}}
+
+===Ad===
+{{tr-ad}}
+
+# {{t|dil=tr|sosyal etkinlik}} [[dinî]] ya da [[millî]] [[açı]]dan önemli olduğu için kutlanan [[gün]]ler
+#:{{örnek|dil=tr|Cumhuriyet '''bayramı''' yurdumuzda ve dış temsilciliklerimizde törenlerle kutlandı.}}
+#:{{örnek|dil=tr|Ramazan '''bayramınız''' mübarek olsun!}}
+# özel olarak kutlanan [[gün]]
+#:{{örnek|dil=tr|Üzüm '''bayramlarının''' eğlencelerinde bulunmak istiyorum.|Halide Edip Adıvar}}
+# {{mecaz|dil=tr}} [[neşe|neş'e]], [[sevinç]]
+#:{{örnek|dil=tr|Sandalda, gemide bir sevinç, bir '''bayram''', el çırpmalar, gülüşler, yaşalar.|Necati Cumalı}}
+# büyük eğlence
+#:{{örnek|dil=tr|Bu yıl kayısı '''bayramı''' sönük geçti.}}
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+====Eş anlamlılar====
+* {{mânâ|[[Hristiyan]]ların/[[Musevi|Mûsevîlerin]] bayramı}} [[yortu]]
+* {{mânâ|millî bayram}} [[ulusal bayram]]
+
+====Zıt anlamlılar====
+* [[matem]]
+
+====Üst kavramlar====
+* [[anma]], [[eğlence]]
+
+====Yan kavramlar====
+* [[düğün]], [[eğlence]], [[şölen]], [[tören]]
+
+====Alt kavramlar====
+{{Üst|dinî bayram|tip=alt kavramlar}}
+* [[arefe]],
+* [[Hamursuz Bayramı]],
+* [[Noel Bayramı]],
+* [[Kurban Bayramı]],
+* [[Ramazan Bayramı]],
+* [[Şeker Bayramı]]
+{{Alt}}
+{{Üst|millî bayram|tip=alt kavramlar}}
+* [[arefe]],
+* [[Atatürk'ü Anma, Gençlik ve Sport Bayramı]],
+* [[Cumhuriyet Bayramı]],
+* [[Zafer Bayramı]]
+{{Alt}}
+{{Üst|özel olarak kutlanan gün|tip=alt kavramlar}}
+* [[bahar bayramı]],
+* [[dinî bayram]], 
+* [[kabotaj bayramı]],
+* [[Nevruz]],
+* [[okuma bayramı]],
+* [[Yenigün Bayramı]]
+{{Alt}}
+
+====Atasözleri====
+{{Üst|sosyal etkinlik|tip=atasözleri}}
+* [[Arife günü aşa ne, bayram günü tıraşa ne?]]
+* [[Arife günü oruç yiyenin bayram günü yüzü kara olur]]
+* [[Arife günü yalan söyleyenin bayram günü yüzü kara çıkar]]
+* [[At ölür, itlere bayram olur]]
+* [[Ay gördünse bayram et]]
+* [[Ayı görmeden bayram etme]]
+* [[Bayram değil, seyran değil, eniştem beni niye öptü]]
+* [[Bayram etiyle it tavlanmaz]]
+* [[Bayramda borç ödeyene ramazan kısa gelir]]
+* [[Deliye her gün bayram]]
+* [[Dilenciye borçlu olma, ya düğünde ister ya bayramda]]
+* [[Düğün değil bayram değil eniştem beni niye öptü]]
+* [[El ile gelen düğün, bayram]]
+* [[Meyhaneceinin yüzünü bayram topu güldürür]]
+* [[Ramazanda oruç yiyenin bayramda yüzü kara olsun]]
+* [[Ramazanda yalan söyleyenin bayramda yüzü kara çıkar]]
+{{Alt}}
+
+====Deyimler====
+{{Üst|sosyal etkinlik|tip=deyimler}}
+* [[bayramlık ağzını bozmak]],
+* [[bayram haftasını mangal tahtası anlamak]],
+* [[bayram etmek]],
+* [[deliye her gün bayram]]
+{{Alt}}
+
+====Kelime birliktelikleri====
+{{Üst|sosyal etkinlik|tip=kelime birliktelikleri}}
+* [[bayram alayı]],
+* [[bayram ayı]],
+* [[bayram beyi]],
+* [[bayram böceği]],
+* [[bayram çocuğu]],
+* [[bayram gazetesi]],
+* [[bayram günü]],
+* [[bayram havası]],
+* [[bayram hediyesi]],
+* [[bayram namazı]],
+* [[bayram şekeri]],
+* [[bayram tebriği]],
+* [[bayram topu]],
+* [[bayram yapmak]],
+* [[bayram yeri]],
+* [[bayram ziyareti]],
+* [[bayramda seyranda]],
+* [[bayramdan bayrama]],
+* [[bayramın kutlu olsun]],
+* [[bayramın mübarek olsun]]
+{{Alt}}
+
+====Çeviriler====
+{{Üst|sosyal etkinlik|tip=çeviriler}}
+* Almanca: {{ç|de|Fest|n}}
+* Azerice: {{ç|az|bayram}}
+* Başkurtça: {{ç|ba|байрам}}
+* Çekçe: {{ç|cs|svátek|m}}
+* Fince: {{ç|fi|juhla}}
+* İngilizce: {{ç|en|festival}}
+* İspanyolca: {{ç|es|fiesta|f}}
+* İtalyanca: {{ç|it|festa|f}}
+* Latince: {{ç|la|festum|f}}
+* Portekizce: {{ç|pt|festa|f}}
+* Tatarca: {{ç|tt|bäyräm}}
+{{Alt}}
+
+===Kaynakça===
+* {{Kaynak-TDK}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}
+
+==Azerice==
+
+===Ad===
+{{başlık başı|az|ad}}
+
+# {{t|dil=az|sosyal etkinlik}} {{b|tr|bayram}}

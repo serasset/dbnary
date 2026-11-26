@@ -1,0 +1,73 @@
+==Türkçe==
+
+===Köken===
+{{devralınan|tr|ota|قید}}, {{kökenli|tr|ar|قَيْد}}.
+
+===Söyleniş===
+* {{IPA|/kɑ.jɯt/|dil=tr}}
+* {{ses|dil=tr|LL-Q256 (tur)-hdayetozsoy-kayit.wav}}
+* {{h|dil=tr||ka|yıt}}
+
+===Ad===
+{{tr-ad}}
+# bir [[yer]]e [[mal|mâl]] [[ederek]] [[defter]]e [[geçirme]]
+#: ''Çocuğun '''kaydı''' bulunamadı.''  
+# [[yazı]]nın, bir [[hesap|hesabın]] [[tarih]], [[numara]] v.s.'nin veya [[kopya]]sının bir [[yer]]de [[yazılı]] [[bulunma]]sı
+# [[önem verme]], [[gözetme]]
+# [[resmî]] [[belge]]
+# [[ses]] veya [[görüntü]]nün [[manyetik]] bant üzerine geçirme işlemi
+# {{mecaz}} [[şart]]
+#: ''Kitabımı geri gönderme '''kaydıyla''' verebilirim.'' 
+# [[sınırlama]], [[davranış]]larını [[çerçeveleme]]
+#: ''Hiçbir '''kayıt''' ileri sürmeksizin iddia edip duruyor.''
+# {{t|mimarlık|dil=tr}} [[pencere çerçevesi]]
+# [[araç]], [[eşya]]
+# {{t|halk ağzı|dil=tr}} [[yiyecek]]
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+====Alt kavramlar====
+* {{mana|kopya bulunması}} [[kesin kayıt]], [[nüfus kaydı]], [[ön kayıt]], [[sabıka kaydı]]
+* {{mana|şart}} [[düşey kayıt]], [[yatay kayıt]]
+* {{mana|sınırlama}} [[kış kaydı]]
+
+====Türetilmiş kavramlar====
+* [[kayıtça]]
+* [[kayıtçı]]
+* [[kayıtçık]]
+* [[kayıtken]]
+* [[kayıtla]]
+* [[kayıtlı]]
+* [[kayıtsa]]
+* [[kayıtsı]]
+* [[kayıtsız]]
+* {{mana|şart}} [[kayıt çatkısı]]
+
+====Sözcük birliktelikleri====
+* [[kayda değer]]
+* [[kayda geçirmek]]
+* [[kaydedilmek]]
+* [[kaydetmek]]
+* [[kaydıhayat]]
+* [[kaydıihtiyat]]
+* [[kaydını silmek]]
+* [[kaydolmak]]
+* [[kayıt altına girmek]]
+* [[kayıt defteri]]
+* [[kayıt dışı]]
+* [[kayıt kabul]]
+* [[kayıt koymak]]
+* [[kayıt kuyut]]
+* [[kayıttan düşmek]]
+
+====Çeviriler====
+{{üst|kopya bulunması|tip=çeviriler}}
+* Kırım Tatarcası: {{ç|crh|qayd}}
+{{alt}}
+
+===Kaynakça===
+* {{kaynak-TDK}}
+
+===Ek okumalar===
+* {{proje bağlantısı|vikipedi}}

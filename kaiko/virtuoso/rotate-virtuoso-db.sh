@@ -80,7 +80,7 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/virtuoso-opensource/bin
 VIRTUOSODAEMON=virtuoso-t
 SERVERPORT=1112
 SSLSERVERPORT=2112
-WEBSERVERPORT=8899
+WEBSERVERPORT=8989
 VIRTUOSO_PLUGINS_HOSTING=/usr/lib/virtuoso-opensource-7/hosting
 VAD_INSTALL_DIR=/usr/share/virtuoso-opensource-7/vad/
 VSP_INSTALL_DIR=/var/lib/virtuoso-opensource-7/vsp/
@@ -227,6 +227,7 @@ iso3Lang[ca]="cat"
 iso3Lang[ga]="gle"
 iso3Lang[da]="dan"
 iso3Lang[cs]="ces"
+iso3Lang[et]="est"
 
 
 SAVETMPDIR=$TMPDIR
@@ -293,7 +294,6 @@ fi
     ## TODO: expand Disambiguated translations + foreign data ? + etymology
     pushd "$DATASETDIR"
     # Decompress in parallel
-    #bunzip2 ./*.ttl.bz2
     find ./*.ttl.bz2 -print0 | xargs -0 -n 1 -P 6 bunzip2
   fi
 )

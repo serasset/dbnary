@@ -1,0 +1,59 @@
+==Türkçe==
+
+===Köken===
+{{k|el|dil=tr}}
+
+===Ad===
+{{tr-ad}}
+[[File:Kaluwara-Diospyros ebenum-Sri Lanka (1).jpg|küçükresim|Abanoz ağacı (1)]]
+[[File:Ebony wood 7 (27440137150).jpg|küçükresim|Abanoz (2)]]
+# {{t|dil=tr|abanozgiller|ağaçlar}}  Abanozgillerden, sıcak ülkelerde yetişen, kerestesinden yararlanılan birçok ağacın ortak adı, Diospyros ebenum.
+# {{t|malzemeler|dil=tr}} Bu ağacın ağır, sert ve siyah renkli tahtası
+# {{t|dil=tr|mecaz|renkler}} Koyu, parlak siyah.
+#* {{kt|başlık=İzmir Postası'nın Adamları|yazar=Ahmet BÜKE|yayıncı=Kanat Yayınları|yıl=2004|sayfa=83|tanıklık='''Abanoz''' renkli kesme dil "tık" içeriye düşüyor.|dil=tr}}
+
+===Köken 2=== 
+
+*1940'ların sonuna kadar yaşamış İstanbul'da meşhur genelevler sokağına nispetle
+
+===Ad===
+{{tr-ad}}
+# {{t|dil=tr|fahişelik|binalar|argo}} [[genelev]].
+#* {{tanıklık|dil=tr|yazar=Ümit Yaşar OĞUZCAN|başlık=Acılar Denizi|yıl=1997|yayıncı=Özgür Yayınları|baskı=10
+|sayfa=80
+|tanıklık= Kirli çarşaflar ağardı karanlıktan /  '''Abanoz sokağında''' akşam olmaktadır / Alçacık sedirlerde üryân kadınlar}}
+#* {{kt|yıl=2012 |yazar=Attilâ İlhan |başlık=Sokaktaki Adam|sayfa=70|tanıklık='''Abanoz''' Sokağı yapışkan, ıslak ve müstekreh. |tercüme=|yayıncı=İş Bankası Kültür Yayınları|ISBN= |oclc= |dil=tr}}
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+===Ön ad===
+{{tr-ön ad}}
+# Abanoz tahtasından yapılmış
+#* {{kt|başlık=Klan|yazar=Cem KALENDER|yayıncı=Kavis Kitap|yıl=2009|sayfa=297|tanıklık=Davut'un çaldığı zurna '''abanozdan''' yapılmış meşhur bir zurnaydı.|dil=tr}} 
+# {{t|renkler|dil=tr}} abanoz renkte olan
+
+====Deyimler====
+[[abanoz gibi]], 
+[[abanoza dönmek]], 
+[[abanoz kesilmek]]
+
+====Çeviriler====
+{{Üst|ad|tip=çeviriler}}
+*Almanca: {{ç|de|Ebenholz|n}}
+*Felemenkçe: {{ç|nl|ebben}}
+*Fince: {{ç|fi|eebenpuu}}
+*Fransızca: {{ç|fr|ébène|f}}
+*İngilizce: {{ç|en|ebony}}
+*Kürtçe: {{ç|ku|ebenûs}}
+{{Alt}}
+
+====Çeviriler====
+{{Üst|ön ad|tip=çeviriler}}
+*Bulgarca: {{ç|bg|абанос}}
+*Fince: {{ç|fi|eebenpuinen}}, {{ç|fi|eebenpuun värinen}}
+*Lehçe: {{ç|pl|hebanowy}}
+{{Alt}}
+
+===Kaynakça===
+* {{kaynak-TDK}}

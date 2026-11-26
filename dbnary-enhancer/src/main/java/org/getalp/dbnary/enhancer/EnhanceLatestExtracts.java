@@ -34,6 +34,10 @@ import org.getalp.LangTools;
 import org.getalp.dbnary.enhancer.evaluation.EvaluationStats;
 import org.getalp.dbnary.enhancer.evaluation.TranslationGlossesStatsModule;
 
+/**
+ * @deprecated Enhancement is now run in-process by the extractor (ENHANCEMENT feature).
+ */
+@Deprecated
 public class EnhanceLatestExtracts {
 
 

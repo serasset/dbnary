@@ -1,0 +1,58 @@
+==Türkçe==
+
+===Söyleniş===
+* {{IPA|dil=tr|[dʒe.za.ˈjiɾ]}}
+* {{h|dil=tr||Ce|za|yir}}
+
+===Özel ad===
+{{tr-özel ad|k=1}}  
+[[Dosya:Algeria  w1 locator.svg|küçükresim|Cezayir'in haritadaki yeri.]]
+
+# {{t|dil=tr|ülkeler}} [[Kuzey Afrika]]'da [[ülke]]; [[Afrika]]'nın [[Sudan]]'dan sonra ikinci büyük ülkesi.
+#* {{mt|dil=tr|dergi=Öküz|başlık=Piri Reis'in Papağanı|yazar=Sunay AKIN|yıl=1997|sayı=37|sayfa=41
+|tanıklık= Okyanus'un azgın dalgalarını aşan gemilerin, '''Cezayir'den''' hareket eden korsanların elinden kurtulma şansı hiç yoktu. 
+}}
+# {{t|dil=tr|şehirler|başkentler}} Cezayir'in başkenti ve en büyük şehri 
+
+====Çekimleme====
+{{tr-çekim-özel-1|e}}
+
+====Çeviriler====
+{{Üst|ülke|tip=çeviriler}}
+* Almanca: {{ç|de|Algerien|n}}
+* Arapça: {{ç|ar|الْجَزَائِر|d-ç}}
+* Çince:
+*: Mandarin dili: {{ç|cmn|阿爾及利亞}}, {{ç|cmn|阿尔及利亚|tr=Ā'ěrjílìyà}}
+* Ermenice: {{ç|hy|Ալժիր}}
+* Fince: {{ç|fi|Algeria}}
+* Fransızca: {{ç|fr|Algérie|d}}
+* Galiçyaca: {{ç|gl|Alxeria|d}}
+* Gürcüce: {{ç|ka|ალჟირი}}
+* İngilizce: {{ç|en|Algeria}}
+* İsveççe: {{ç|sv|Algeriet}}
+* İtalyanca: {{ç|it|Algeria|d}}
+* Lehçe: {{ç|pl|Algieria|d}}
+* Somalice: {{ç|so|Aljeeriya}}
+* Yunanca: {{ç|el|Αλγερία|d}}
+{{Alt}}
+
+{{üst|şehir|tip=çeviriler}}
+* Almanca: {{ç|de|Algier}}
+* Arapça: {{ç|ar|الْجَزَائِر|d-ç}}
+* Ermenice: {{ç|hy|Ալժիր}}
+* Fince: {{ç|fi|Alger}}
+* Fransızca: {{ç|fr|Alger}}
+* İngilizce: {{ç|en|Algiers}}
+* İtalyanca: {{ç|it|Algeri}}
+* Lehçe: {{ç|pl|Algier|e}}
+{{alt}}
+
+===Kaynakça===
+* {{proje bağlantısı|vikipedi}}
+
+==Zazaca==
+
+===Özel ad===
+{{zza-özel ad|c=e}}
+
+# {{t|dil=zza|ülkeler}} [[Cezayir]]

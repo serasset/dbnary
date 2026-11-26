@@ -1,0 +1,96 @@
+{{bakınız|AC|Ac|ac}}
+==Türkçe==
+
+===Söyleniş===
+* {{IPA|dil=tr|[ˈɑt͡ʃ]}}
+* {{h|dil=tr||aç}}
+
+===Ön ad===
+{{tr-ön ad}}:The_Hunger_March_in_Copenhagen_(dk).JPG
+[[Dosya:The_Hunger_March_in_Copenhagen_(dk).JPG|küçükresim|{{mana|ön ad}} Aç '''insanlar''' heykeli (2)]]
+# {{t|dil=tr|fizyoloji|yemek içmek}} Yemek yemesi gereken; [[tok]] karşıtı.
+#*     "Baş ağrısı bana eski ve pis otelin aç tahtakurularını bile duyurmadı." - Ömer Seyfettin
+# Yiyecek bulamayan
+#*''Ben hem öksüzüm hem yetimim hem de tam 23 saattir '''açım'''.'' - Yakup Kadri Karaosmanoğlu
+# {{t|dil=tr|mecaz}} Gözü doymaz, gözü doymayan.
+#*''Ne '''aç''' adam''!
+# {{t|dil=tr|mecaz}} Çok istekli, çok hevesli.
+#*''Her zamanki gibi bilgiye '''aç''', her zamanki gibi ağızları lafla, kafaları düşünceyle dolu çalçene yaratıklarız.'' - Ayla Kutlu
+
+===Belirteç===
+{{tr-belirteç}}
+# {{t|dil=tr|fizyoloji}} Karnı doymamış olarak.
+#*''Ben '''aç''' yattım mı kötü kötü rüyâlar görürüm nedense.-- - Orhan Kemal
+
+===Eylem===
+{{tr-eylem}}
+# '''[[açmak]]''' fiilinin ikinci tekil şahıs emir kipi.
+
+====Atasözleri====
+* [[aç aç ile yatınca arada dilenci doğar]]
+* [[aç aman bilmez, çocuk zaman bilmez]]
+* [[aç arslandan tok domuz yeğdir]]
+* [[aç at yol almaz, aç it av almaz]]
+* [[aç ayı oynamaz]]
+* [[aç domuz darıdan çıkmaz]]
+* [[aç tavuk kendini buğday ambarında sanır]]
+* [[aç anansa da kaç]]
+* [[tok, açın hâlinden anlamaz]]
+
+====Deyimler====
+[[acından kimse ölmemiş]], [[acından ölmek]], [[aç açık kalmak]], [[aç bırakmak]], [[aç doyurmak]], [[aç kalmak]], [[aç kurt gibi]], [[aç susuz kalmak]]
+
+====Türetilmiş kavramlar====
+[[aç açına]], [[aç biilaç]], [[açgöz]], [[aç karnına]], [[gözü aç]], [[karnı aç]]
+
+====Çeviriler====
+{{Üst|belirteç|tip=çeviriler}}
+*Almanca: {{ç|de|hungrig}}
+*Arapça: {{ç|ar|َجَوْعَانة|f}} ،{{ç|ar|جَوْعَان|m}}
+*Fince: {{ç|fi|nälissään}}, {{ç|fi|nälkäisenä}}
+*İngilizce: {{ç|en|hungry}}
+*İsveççe: {{ç|sv|hungrig}}
+{{Alt}}
+
+====Çeviriler====
+{{Üst|aç|tip=çeviriler}}
+* Almanca: {{ç|de|hungrig}}
+* Arapça: {{ç|ar|َجَوْعَانة|f}} ،{{ç|ar|جَوْعَان|m}}
+* Azerice: {{ç|az|ac}}
+* Çekçe: {{ç|cs|hladový}}
+* Endonezce: {{ç|id|lapar}}
+* Esperanto: {{ç|eo|malsata}}
+* Felemenkçe: {{ç|nl|hongerig}}
+* Fince: {{ç|fi|nälkäinen}}, {{ç|fi|ravinnoton}}
+* Fransızca: {{ç|fr|affamé}}
+*Fince: {{ç|fi|sanajuuri}}
+* İngilizce: {{ç|en|hungry}}
+* İspanyolca: {{ç|es|hambriento}}
+* İsveççe: {{ç|sv|hungrig}}
+* İtalyanca: {{ç|it|affamato}}
+* Kazakça: {{ç|kk|aş}}
+* Kırgızca: {{ç|ky|aç}}
+* Kürtçe: {{ç|ku|birçî}}
+* Lehçe: {{ç|pl|głodny}}
+* Macarca: {{ç|hu|éhes}}
+* Özbekçe: {{ç|uz|och}}
+* Rusça: {{ç|ru|голодный}}
+* Tatarca: {{ç|tt|aç}}
+*: Eski Türkçe: {{ç|otk|aç}}
+* Türkmence: {{ç|tk|aç}}
+* Uygurca: {{ç|ug|ach}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+
+
+==Türkmence==
+
+===Söyleniş===
+* {{h|dil=tr||aç}}
+
+===Ad===
+{{başlık başı|tk|ad}}
+
+# {{b|tr|aç}}

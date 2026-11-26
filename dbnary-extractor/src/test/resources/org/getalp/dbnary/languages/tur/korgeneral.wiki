@@ -1,0 +1,28 @@
+==Türkçe==
+
+===Ad===
+{{tr-ad}}
+
+# {{t|dil=tr|askeriye}} [[Kara kuvvetleri]] ve [[hava kuvvetleri]]nde [[rütbe]]si [[tümgeneral]]le [[orgeneral]] arasında olan [[general]].
+
+===Köken===
+ [[kolordu]] + {{ç|fr|Général}}.
+
+====Eş anlamlılar====
+# [[ferik]]
+
+====Üst kavramlar====
+# [[subay]], [[asker]], [[üstsubay]]
+
+====Yan kavramlar====
+# [[teğmen]], [[üsteğmen]], [[yüzbaşı]], [[binbaşı]], [[yarbay]], [[albay]], [[tuğgeneral]], [[tümgeneral]], [[orgeneral]]
+
+====Çeviriler====
+{{üst|tip=çeviriler}}
+*Almanca: {{ç|de|Generalleutnant}}
+*Fransızca: {{ç|fr|Lieutenant-Général}}
+*İngilizce: {{ç|en|lieutenant general}}
+{{alt}}
+
+===Kaynakça===
+{{kaynak-TDK}}

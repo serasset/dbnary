@@ -1,0 +1,222 @@
+{{bakınız|Güç|guc}}
+==Türkçe==
+
+===Köken===
+{{k|dil=tr|ota}} {{z|ota|گوچ}}
+
+===Söyleniş===
+* {{IPA|dil=tr|/ˈɡyt͡ʃ/}}
+* {{h|dil=tr||güç}}
+
+===Ad===
+{{tr-ad}}
+
+# [[ahlak|ahlâk]], [[düşünce]] [[ve]] [[fizik]] [[yön]]ünden [[etki]] [[yapabilme]] [[veya]] [[etki]]ye [[direnebilme]] [[yetenek|yeteneği]]
+#: {{örnek|dil=tr|Yaşama '''gücü'''. Zihin '''gücü'''.}}
+# [[bir]] [[cihaz]]ın, [[mekanizma]]nın [[iş]] [[yapabilme]] [[vasıf|vasfı]]
+#: {{örnek|dil=tr|Motorun '''gücü'''}}
+# bir [[olay]]a [[yol]] [[açan]] [[her]] [[türlü]] [[hareket]]
+# [[büyük]] [[etkinlik|etkinliği]] [[ve]] [[önem]]i [[olan]] [[vasıf]]
+#: {{örnek|dil=tr|Paranın '''gücü'''.}}
+# [[millet]], [[ordu]] [[v.s.]]'nin [[askerî]], [[ekonomik]] [[ve]] [[endüstriyel]] [[potansiyel]]i
+#: {{örnek|dil=tr|İnsan '''gücü'''.}}
+# [[mutlak]], [[sınırsız]] [[nitelik]]
+#: {{örnek|dil=tr|Tanrı'nın '''gücü'''.}}
+# [[yeterlilik|yeterliliğini]] [[ve]] [[güvenilirlik|güvenilirliğini]] [[kanıtlamış]] [[kişi]]
+# {{t|dil=tr|coğrafya}} [[akarsu]]yun [[aşındırma]] [[ve]] [[taşıma]] [[kabiliyet]]i
+# {{t|dil=tr|elektrik|fizik}} [[birim]] [[zaman]]da [[yapılmak|yapılan]] [[iş]]
+# {{t|dil=tr|politika}} [[askerî]], [[ekonomik]], [[siyâsî]] [[v.s.]] [[bakım]]dan [[etki]] [[ve]] [[önem]]i [[büyük]] [[olan]] [[devlet]] [[ya da]] [[devlet]]ler [[topluluk|topluluğu]]
+#: {{örnek|dil=tr|'''Güçler''' dengesi}}
+# {{t|dil=tr|ziraat}} [[toprak|toprağın]] [[verimlilik]] [[kabiliyet]]i
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+====Eş anlamlılar====
+* {{mânâ|ahlâk}} [[efor]], [[kuvvet]]
+
+====Alt kavramlar====
+{{Üst|elektrik, fizik|tip=alt kavramlar}}
+* [[aktif güç]], 
+* [[anten gücü]], 
+* [[beygir gücü]], 
+* [[çıkış gücü]], 
+* [[elektrik gücü]], 
+* [[giriş gücü]], 
+* [[reaktif güç]]
+{{Alt}}
+{{Üst|kuvvet|tip=alt kavramlar}}
+* [[avlanma gücü]], 
+* [[aydınlatma gücü]], 
+* [[ayırdetme gücü]], 
+* [[ayırıcılık gücü]], 
+* [[ayırma gücü]], 
+* [[bağlantı gücü]], 
+* [[barış gücü]], 
+* [[benlik gücü]], 
+* [[beyin gücü]], 
+* [[borçlanma gücü]], 
+* [[büyüme gücü]], 
+* [[büyütüm gücü]], 
+* [[çalışma gücü]], 
+* [[çekim gücü]], 
+* [[çekme gücü]], 
+* [[çimlenme gücü]], 
+* [[çözme gücü]], 
+* [[dalgalık gücü]], 
+* [[dayanma gücü]], 
+* [[döndürüm gücü]], 
+* [[durdurum gücü]], 
+* [[düş gücü]], 
+* [[düşlem gücü]], 
+* [[emek gücü]], 
+* [[fizik gücü]], 
+* [[hayal gücü]], 
+* [[insan gücü]], 
+* [[iş gücü]], 
+* [[kan gücü]], 
+* [[kas gücü]], 
+* [[motorun gücü]], 
+* [[vurucu güç]], 
+* [[yapabilme gücü]]
+{{Alt}}
+
+====Atasözleri====
+* {{mânâ|kuvvet}} [[Al ile arslan tutulur, güç ile sıçan tutulmaz]]
+
+====Deyimler====
+{{Üst|kuvvet|tip=deyimler}}
+* [[gücü artmak]], 
+* [[gücü çoğalmak]], 
+* [[gücü görmek]], 
+* [[gücü gücü yetene]], 
+* [[gücü gücüne]], 
+* [[gücü kurumak]], 
+* [[gücü üzmek]], 
+* [[gücü üzülmek]], 
+* [[gücü yetmek]]
+{{Alt}}
+
+====Türetilmiş kavramlar====
+{{sütun|4|
+* [[gücü ağacı]], 
+* [[gücü ipliği]], 
+* [[gücü kesilmek]], 
+* [[güç birliği]], 
+* [[güç devşirmesi]], 
+* [[güç edici]], 
+* [[güç kaynağı]], 
+* [[güçler dengesi]], 
+* [[güççe]], 
+* [[güçken]], 
+* [[güçle]], 
+* [[güçlü]], 
+* [[güçse]], 
+* [[güçsüz]]
+{{Alt}}
+
+====Çeviriler====
+{{Üst|kuvvet|tip=çeviriler}}
+* Almanca: {{ç|de|Kraft|f}}
+* Arapça: {{ç|ar|قُوَّة|f}}
+* Arnavutça: {{ç|sq|fuqi|f}}
+* Azerice: {{ç|az|güc}}, {{ç|az|çətin}}, {{ç|az|qüvvə}}
+* Çekçe: {{ç|cs|moc|f}}, {{ç|cs|síla|f}}, {{ç|cs|velmoc}}
+* Çince: {{ç|zh|力|tr=lì}}
+* Endonezce: {{ç|id|kekuatan}}, {{ç|id|tenaga}}
+* Estonca: {{ç|et|jõud}}
+* Felemenkçe: {{ç|nl|kracht}}
+* Fince: {{ç|fi|voima}}, {{ç|fi|teho}}
+* Fransızca: {{ç|fr|force}}, {{ç|fr|énergie}}
+* Gagavuzca: {{ç|gag|güç}}
+* İngilizce: {{ç|en|force}}, {{ç|en|power}}, {{ç|en|strength}}
+* İsveççe: {{ç|sv|kraft}}, {{ç|sv|styrka}}, {{ç|sv|effekt}}
+* İtalyanca: {{ç|it|forza|f}}
+* Japonca: {{ç|ja|力}}, {{ç|ja|ちから|tr=chikara}}
+* Karaçay-Balkarca: {{ç|krc|küç}}, {{ç|krc|kün}}
+* Kazakça: {{ç|kk|köç}}
+* Lehçe: {{ç|pl|siła}}, {{ç|pl|moc|f}}
+* Macarca: {{ç|hu|erő}}
+* Rusça: {{ç|ru|сила|f}}, {{ç|ru|мощь|f}}
+* Türkçe:
+*: Osmanlı Türkçesi: {{ç|ota|گوچ}}
+{{Alt}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}
+
+===Belirteç===
+{{tr-belirteç}}
+
+# [[zorluk]]la
+#: {{örnek|dil=tr|Kendini yatağa '''güç''' atmış ve sızıp kalmıştı.}}
+
+====Atasözleri====
+{{Üst|güç|tip=atasözleri}}
+* [[Az yiyen az uyur, çok yiyen güç uyur]]
+* [[Geç olsun da güç olmasın]]
+{{Alt}}
+
+====Çeviriler====
+{{Üst|güç|tip=çeviriler}}
+* Almanca: {{ç|de|schwierig}}
+* Arapça: {{ç|ar|ْصَعَب}}
+* Fince: {{ç|fi|vaivoin}}, {{ç|fi|voimalla}}
+* Gagavuzca: {{ç|gag|güç}}
+* İngilizce: {{ç|en|difficult}}, {{ç|en|hard}}
+* İsveççe: {{ç|sv|svår}}
+* Türkçe:
+*: Osmanlı Türkçesi: {{ç|ota|گوچ}}
+{{Alt}}
+
+===Ön ad===
+{{tr-ön ad}}
+
+# [[ağır]] [[ve]] [[yorucu]] [[emek]]le [[yapılmak|yapılan]]
+#: {{örnek|dil=tr|Bir sanat eserini tenkit ne '''güç''' iştir!|Ahmet Muhip Dıranas|A. M. Dıranas}}
+
+====Eş anlamlılar====
+* [[çetin]], [[efor]], [[müşkül]]
+
+====Zıt anlamlılar====
+* [[kolay]]
+
+====Çeviriler====
+{{Üst|güç|tip=çeviriler}}
+* Almanca: {{ç|de|schwierig}}
+* Fince: {{ç|fi|kova}}, {{ç|fi|vaikea}}
+* Fransızca: {{ç|fr|difficile}}
+* Gagavuzca: {{ç|gag|güç}}
+* İngilizce: {{ç|en|hard}}, {{ç|en|difficult}}
+* İspanyolca: {{ç|es|difícil}}
+* İsveççe: {{ç|sv|svår}}
+* Portekizce: {{ç|pt|difícil}}
+* Türkçe:
+*: Osmanlı Türkçesi: {{ç|ota|گوچ}}
+{{Alt}}
+
+===Kaynakça===
+* {{Kaynak-TDK}}
+
+==Gagavuzca==
+
+===Köken===
+{{k|dil=gag|otk}}
+
+===Söyleniş===
+* {{h|dil=gag||güç}}
+
+===Ad===
+{{başlık başı|gag|ad}}
+
+# {{b|tr|güç}}
+
+===Belirteç===
+{{başlık başı|gag|belirteç}}
+
+# {{b|tr|güç}}
+
+===Ön ad===
+{{başlık başı|gag|ön ad}}
+
+# {{b|tr|güç}}

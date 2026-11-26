@@ -1,5 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="dbnary sample (en)" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/local/graalvm" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.getalp.dbnary.cli.DBnary" />
     <module name="dbnary-commands" />
     <option name="PROGRAM_PARAMETERS" value="sample --trace=org.getalp.dbnary --trace=info.bliki -l en --endolex=ontolex --exolex=ontolex --fill-missing-pages enwkt-2026-08-01.xml &quot;book&quot;" />

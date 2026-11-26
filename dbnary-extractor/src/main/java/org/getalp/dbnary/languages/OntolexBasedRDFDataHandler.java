@@ -1035,6 +1035,13 @@ public class OntolexBasedRDFDataHandler extends DbnaryModel implements IWiktiona
             Statement nymRel = nyms.next();
             toBeAdded.add(aBox.createStatement(s, nymProp, nymRel.getObject()));
             toBeRemoved.add(nymRel);
+            // Keep the reification (gloss, usage) of the nym pointing to the promoted statement.
+            for (Resource r : aBox.listResourcesWithProperty(RDF.subject, lu).toList()) {
+              if (r.hasProperty(RDF.predicate, nymProp) && r.hasProperty(RDF.object, nymRel.getObject())) {
+                toBeRemoved.add(aBox.createStatement(r, RDF.subject, lu));
+                toBeAdded.add(aBox.createStatement(r, RDF.subject, s));
+              }
+            }
           }
         }
       }

@@ -1,0 +1,33 @@
+==Türkçe==
+
+===Köken===
+{{k|dil=tr|ota}} {{z|ota|كافى}}, [[Arapça]] {{z|ar|كَافِي}}.
+
+===Söyleniş===
+* {{IPA|dil=tr|/kyaː.ˈfi/|/kyaː.ˈfiː/}}
+* {{h|dil=tr||kâ|fi}}
+
+===Çeviriler===
+{{Üst|kâfi|tip=çeviriler}}
+* Arapça: {{ç|ar|كَافِي}}
+* Türkçe:
+*:Osmanlı Türkçesi: {{ç|ota|كافى}}
+{{Alt}}
+
+===Ön ad===
+{{tr-ön ad}}
+
+# [[yeterli]], yetecek ölçüde olan
+#:{{örnek|dil=tr|Yalnız güzellik âdî bir zevk kadını için bile '''kâfi''' değildir.|Hüseyin Cahit Yalçın}}
+
+====Türetilmiş kavramlar====
+* [[El-Kâfi]]
+
+===Ünlem===
+{{başlık başı|tr|ünlem}}
+
+#''Yeter, yetişir, artık istemez'' anlamlarında bir seslenme sözü
+#:{{örnek|dil=tr|Artık '''kâfi''', yeter, illallah!|Sermet Muhtar Alus|S. M. Alus}}
+
+===Kaynakça===
+* {{Kaynak-TDK}}

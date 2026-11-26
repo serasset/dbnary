@@ -1,0 +1,157 @@
+{{bakınız|Gül|gul}}
+==Türkçe==
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||gül}}
+ 
+
+===Köken 1===
+{{k|dil=tr|ota}} {{z|ota|گل|ç=gül}}, [[Farsça]] {{z|fa|گل|ç=gol}}.
+
+====Ad====
+{{tr-ad}}
+[[Dosya:Rosa pendulina RF.jpg|küçükresim|Gül (1)]]
+[[Dosya:Rosa color rosa.jpg|küçükresim|Gül (2)]]
+
+# {{t|dil=tr|gülgiller}} Gülgillerin örnek bitkisi, {{belirtici|[[Rosa]]}}.
+# {{t|dil=tr|çiçekler}} Bu bitkinin katmerli, genellikle kokulu olan çiçeği.
+
+=====Çekimleme=====
+{{tr-ad-tablo}}
+
+=====Atasözleri===== 
+* [[bir ağaçta gül de biter, diken de]]
+* [[çalıda gül bitmez, cahile söz yetmez]]
+* [[dikensiz gül olmaz]]
+* [[gülü seven dikenine katlanır]]
+* [[halayıktan kadın olmaz, gül ağacından odun olmaz]]
+* [[hocanın vurduğu yerde gül biter]]
+
+=====Deyimler===== 
+* [[gül gibi bakmak]], 
+* [[gül pencere]], 
+* [[yanağında güller açmak]]
+
+====Türetilmiş kavramlar====
+[[gülabdan]], [[gülbahar]], [[gülbank]], [[gülbeşeker]], [[gül böceği]], [[gül böreği]], [[güldeste]], [[gülhatmi]], [[gül ibik]], [[gülibrişim]], [[gülistan]], [[gülkurusu]], [[gül kurusu]], [[gül rengi]], [[gül suyu]], [[gülşen]], [[gül yağı]], [[karagül]], [[yabani gül]], [[ayı gülü]], [[Çin gülü]], [[denizgülü]], [[gün gülü]], [[Isparta gülü]], [[ipek gülü]], [[Japon gülü]], [[kır gülü]], [[menekşe gülü]], [[Noel gülü]], [[orman gülü]], [[rüzgârgülü]], [[yaban gülü]], [[yayla gülü]]
+
+=====Çeviriler=====
+{{Üst|çalı|tip=çeviriler}}
+* Almanca: {{ç|de|Rosenstrauch|m}}
+* Bulgarca: {{ç|bg|гюл|m}}
+* Fince: {{ç|fi|ruusun kukka}}
+* İngilizce: {{ç|en|rose}}
+{{Alt}}
+
+{{Üst|çiçek|tip=çeviriler}}
+* Afrikaanca: {{ç|af|roos}}
+* Almanca: {{ç|de|Rose|f}}
+* Aragonca: {{ç|an|rosa}}
+* Arnavutça: {{ç|sq|trëndafil}}
+* Asturyasça: {{ç|ast|rosa}}
+* Aymaraca: {{ç|ay|phaqhalli}}
+* Azerice: {{ç|az|gül}}
+* Bulgarca: {{ç|bg|гюл|m}}
+* Bretonca: {{ç|br|rozenn}}
+* Çekçe: {{ç|cs|růže}}
+* Danca: {{ç|da|rose}}
+* Estonca: {{ç|et|roos}}
+* Faroe dili: {{ç|fo|rósin}}
+* Farsça: {{ç|fa|گل|tr=gol}}
+* Felemenkçe: {{ç|nl|roos|f}}
+* Fince: {{ç|fi|ruusu}}
+* Fransızca: {{ç|fr|rose|f}}
+* Frizce: {{ç|fy|roas}}
+* Gagavuzca: {{ç|gag|gül}}
+* Galce: {{ç|cy|rhosyn}}
+* Galiçyaca: {{ç|gl|rosa}}
+* Grönlandca: {{ç|kl|ruusa}}
+* Guarani dili: {{ç|gn|yvotyje}}
+* Hintçe: {{ç|hi|गुलाब}}
+* İbranice: {{ç|he|רוזה}}
+* İngilizce: {{ç|en|rose}}
+* İrlandaca: {{ç|ga|rós}}
+* İskoçça: {{ç|gd|ròs}}
+* İspanyolca: {{ç|es|rosa|f}}
+* İsveççe: {{ç|sv|ros}}
+* İtalyanca: {{ç|it|rosa}}
+* İzlandaca: {{ç|is|rós}}
+* Katalanca: {{ç|ca|rosa}}
+* Keçuva dili: {{ç|qu|awarmatu}}
+* Kürtçe: {{ç|ku|gul}}
+* Ladince: {{ç|lld|rösa}}
+* Latince: {{ç|la|rosa}}
+* Lehçe: {{ç|pl|róża}}
+* Lüksemburgca: {{ç|lb|Rous}}
+* Maasai dili: {{ç|mas|entapukai nado}}
+* Macarca: {{ç|hu|rózsa}}
+* Malgaşça: {{ç|mg|rozy}}
+* Marathi dili: {{ç|mr|गुलाब}}
+* Manksça: {{ç|gv|rose}}
+* Makedonca: {{ç|mk|трендафил|m}}
+* Oksitanca: {{ç|oc|ròsa}}
+* Portekizce: {{ç|pt|rosa}}
+* Rumence: {{ç|ro|trandafir}}, {{ç|ro|roză}}
+* Rusça: {{ç|ru|рожа}}
+* Samoaca: {{ç|sm|rosa}}
+* Sırp-Hırvatça:
+*: Latin: {{ç|sh|ruža}}
+* Svahili dili: {{ç|sw|waridi}}
+* Tagalogca: {{ç|tg|rosa}}
+* Tatarca: {{ç|tt|gölçäçäk}}
+* Türkçe:
+*: Osmanlı Türkçesi: {{z|ota|گل|tr=gül}}
+* Türkmence: {{ç|tk|bägül}}, {{ç|tk|bääğül}}
+* Ukraynaca: {{ç|uk|рожа}}
+* Uygurca: {{ç|ug|قىزىل‮ ‬گۈل}}
+* Venedikçe: {{ç|it|rosa}}
+* Yunanca:
+*: Modern Yunanca: {{ç|el|τριανταφυλλιά}}
+{{Alt}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}
+
+===Köken 2===
+
+====Eylem====
+{{başlık başı|tr|çekimli eylem}}
+
+# {{fiil|gül||ü}}.
+
+=====Çekimleme=====
+{{tr-eylem-tablo}}
+
+==Azerice==
+
+===Söyleniş===
+* {{h|dil=az||gül}}
+
+===Ad===
+{{az-ad|gülü|güllər}}
+
+# {{t|dil=az|çiçekler|gülgiller}} {{b|tr|gül}}
+
+==Kırım Tatarcası==
+
+===Köken===
+{{k|dil=crh|fa}} {{z|fa|گل|tr=gol}}
+
+===Söyleniş===
+* {{h|dil=crh||gül}}
+
+===Ad===
+{{başlık başı|crh|ad}}
+
+# {{t|dil=crh|çiçekler|gülgiller}} {{b|tr|gül}}
+
+==Türkmence==
+
+===Söyleniş===
+* {{h|dil=tk||gül}}
+
+===Ad===
+{{başlık başı|tk|ad}}
+
+# {{t|dil=tk|çiçekler|gülgiller}} {{b|tr|gül}}

@@ -1,0 +1,152 @@
+{{bakınız|Gerçek|hakiki}}
+==Türkçe==
+
+===Köken===
+{{nakledilen|tr|ota|كرچك}}, o da {{nakledilen|tr|trk-oat|girçek||doğru}}, {{z|trk-oat|girtü||doğru}}, o da {{kökenli|tr|trk-pro|*kẹr-tü||doğru}}.<ref>[http://starling.rinet.ru/cgi-bin/response.cgi?single=1&basename=%2fdata%2falt%2fturcet&text_number=+471&root=config]</ref> {{eş asıllı|mn|гэрээ||anlaşma}}, {{z|mn|гэрч||şahit}} ile kıyaslanabilir.
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||ger|çek}}
+* {{ses|dil=tr|Tr tr gerçek.ogg|dinle}} 
+
+===Ad===
+{{tr-ad}}
+# Yalan olmayan, doğru olan şey.
+#* {{eş anlamlılar|tr|çın|ciddi|hakikat}}
+#* "Esasen bizim için millî varlık ile istiklal ve hürriyet aynı gerçeğin çeşitli cepheleridir." - Mehmet Kaplan
+# {{eş anlamlı|dil=tr|gerçeklik  }}.
+#* "Her hâlde o gün imparatorluğun ölümü apaçık bir gerçekti." - Halide Edip Adıvar
+# {{eş anlamlı|dil=tr|doğruluk  }}.
+#* "Bu laflarda gerçek payı ne kadar çoksa duygu payı da ondan az değildir." - Burhan Felek
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+===Ön ad===
+{{tr-ön ad}} 
+# Yalan olmayan.
+#* "O yürekler acısı fukara kafile, yüzlerinden gerçek acı aka aka ölü arkadaşlarının namazını kıldılar." - Halikarnas Balıkçısı
+# Bir durum, bir nesne veya bir nitelik olarak var olan, varlığı inkâr edilemeyen, olgu durumunda olan.
+#* {{eş anlamlılar|tr|özbeöz|hakiki|reel}}
+#* Kâğıt paranın saymaca değeri varsa da gerçek değeri yoktur.
+# Aslına uygun nitelikler taşıyan, sahici.
+#* Gerçek elmas. Gerçek hikâye.
+# Temel, başlıca, asıl.
+#* "Bir kişinin ahlaklı olması için, o benim dediğim gerçek ahlaka erişebilmesi için bir iç âlemi olmalıdır." - Nurullah Ataç
+# Doğadaki gibi olan, doğayı olduğu gibi yansıtan.
+# Yapay olmayan.
+# # {{t|dil=tr|felsefe}} Düşünülen, tasarımlanan, imgelenen şeylere karşıt olarak var olan.
+
+====Atasözleri====
+* [[ana yılan, sözü yalan, karı çiçek, sözü gerçek]]
+* [[yaz yalan, kış gerçek]]
+
+====Türetilmiş kavramlar====
+[[gerçek dışı]], [[gerçek kişi]], [[gerçek mantarlar]], [[gerçek sayı]], [[gerçeküstü]], [[gerçeğe aykırı]], [[gerçeğe uygun]], [[acı gerçek]]
+
+====Çeviriler====
+{{Üst|doğru olan şey|tip=çeviriler}}
+*Afrikanca: {{ç|af|waarheid}}
+*Almanca: {{ç|de|Wahrheit|f}}, {{ç|de|Treue|f}}
+*:İsviçre Almancası: {{ç|de|Wahrheit|f}}, {{ç|de|Treue|f}}
+*Aragonca: {{ç|an|verdat}}
+*Arnavutça: {{ç|sq|vërtetë}}
+*Asturyasça: {{ç|ast|verdá}}
+*Aşağı Almanca: {{ç|nds|Woored|f}}, {{ç|nds|Treue|f}}
+*Azerice: {{ç|az|doğru}}, {{ç|az|düz}}, {{ç|az|gərçək}}, {{ç|az|real}}
+*Baskça: {{ç|eu|egia}}
+*Beyaz Rusça: {{ç|be|ісціна}}
+*Bulgarca: {{ç|bg|истина}}, {{ç|bg|правда}} [pravda], {{ç|bg|унэн}}
+*Çekçe: {{ç|cs|pravda|f}}, {{ç|cs|skutečnost|f}}
+*Danca: {{ç|da|sandhed}}
+*Endonezce: {{ç|id|kebenaran}}
+*Esperanto dili: {{ç|eo|vero}}
+*Felemenkçe: {{ç|nl|waarheid}}
+*Fince: {{ç|fi|totuus}}, {{ç|fi|todellisuus}}, {{ç|fi|tosiasia}}
+*Fransızca: {{ç|fr|vérité|f}}
+*Galce: {{ç|cy|gwirionedd}}
+*Hintçe: {{ç|hi|सच|m}} [sac]
+*İbranice: {{ç|he|אמת}}
+*İdo dili: {{ç|io|verajo}}
+*İngilizce: {{ç|en|truth}}
+*İnterlingua dili: {{ç|ia|veritate}}
+*İspanyolca: {{ç|es|verdad|f}}
+*İsveççe: {{ç|sv|sanning}}, {{ç|sv|sannfärdighet}}
+*İtalyanca: {{ç|it|verità}}
+*İzlandaca: {{ç|is|sannleiki}}
+*Karaçay-Balkarca: {{ç|krc|kerti}}
+*Katalanca: {{ç|ca|veritat}}
+*Kazakça: {{ç|kk|мәңгілік ақикат}}
+*Kırgızca: {{ç|ky|чындык}}
+*Korsikaca: {{ç|co|verità}}
+*Kürtçe: {{ç|ku|rastî}}
+*Lao dili: {{ç|lo|ຄວາມເປັນຈິງ}}
+*Latince: {{ç|la|veritas}} *Lehçe: {{ç|pl|prawda}}
+*Letonca: {{ç|lv|patiesība}}
+*Limburgca: {{ç|li|waorheid}}
+*Litvanca: {{ç|lt|tiesa}}
+*Macarca: {{ç|hu|igazság}}
+*Maltaca: {{ç|mt|verità}}
+*Norveççe: {{ç|no|sanning}}, {{ç|no|sannhet}}
+*Oksitanca: {{ç|oc|vertat}}
+*Portekizce: {{ç|pt|verdade|f}}
+*Rumence: {{ç|ro|adevăr|n}}
+*Rusça: {{ç|ru|истина|f}} [ístina], {{ç|ru|правда}} [pravda]
+*Sırp-Hırvatça: {{ç|sh|istina}}
+*Slovakça: {{ç|sk|pravda}}
+*Slovence: {{ç|sl|pravda}}
+*Tatarca: {{ç|tt|xaq}}
+*:Kırım Tatarcası: {{ç|crh|aqiqiy}}, {{ç|crh|kerçek}}
+*Türkçe:
+*:Osmanlı Türkçesi: {{ç|ota|كرچك}}
+*Ukraynaca: {{ç|uk|істина}}, {{ç|uk|правда}}
+*Yunanca:
+*:Modern Yunanca: {{ç|el|αλήθεια}}
+{{Alt}}
+{{Üst|ön ad|tip=çeviriler}}
+*Almanca: {{ç|de|real}}, {{ç|de|wahr}}
+*Arnavutça: {{ç|sq|vërtetë}}
+*Azerice: {{ç|az|həqiqi}}
+*Bulgarca: {{ç|bg|истински}}
+*Estonca: {{ç|et|tõeline}}, {{ç|et|tegelik}}, {{ç|et|reaalne}}
+*Felemenkçe: {{ç|nl|waar}}, {{ç|nl|echt}}
+*Fince: {{ç|fi|tosi}}, {{ç|fi|todellinen}}
+*Fransızca: {{ç|fr|réel}}, {{ç|fr|vrai, {{ç|fr|véritable}}
+*Hintçe: {{ç|hi|सत्य}}
+*İngilizce: {{ç|en|real}}, {{ç|en|true}}, {{ç|en|veritable}}
+*İspanyolca: {{ç|es|real}} {{ç|es|verdadero}}
+*İsveççe: {{ç|sv|verklig}}, {{ç|sv|faktisk}}
+*İtalyanca: {{ç|it|vero}} 
+*Karaçay Balkarca: {{ç|krc|çıng}} 
+*Kırım Tatarcası: {{ç|crh|}}
+*Kürtçe: {{ç|ku|bera}}
+*Lehçe: {{ç|pl|faktyczny}} 
+*Macarca: {{ç|hu|igaz}}, {{ç|hu|igazi}}, {{ç|hu|tényleges}} 
+*Özbekçe: {{ç|uz|hakikiy}}, {{ç|uz|haqiqiy}}
+*Portekizce: {{ç|pt|real}}, {{ç|pt|verdadeiro}}
+*Rumence: {{ç|ro|veritabil}}
+*Rusça: {{ç|ru|реальный}}, {{ç|ru|истинный}}, {{ç|ru|настоящий}}, {{ç|ru|действительный}} 
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}
+
+
+==Gagavuzca==
+
+===Köken===
+{{k|dil=gag|otk}} {{z|otk|kärtü}}
+
+===Ön ad===
+{{başlık başı|gag|ön ad}}
+
+# {{b|gag|gerçek}}
+
+==Türkmence==
+
+===Ad===
+{{başlık başı|tk|ad}}
+
+# [[babayiğit]], [[cesur]], [[yiğit]]

@@ -1,10 +1,32 @@
 package org.getalp.dbnary.languages.ind;
 
+import static org.getalp.dbnary.model.NymRelation.ANTONYM;
+import static org.getalp.dbnary.model.NymRelation.HYPERNYM;
+import static org.getalp.dbnary.model.NymRelation.HYPONYM;
+import static org.getalp.dbnary.model.NymRelation.SYNONYM;
+
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.Pair;
+import org.getalp.dbnary.api.WiktionaryPageSource;
+import org.getalp.dbnary.bliki.ExpandAllWikiModel;
 import org.getalp.dbnary.languages.AbstractWiktionaryExtractor;
 import org.getalp.dbnary.api.IWiktionaryDataHandler;
+import org.getalp.dbnary.model.NymRelation;
+import org.getalp.dbnary.wiki.ClassBasedFilter;
+import org.getalp.dbnary.wiki.WikiEventFilter;
+import org.getalp.dbnary.wiki.WikiEventFilter.Action;
+import org.getalp.dbnary.wiki.WikiEventsSequence;
+import org.getalp.dbnary.wiki.WikiText;
+import org.getalp.dbnary.wiki.WikiText.InternalLink;
+import org.getalp.dbnary.wiki.WikiText.ListItem;
+import org.getalp.dbnary.wiki.WikiText.NumberedListItem;
+import org.getalp.dbnary.wiki.WikiText.Template;
+import org.getalp.dbnary.wiki.WikiText.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +38,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   private final Logger log = LoggerFactory.getLogger(WiktionaryExtractor.class);
 
-  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^\\}=]+)=*\\}{2}\\s*={2}|\\{{2}\\s*-([^-]+)-\\s*\\}{2}|={2}\\s*([^=]+)={2}\n";
-  protected final static String blockPatternString = "\n\\{{2}([^\\}]+)\\}{2}|={3}\\s*([^=]+)={3}\n";
-  protected final static String tradPatternString = "\\{{2}([^\\\\}]+)\\}{2}\\s*:\\s*\\[{2}([^\\]]+)\\]{2}|\\{{2}(t[^\\|][^\\}]+)\\}{2}";
-  protected final static String nymsPatternString = "\\{{2}([^\\}]+)\\}{2}";
-  protected final static String defPatternString = "#\\s*([^\\n]+)|\\'{5}Definisi\\'{5}\\s*:\\s*([^\\n]+)";
-  protected final static String examplePatternString = "\\*\\s*([^\n]+)\n";
+  protected final static String languageSectionPatternString = "={2}\\s*\\{{2}=*([^}=]+)=*}{2}\\s*={2}|={2}\\s*([^=]+)={2}\n";
+  protected final static String blockPatternString = "\n" + "\\{{2}([^}]+)}{2}|={3}\\s*([^=]+)={3}\n";
+  protected final static String tradPatternString = "\\{{2}([^\\\\}]+)}{2}\\s*:\\s*\\[{2}([^]]+)]{2}|\\{{2}(t[^|][^}]+)}{2}";
+  protected final static String nymsPatternString = "\\{{2}([^}]+)}{2}";
+  protected final static String defPatternString = "#\\s*([^\\n]+)|'{5}Definisi'{5}\\s*:\\s*([^\\n]+)";
+  protected final static String examplePatternString = "(?:\\*|#:)\\s*([^\n]+)\n";
 
   protected final static Pattern languageSectionPattern;
   protected final static Pattern blockPattern;
@@ -38,6 +60,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     defPattern = Pattern.compile(defPatternString);
     examplePattern = Pattern.compile(examplePatternString);
   }
+
+  private ExpandAllWikiModel defExpander;
 
   public WiktionaryExtractor(IWiktionaryDataHandler wdh) {
     super(wdh);
@@ -56,8 +80,6 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         nextLang = languageFilter.group(1);
       } else if (languageFilter.group(2) != null) {
         nextLang = languageFilter.group(2);
-      } else if (languageFilter.group(3) != null) {
-        nextLang = languageFilter.group(3);
       }
       if (nextLang != null) {
         nextLang = nextLang.replaceAll("[=-]", "").trim();
@@ -74,11 +96,25 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizePageExtraction();
   }
 
+  @Override
+  public void setWiktionaryIndex(WiktionaryPageSource wi) {
+    super.setWiktionaryIndex(wi);
+    IndonesianModulesPatcherWikiModel indonesianWikiModel = new IndonesianModulesPatcherWikiModel(wi, Locale.forLanguageTag("id"), "/images", "/link");
+    defExpander = new ExpandAllWikiModel(indonesianWikiModel, wi, Locale.forLanguageTag("id"), "/images", "/link");
+  }
+
+  @Override
+  protected void setWiktionaryPageName(String wiktionaryPageName) {
+    super.setWiktionaryPageName(wiktionaryPageName);
+    defExpander.setPageName(wiktionaryPageName);
+  }
+
   private enum Block {
     NOBLOCK, IGNOREPOS, POSBLOCK, EXAMPLEBLOCK, NYMBLOCK, TRADBLOCK, PRONBLOCK
   }
 
-  protected static HashMap<String, Block> blockValue = new HashMap<>();
+  private static final HashMap<String, Block> blockValue = new HashMap<>();
+  private static final HashMap<String, String> nymTemplates = new HashMap<>();
 
   static {
     blockValue.put("", Block.NOBLOCK); // noblock
@@ -135,7 +171,9 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockValue.put("part", Block.POSBLOCK); // particle
 
     blockValue.put("syn", Block.NYMBLOCK);
+    blockValue.put("sinonim", Block.NYMBLOCK);
     blockValue.put("ant", Block.NYMBLOCK);
+    blockValue.put("antonim", Block.NYMBLOCK);
 
     blockValue.put("terjemahan", Block.TRADBLOCK);
     blockValue.put("kotak mulai", Block.TRADBLOCK); // top
@@ -200,11 +238,20 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     blockValue.put("Lihat pula", Block.IGNOREPOS); // see also
     blockValue.put("Kata terkait", Block.IGNOREPOS); // see also
     blockValue.put("terkait", Block.IGNOREPOS); // see also
+    blockValue.put("bacaan", Block.IGNOREPOS); // see also
+    blockValue.put("rujukan", Block.IGNOREPOS); // References
 
     blockValue.put("Negara", Block.IGNOREPOS);
     blockValue.put("alt", Block.IGNOREPOS);
     blockValue.put("Unsur kimia", Block.IGNOREPOS); // chemical elements
     blockValue.put("Angka", Block.IGNOREPOS);
+
+    nymTemplates.put("syn", "syn");
+    nymTemplates.put("sinonim", "syn");
+    nymTemplates.put("antonim", "ant");
+    nymTemplates.put("hipernim", "hyper");
+    nymTemplates.put("hiponim", "hypo");
+    nymTemplates.put("etimologi", null);
   }
 
   private Block getBlock(String blockString) {
@@ -334,37 +381,39 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
     Matcher m = blockPattern.matcher(pageContent);
     m.region(startOffset, endOffset);
-    String blockString = "";
-    Block block = Block.IGNOREPOS;
-    int start = startOffset;
+    int start = endOffset;
 
-    if (m.find()) {
-      start = m.start();
-      if (m.group(1) != null) {
-        blockString = m.group(1).trim();
-      } else if (m.group(2) != null) {
-        blockString = m.group(2).trim();
-      }
-      block = getBlock(blockString);
-      extractDefinitions(startOffset, start);
-    }
-    while (m.find()) {
-      extractDataBlock(start, m.start(), block, blockString);
+    Pair<String, Block> blockPair = null;
+    while (m.find() && ((blockPair = isBlock(m)) == null)); // find first effective block
+
+    if (blockPair != null) {
       start = m.end();
-      if (m.group(1) != null) {
-        blockString = m.group(1).trim();
-      }
-      if (m.group(2) != null) {
-        blockString = m.group(2).trim();
-      }
-      block = getBlock(blockString);
+    }
+    extractDefinitions(startOffset, start);
+    while (blockPair != null) {
+      Pair<String, Block> nextBlock = null;
+      while (m.find() && (nextBlock = isBlock(m)) == null); // find next effective block
+      int end = (nextBlock != null) ? m.start() : endOffset;
+      extractDataBlock(start, end, blockPair.getRight(), blockPair.getLeft());
+      start = end;
+      blockPair = nextBlock;
     }
 
-    extractDataBlock(start, endOffset, block, blockString);
     wdh.finalizeLanguageSection();
   }
 
-  protected void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
+  private Pair<String, Block> isBlock(Matcher m) {
+    String blockString = "";
+    if (m.group(1) != null) {
+      blockString = m.group(1).trim();
+    } else if (m.group(2) != null) {
+      blockString = m.group(2).trim();
+    }
+    Block block = getBlock(blockString);
+    return (block == Block.NOBLOCK) ? null : Pair.of(blockString, block);
+  }
+
+  private void extractDataBlock(int startOffset, int endOffset, Block currentBlock, String blockString) {
     switch (currentBlock) {
       case NOBLOCK:
       case IGNOREPOS:
@@ -453,6 +502,59 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractDefinitions(int start, int end) {
     WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
+    WikiText text = new WikiText(pageContent.substring(start, end));
+    WikiEventFilter lis = (new ClassBasedFilter()).allowIndentedItem();
+    int senseNum = 1;
+
+    for (Token tok : text.filteredTokens(lis)) {
+      switch (tok) {
+        case NumberedListItem nli:
+          String source = nli.getContent().getText().trim();
+          if (nli.getListPrefix().endsWith("*")) {
+            String def = defExpander.expandAll(source, null);
+            wdh.registerExample(def, null);
+          } else if (nli.getListPrefix().endsWith("#")) {
+            String def = defExpander.expandAll(source, null);
+            dwdh.addNewDefinition(def, "" + senseNum);
+            senseNum++;
+          } else if (nli.getListPrefix().endsWith(":")) {
+            Optional<Template> nymt = nli.getContent().wikiTokensStream().filter(t -> t instanceof Template).map(Token::asTemplate)
+                .filter(t -> nymTemplates.containsKey(t.getName())).findFirst();
+            if (nymt.isPresent()) {
+              // we are dealing with a nym line, decode it
+              for (Token t : nli.getContent().templates()) {
+                Template tmpl = t.asTemplate();
+                String nym = nymTemplates.get(tmpl.getName());
+                if (null != nym) {
+                  for (Map.Entry<String, String> e : tmpl.getParsedArgs().entrySet()) {
+                    try {
+                      int n = Integer.parseInt(e.getKey());
+                      if (n > 1) {
+                        dwdh.registerNymRelationOnCurrentSense(e.getValue(), nym);
+                      }
+                    } catch (NumberFormatException ex) {
+                      // Silently ignored
+                    }
+                  }
+                }
+              }
+            } else {
+              String def = defExpander.expandAll(source, null);
+              wdh.registerExample(def, null);
+            }
+          } else {
+            log.trace("Ignoring strange definition --> {} || {}", tok, wiktionaryPageName);
+          }
+          break;
+        default:
+          log.trace("Ignoring unknown definition --> {} || {}", tok, wiktionaryPageName);
+          break;
+      }
+    }
+  }
+
+  protected void extractDefinitionsOld(int start, int end) {
+    WiktionaryDataHandler dwdh = (WiktionaryDataHandler) wdh;
     Matcher m = defPattern.matcher(pageContent);
     m.region(start, end);
 
@@ -467,7 +569,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         return;
       }
       if (!tmp.equals("")) {
-        dwdh.addNewDefinition(cleanUpMarkup(tmp), "" + senseNum);
+        tmp = defExpander.expandAll(tmp.trim(), null);
+        dwdh.addNewDefinition(tmp, "" + senseNum);
         senseNum++;
       }
     }

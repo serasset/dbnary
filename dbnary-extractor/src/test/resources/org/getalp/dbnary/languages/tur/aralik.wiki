@@ -1,0 +1,135 @@
+{{Haftanın kelimesi|51|2006}}
+{{bakınız|Aralık|ara}}
+==Türkçe==
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||a|ra|lık}}
+* {{tr-ses|k=MustafaCavlak}}
+* {{ses|dil=tr|Tur-aralık.ogg|aralık}}
+
+===Ad===
+{{tr-ad}}
+[[Dosya:Likavka, Slovakia, December 30, 2007.jpg|küçükresim|İki adam arasında bir miktar aralık var. (1)]]
+
+# İki şey arasındaki mesafe, iki şeyin arasındaki boşluk.
+#*{{eş anlamlılar|tr|fasıla}}
+#*{{ux|tr|İki masa arasında bir metre '''aralık''' var.}}
+# Elverişli durum, uygun fırsat.
+# {{eş anlamlı|dil=tr|koridor  }}.
+#* {{kt|yıl=2014 |yazar=Ayfer TUNÇ|başlık=Dünya Ağrısı|=Can Sanat Yayınları |sayfa=156|tanıklık=Hava dışarıda durulamayacak kadar soğuduğu için avluya çıkan dar '''aralığa''', çay ocağının yanına yerleştiler.|dil=tr}}
+# {{t|dil=tr|aylar}} Yılın on ikinci ayı.
+#*{{eş anlamlılar|tr|birinci kânun|ilk kânun|kânunuevvel}}
+# {{t|dil=tr|hijyen|odalar}} {{eş anlamlı|dil=tr|tuvalet  }}.
+# {{t|dil=tr|matbaacılık}} Basımcılıkta harfler veya satırlar arasındaki açıklık.
+#*{{eş anlamlılar|tr|espas}}
+# {{t|dil=tr|bankacılık}} borsada hisse senetlerinin alım satım emirlerinin verildiği süre.
+# {{t|dil=tr|ses}} bir sesi bir başka sesten, kalına veya inceye doğru ayıran [[uzaklık]].
+# {{t|dil=tr|müzik}} iki nota arasındaki perde uzaklığı.
+# {{t|dil=tr|müzik}} portenin paralel çizgileri arasındaki boşluk.
+#*{{ux|tr|Portenin beş çizgisi arasında dört '''aralık''' vardır.}}
+# {{t|dil=tr|spor}} Toplu beden eğitiminde art arda dizilenlerin arasındaki açıklık.
+====Çekimleme====
+{{tr-ad-tablo}}
+
+===Ön ad===
+[[Dosya:Half-open door to Heaven (4761478827).jpg|küçükresim|{{mana|ön ad}} Aralık bir kapı. (1) <p> {{mana|belirteç}} Kapı, aralık duruyor.]]
+{{tr-ön ad}}
+
+# Yarı açık, tam kapanmamış.
+#: {{ux|tr|'''Aralık''' kapıdan yatağı görmüştü demin.|Oktay Akbal}}
+
+===Belirteç===
+{{tr-belirteç}}
+
+# Yarı açık olarak.
+#*{{ux|tr|İyice kararmış çarpık bir tahta kapı '''aralık''' duruyordu.|Çetin Altan}}
+
+====Deyimler====
+[[aralık vermek]]
+
+====Türetilmiş kavramlar====
+[[aralık korozyonu]], [[aralık oyunu]], [[aman aralık]], [[bir aralık]], [[çıkıcı aralık]], [[dar aralık]], [[o aralık]], [[hava aralığı]], [[tavan aralığı]]
+
+====Çeviriler====
+{{Üst|aylar|tip=çeviriler}}
+* Afrikaanca: {{ç|af|Desember}}
+* Almanca: {{ç|de|Dezember|m}}
+*: Yahudi Almancası: {{ç|yi|detsember}}
+* Arapça: {{ç|ar|دِيسَمْبِرُ|m}}
+* Arnavutça: {{ç|sq|dhjetor}}
+* Asturyasça: {{ç|ast|avientu}}
+* Aymaraca: {{ç|ay|uma pacha}}
+* Azerice: {{ç|az|dekabr}}
+* Baskça: {{ç|eu|abendu}}
+* Bretonca: {{ç|br|kerzu}}
+* Bulgarca: {{ç|bg|декември}}
+* Çekçe: {{ç|cs|prosinec}}
+* Çince: {{ç|zh|十二月}}
+* Danca: {{ç|da|december}}
+* Esperanto: {{ç|eo|decembro}}
+* Estonca: {{ç|et|detsember}}
+* Faroece: {{ç|fo|desember}}
+* Farsça: {{ç|fa|دسامبر}}
+* Felemenkçe: {{ç|nl|december}}
+* Fince: {{ç|fi|joulukuu}}, {{ç|fi|väli}}, {{ç|fi|tilaisuus}}, {{ç|fi|mahdollisuus}}, 
+{{ç|fi|käytävä}}, {{ç|fi|käymälä}}
+* Fransızca: {{ç|fr|décembre}}
+* Galce: {{ç|cy|Rhagfyr}}
+* Galiçyaca: {{ç|gl|decembro}}
+* Gucaratça: {{ç|gu|ડિસેમ્બર}}
+* Hintçe: {{ç|hi|दिसम्बर}}
+* İbranice: {{ç|he|דצמבר}}
+* İngilizce: {{ç|en|December}}, {{ç|en|interval}}, {{ç|en|range}}, {{ç|en|space}}
+* İrlandaca: {{ç|ga|Mí na Nollag}}
+* İsveççe: {{ç|sv|december}}
+* İtalyanca: {{ç|it|dicembre}}
+* İzlandaca: {{ç|is|desember}}
+* Japonca: {{ç|ja|十二月}}
+* Katalanca: {{ç|ca|desembre}}
+* Keçuva dili: {{ç|qu|raymikis}}
+* Korece: {{ç|ko|십이월}} [şibivôl]
+* Kürtçe: {{ç|ku|çilêya pêşîn}}
+* Latince: {{ç|la|december}}
+* Lehçe: {{ç|pl|grudzień}}
+* Lingala: {{ç|ln|desembere}}
+* Litvanca: {{ç|lt|gruodis}}
+* Lüksemburgca: {{ç|lb|Dezember}}
+* Macarca: {{ç|hu|december}}
+* Malgaşça: {{ç|mg|desambra}}
+* Maltaca: {{ç|mt|Diċembru}}
+* Maorice: {{ç|mi|Tiihema}}
+* Marathi dili: {{ç|mr|डिसेंबर}}
+* Moğolca: {{ç|mn|арван хоёрдугаар сар}}
+* Norveççe: {{ç|no|desember|m}}
+* Oksitanca: {{ç|oc|decembre}}
+* Özbekçe: {{ç|uz|dekabr}}
+* Portekizce: {{ç|pt|dezembro}}
+* Rapanui dili: {{ç|rap|Ko koro}}
+* Romanşça: {{ç|rm|december}}
+* Rumence: {{ç|ro|decembrie}}
+* Rusça: {{ç|ru|декабрь}}
+* Sırp-Hırvatça: {{ç|sh|децембар}}, {{ç|sh|decembar}}, {{ç|sh|prosinac}}
+* Sicilyaca: {{ç|scn|dicembri}}
+* Slovakça: {{ç|sk|december}}
+* Slovence: {{ç|sl|decémber}}, {{ç|sl|grúden}}
+* Svahili dili: {{ç|sw|desemba}}
+* Tatarca: {{ç|tt|dekabr}}
+* Tayca: {{ç|th|เดือนธันวาคม}}
+* Türkçe:
+*: Osmanlı Türkçesi: {{ç|ota|خلال}}
+* Ukraynaca: {{ç|uk|грудень}}
+* Xhosa dili: {{ç|xh|udisemba}}
+* Yunanca:
+*: Modern Yunanca: {{ç|el|Δεκέμβριος}}
+* Zuluca: {{ç|zu|amasingana}}
+{{Alt}}
+{{Üst|yarı açık|tip=çeviriler}}
+* Fince: {{ç|fi|puoliavoin}}
+* Tatarca: {{ç|tt|aralıq}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}

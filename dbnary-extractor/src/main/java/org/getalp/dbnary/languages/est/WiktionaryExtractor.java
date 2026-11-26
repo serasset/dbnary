@@ -628,7 +628,7 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
                 if (tm.getName().equals("IPA")) {
                     String pron = tm.getParsedArgs().get("1");
 
-                    estWdh.registerPronunciation(pron, "ces");
+                    estWdh.registerPronunciation(pron, "est");
 
                     return;
                 }

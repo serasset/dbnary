@@ -1,0 +1,134 @@
+==Türkçe==
+
+===Köken===
+{{devralınan|tr|ota|سکز}}
+
+===Ön ad===
+[[Dosya:Circle sign 8.svg|72px|sağ|küçükresim|Sekiz]]
+{{başlık başı|tr|ön ad}}
+# {{t|sayılar|dil=tr}} [[yedi]]den sonra, [[dokuz]]dan önce gelen [[sayı]]nın adı
+# yediden bir artık, sekizden bir eksik
+#:'''Türk sayıları sıfatdırlar.'''
+
+====Sözcük birliktelikleri====
+* [[sekizçifte]], [[sekiztek]], [[sekiz yüzlü]]
+
+====Çeviriler====
+{{üst|Ön ad|tip=çeviriler}}
+* Aari dili: {{ç|aiw|lamakay}}
+* Abhazca: {{ç|ab|ааба}}
+* Afrikanca: {{ç|af|agt}}
+* Almanca: {{ç|de|acht}}
+* Arapça: {{ç|ar|ثمانية}}, {{ç|ar|۸}}
+* Arnavutça: {{ç|sq|tetë}}
+* Assam dili: {{ç|as|আঠ}}
+* Aymaraca: {{ç|ay|kimsaqalqu}}
+* Azerice: {{ç|az|səkkiz}}
+* Baskça: {{ç|eu|zortzi}}
+* Beyaz Rusça: {{ç|be|восем}}
+* Bretonca: {{ç|br|eizh}}
+* Bulgarca: {{ç|bg|осем}}
+* Çağatayca: {{ç|chg|sekiz}}
+* Çekçe: {{ç|cs|osm}}
+* Çuvaşça: {{ç|cv|саккăр}}
+* Danca: {{ç|da|otte}}
+* Endonezce: {{ç|id|delapan}}
+* Ermenice: {{ç|hy|ութ}}
+* Esperanto dili: {{ç|eo|ok}}
+* Estonca: {{ç|et|kaheksa}}
+* Faroe dili: {{ç|fo|átta}}
+* Farsça: {{ç|fa|هشت}}, {{ç|fa|۸}}
+* Felemenkçe: {{ç|nl|acht}}
+* Fince: {{ç|fi|kahdeksan}}
+* Fransızca: {{ç|fr|huit}}
+* Gagavuzca: {{ç|gag|səkkiz}}
+* Galce: {{ç|cy|wyth}}
+* Galiçyaca: {{ç|gl|oito}}
+* Gucaratça: {{ç|gu|આઠ}}
+* Gürcüce: {{ç|ka|რვა}}
+* Hintçe: {{ç|hi|आठ}}
+* İbranice: {{ç|he|שמונה}}, {{ç|he|שמונת}}, {{ç|he|אַכט}}
+* İngilizce: {{ç|en|eight}}
+* İrlandaca: {{ç|ga|ocht}}
+* İskoç İngilizcesi: {{ç|sco|aicht}}
+* İspanyolca: {{ç|es|ocho}}
+* İsveççe: {{ç|sv|åtta}}
+* İtalyanca: {{ç|it|otto}}
+* Japonca: {{ç|ja|八}}
+* Karaçay Balkarca: {{ç|krc|segiz}}
+* Katalanca: {{ç|ca|vuit}}, {{ç|ca|huit}}, {{ç|ca|† huit}}
+* Keçuva dili: {{ç|qu|pusajj}}
+* Kırım Tatarcası: {{ç|crh|sekiz}}
+* Kmer dili: {{ç|km|ប្រាំបី}}
+* Korece: {{ç|ko|여덟}}, {{ç|ko|팔}}
+* Konkani dili: {{ç|kok|आठ}}
+* Kürtçe: {{ç|ku|heşt}}
+* Lao dili: {{ç|lo|ແປດ}}
+* Latince: {{ç|la|octo}}, {{ç|la|VIII}}
+* Lehçe: {{ç|pl|osiem}}
+* Litvanca: {{ç|lt|aštuoni}}
+* Limburgca: {{ç|li|ach}}
+* Macarca: {{ç|hu|nyolc}}
+* Magindanao dili: {{ç|mdh|walu}}
+* Malgaşça: {{ç|mg|valo}}
+* Maltaca: {{ç|mt|tmienja}}
+* Maorice: {{ç|mi|waru}}
+* Maranao dili: {{ç|mrw|walo}}
+* Marathi dili: {{ç|mr|आठ}}
+* Napolice: {{ç|nap|otto}}
+* Norveççe: {{ç|no|åtte}}
+* Oksitanca: {{ç|oc|uèch}}, {{ç|oc|uòch}}
+* Özbekçe: {{ç|uz|sakkiz}}
+* Portekizce: {{ç|pt|oito}}
+* Rapanui dili: {{ç|rap|ka va'u}}
+* Rohingya dili: {{ç|rhg|añctho}}, {{ç|rhg|añcto}}
+* Romanca: {{ç|rom|oxto}}
+* Romanşça: {{ç|rm|oti}}
+* Rumence: {{ç|ro|opt}}
+* Rusça: {{ç|ru|восемь}}
+* Samoaca: {{ç|sm|valu}}
+* Sanskritçe: {{ç|sa|अष्ट}}
+* Sarduca: {{ç|sc|otto}}
+* Savahili dili: {{ç|sw|nane}}
+* Sırp-Hırvatça: {{ç|sh|osam}}
+* Somalice: {{ç|so|siddeed}}
+* Tagalogca: {{ç|tl|walo}}
+
+* Tamilce: {{ç|ta|எட்டு}}
+* Tatarca: {{ç|tt|sigez}}
+* Tibetçe: {{ç|bo|བརྒྱད}}
+* Tongaca: {{ç|to|valu}}
+* Türkmence: {{ç|tk|sekiz}}
+* Venedikçe: {{ç|vec|oto}}
+* Vepsice: {{ç|vep|kahca}}
+* Yunanca: {{ç|el|οχτώ}}
+* Zuluca: {{ç|zu|shiyagalombili}}
+* Zazaca: {{ç|zza|hest}}
+{{alt}}
+
+===Ad===
+{{tr-ad}}
+# bu sayıyı gösteren '''8''', '''VIII''' rakamlarının adı
+
+====Çeviriler====
+{{üst|sayı adı|tip=çeviriler}}
+*Fince: {{ç|fi|kahdeksikko}}
+{{alt}}
+
+===Kaynakça===
+* {{kaynak-TDK}}
+
+==Kırım Tatarcası==
+
+===Sayı adı===
+{{başlık başı|crh|sayı adı}}
+# sekiz
+
+===Kaynakça===
+{{R:crh:Luğatçıq}}
+
+==Türkmence==
+
+===Sayı adı===
+{{başlık başı|tk|sayı adı}}
+# sekiz

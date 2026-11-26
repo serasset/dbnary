@@ -1,0 +1,35 @@
+==Türkçe==
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||yu|var|la|mak}}
+
+===Eylem===
+{{tr-eylem}}
+
+[[File:Rolling Tyre with stick 07.jpg|küçükresim|Adam, alet vasıtasıyla tekerleği yuvarlıyor. (1)]]
+
+# Bir şeyi bir yerden kaldırmadan ekseni çevresinde döndürerek yürütmek.
+#* {{eş anlamlılar|tr| tekerlemek  }}
+# Döndürerek [[tomar]] yapmak veya yuvarlak duruma getirmek
+# Hızla düşürmek, devirmek
+# {{t|dil=tr|mecaz|konuşma}} Sözü belirsizce, anlaşılmayacak biçimde söylemek.
+#*      "Bu meslekte neler gördük biz diye yuvarlayarak lafı değiştiriyorum." - Ahmet Ümit 
+# {{t|dil=tr|teklifsiz konuşma}} İnanılmayacak yalanlar söylemek.
+# {{t|dil=tr|teklifsiz konuşma|yemek içmek}} İstekle ve çabucak yemek veya içmek.
+#*      "Birbiri ardınca bilmem kaç şişe bira yuvarlamış." - Attilâ İlhan
+# Kelimelerin bazı seslerini söylememek.
+#*      "Kendine has, kelimelerin son hecelerini yuvarlaya yuvarlaya, yumuşak bir konuşma tarzı vardı." - Emine Işınsu
+#Sayıyı, küçük tutarlarını atarak veya ekleyerek tüm sayı durumuna getirmek.
+
+====Çekimleme====
+{{tr-eylem-tablo}}
+
+====Çeviriler====
+{{üst|tip=çeviriler}}
+*Türkmence: {{ç|tk|toğalamak}}
+{{alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}

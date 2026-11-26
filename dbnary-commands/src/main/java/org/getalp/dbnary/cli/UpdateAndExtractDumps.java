@@ -774,9 +774,6 @@ public class UpdateAndExtractDumps implements Callable<Integer> {
     if (batch.useTdb()) {
       a.add("--tdb");
     }
-    if (!networkIsOff) {
-      a.add("--fill-missing-pages");
-    }
     if (parent.isVerbose()) {
       a.add("-v");
     }

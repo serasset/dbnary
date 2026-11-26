@@ -1,0 +1,185 @@
+{{bakınız|-uc|UC|Úc|u/c|uC|uc|uç|ức|ực}}
+
+==Türkçe==
+[[Dosya:Circle sign 3.svg|küçükresim|'''Üç''' rakamı. ]]
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||üç}}
+
+===Ad===
+{{tr-ad|istisna=yumuşama}}
+
+# İkiden sonra gelen sayının adı.
+#* {{eş anlamlılar|tr|se  }}
+# Bu sayıyı gösteren 3 ve III rakamlarının adı.
+
+====Çekimleme====
+{{tr-ad-tablo|istisna=yumuşama}}
+
+===Ön ad===
+{{tr-ön ad}}
+# İkiden bir artık.
+#* {{tanıklık|dil=tr|yazar=Ümit Yaşar OĞUZCAN|başlık=Acılar Denizi|yıl=1997|yayıncı=Özgür Yayınları|baskı=10
+|sayfa=144
+|tanıklık=Bir adam '''üç''' kadın seviyordu / Üçünün de ismi dudaklarında.}}
+
+====Atasözleri==== 
+* [[bir günlük ölüye üç gün yiyecek gerek]]
+* [[misafir üç gün misafirdir]]
+* [[padişah yasağı üç gün sürer]]
+* [[üç elli, yaz belli]]
+* [[üç göç, bir yangın yerini tutar]] 
+
+====Deyimler====
+[[üç aşağı beş yukarı]], [[üç aşağı beş yukarı dolaşmak]], [[üç günlük ömür]], [[üç günlük dünya]], [[üç maymunu oynamak]], [[üç nalla bir ata kaldı]]
+
+====Türetilmiş kavramlar====
+[[üç adım]], [[üçayak]], [[üç aylar]], [[üç aylık]], [[üç başlı]], [[üç beş]], [[üç beyaz]], [[üç birlik kuralı]], [[üç boyutlu]], [[üç buçuk]], [[üçbudak]], [[üç buutlu]], [[üççatal]], [[üççeyrek]], [[üç ders imtihanı]], [[üç ders sınavı]], [[üç durum yasası]], [[üç düzlemli]], [[üç etek]], [[üçgen]], [[üçgül]], [[üç hâl kanunu]], [[üçkâğıt]], [[üçkat]], [[üç nokta]], [[üç otuzunda]], [[üç parmaklı]], [[üçtaş]], [[üçteker]], [[üçtelli]], [[üçten dokuza]]
+ 
+
+====Çeviriler====
+{{Üst|sembol|tip=çeviriler}}
+* Almanca: {{ç|de|Drei|f}}
+* Danca: {{ç|da|treer}}
+* Fince: {{ç|fi|kolmonen}}
+* İngilizce: {{ç|en|three}}
+* İsveççe: {{ç|sv|trea}}
+* Lehçe: {{ç|pl|trzy}}
+{{Alt}}
+
+===Ön ad===
+{{tr-ön ad}}
+
+# {{t|dil=tr|matematik}} [[iki]]den büyük ve bir küçüğü arasında bir [[sayma sayısı]] bulunmayan [[tek]] [[asal sayı]]
+# {{t|dil=tr|sayılar}} [[iki]]den sonra [[dört]]ten önce gelen [[sayma sayısı]]
+#: {{örnek|dil=tr|'''Üç''', '''üç''' daha altı eder. }}
+
+====Sembol====
+* {{l|mul|3}}, {{l|mul|III}}
+
+====Çeviriler====
+{{Üst|sayı|tip=çeviriler}}
+* Aari dili: {{ç|aiw|makkan}}
+* Aragonca: {{ç|an|tres}}
+* Afrikaanca: {{ç|af|drie}}
+* Almanca: {{ç|de|drei}}
+*: Yahudi Almancası: {{ç|yi|דרײַ}}
+* Arapça: {{ç|ar|ثَلَاثَة}}
+* Arnavutça: {{ç|sq|tre}}, {{ç|sq|tri}}
+* Aşağı Almanca: {{ç|nds|dree}}
+* Aymaraca: {{ç|ay|kimsa}}
+* Azerice: {{ç|az|üç}}
+* Baskça: {{ç|eu|hiru}}
+* Birmanca: {{ç|my|သုံး}}
+* Bretonca: {{ç|br|tri}}, {{ç|br|teir}}
+* Bulgarca: {{ç|bg|три}}
+* Çağatayca: {{ç|chg|üç}}
+* Çekçe: {{ç|cs|tři}}
+* Çeçence: {{ç|ce|кхоъ}}
+* Çince: {{ç|zh|三}}, {{ç|zh|叁}}
+* Danca: {{ç|da|tre}}
+* Endonezce: {{ç|id|tiga}}
+* Ermenice: {{ç|hy|երեք}}
+* Esperanto: {{ç|eo|tri}}
+* Estonca: {{ç|et|kolm}}
+* Faroece: {{ç|fo|tríggir}}
+* Farsça: {{ç|fa|سه}}
+* Felemenkçe: {{ç|nl|drie}}
+* Fiji dili: {{ç|fj|tolu}}
+* Fince: {{ç|fi|kolme}}
+* Fransızca: {{ç|fr|trois}}
+* Gagavuzca: {{ç|gag|üç}}
+* Galce: {{ç|cy|tri}}, {{ç|cy|tair}}
+* Galiçyaca: {{ç|gl|tres}}
+* Gucaratça: {{ç|gu|ત્રણ}}
+* Gürcüce: {{ç|ka|სამი}}
+* Hintçe: {{ç|hi|तीन}}
+* İbranice: {{ç|he|שְׁלוֹשָׁה}}, {{ç|he|שלושת}}
+* İngilizce: {{ç|en|three}}
+* İnguşça: {{ç|inh|кхоъ}}
+* İrlandaca: {{ç|ga|trí}}
+* İspanyolca: {{ç|es|tres}}
+* İsveççe: {{ç|sv|tre}}
+* İtalyanca: {{ç|it|tre}}
+* Japonca: {{ç|ja|三}} [san]
+* Kabarca: {{ç|kbd|хҧа}}
+* Katalanca: {{ç|ca|tres}}
+* Keçuva dili: {{ç|qu|kimsa}}
+* Kmer dili: {{ç|km|បី}}
+* Konkani dili: {{ç|kok|तीन}}
+* Korece: {{ç|ko|셋|tr=sed}}, {{ç|ko|세|tr=se}}, {{ç|ko|삼|tr=sam}}
+* Kürtçe: {{ç|ku|sê}}
+* Lao dili: {{ç|lo|ສາມ}}
+* Latince: {{ç|la|tres}}
+* Lehçe: {{ç|pl|trzy}}
+* Limburgca: {{ç|li|drie}}
+* Litvanca: {{ç|lt|trys}}
+* Macarca: {{ç|hu|három}}
+* Maorice: {{ç|mi|toru}}
+* Magindanao dili: {{ç|mdh|telu}}
+* Malayalam dili: {{ç|ml|മൂന്ന്}}
+* Malayca: {{ç|ms|telu}}
+* Malgaşça: {{ç|mg|telo}}
+* Maltaca: {{ç|mt|tlieta}}
+* Maranao dili: {{ç|mrw|telo}}
+* Marathi dili: {{ç|mr|तीन}}
+* Mon dili: {{ç|mnw|ပိ|tr=pi}}
+* Norveççe: {{ç|no|tre}}
+* Oriya dili: {{ç|or|ତିନି}}, {{ç|or|୩}}
+* Oksitanca: {{ç|oc|tres}}
+* Özbekçe: {{ç|uz|uch}}
+* Portekizce: {{ç|pt|três}}
+* Rapanui dili: {{ç|rap|ka toru}}
+* Rumence: {{ç|ro|trei}}
+* Rusça: {{ç|ru|три}}
+* Sanskritçe: {{ç|sa|त्रयं}}
+* Sırp-Hırvatça:
+*: Kiril: {{ç|sh|три}}
+*: Latin: {{ç|sh|tri}}
+* Svahili dili: {{ç|sw|tatu}}
+* Tagalogca: {{ç|tl|tatlo}}
+* Tatarca: {{ç|tt|öç}}
+*: Kırım Tatarcası: {{ç|crh|hirê}}
+* Tayca: {{ç|th|สาม}}
+* Tibetçe: {{ç|bo|གསུམ}}
+* Türkçe:
+*: Osmanlı Türkçesi: {{ç|ota|اوچ}}
+* Türkmence: {{ç|tk|üç}}
+* Uygurca: {{ç|ug|ئۈچ}}
+* Venedikçe: {{ç|vec|tre}}
+* Vepsice: {{ç|vep|koume}}
+* Yunanca:
+*: Modern Yunanca: {{ç|el|τρίτο}}
+* Zhuang dili: {{ç|za|sam}}
+* Zuluca: {{ç|zu|thathu}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}
+
+
+==Azerice==
+
+===Söyleniş===
+* {{h|dil=az||üç}}
+
+===Sayı adı===
+{{başlık başı|az|sayı adı}}
+
+# {{t|dil=az|aritmetik|sayılar}} {{b|tr|üç}}
+
+==Kırım Tatarcası==
+
+===Söyleniş===
+* {{h|dil=crh||üç}}
+
+===Sayı adı===
+{{başlık başı|crh|sayı adı}}
+
+# {{t|dil=crh|aritmetik|sayılar}} {{b|tr|üç}}
+
+===Kaynakça===
+{{R:crh:Luğatçıq}}

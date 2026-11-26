@@ -461,6 +461,33 @@ public class WiktionaryExtractorTest {
     assertEquals(2, count(extract("koyun", "koyun"), OntolexOnt.LexicalEntry));
   }
 
+  @Test
+  public void skipsInflectionEntriesAndSenses() {
+    // #70: {{çekim}}, {{hâl}}, {{tr-çekim:m1}}.. definitions are inflected forms, not senses.
+    Model m = extractPage("abandırma", "==Türkçe==\n===Eylem===\n# {{çekim|dil=tr|abandırmak||2t|imp|neg}}\n"
+        + "===Özel ad===\n# {{hâl|Allah|'ın}}\n===Ad===\n# {{tr-çekim:m1|indirme|ler}}\n");
+    assertEquals(0, count(m, OntolexOnt.LexicalEntry));
+    // A mixed PoS keeps its entry and its real senses only; the examples of a skipped sense go too.
+    m = extractPage("abanozlaşma", "==Türkçe==\n===Ad===\n# {{eylem-hâl|abanozlaşmak}}\n#: ''örnek''\n# [[abanozlaşmak]] [[durum]]u\n");
+    assertEquals(1, senseCount(m, "abanozlaşma__Ad__1"));
+    assertEquals(Set.of(), examples(m));
+  }
+
+  @Test
+  public void acceptsSpacedLanguageHeading() {
+    // Suriyeli: "== Türkçe ==".
+    assertEquals(1, senseCount(extractPage("Suriyeli", "== Türkçe ==\n===Özel ad===\n# Suriye’de yaşayan halk\n"), "Suriyeli__Özel_ad__1"));
+  }
+
+  @Test
+  public void extractsPosNestedUnderPronunciation() {
+    // tanım: ===Söyleniş=== / ====Ad==== (76 pages in the 2026-11-01 dump).
+    Model m = extractPage("tanım",
+        "==Türkçe==\n===Söyleniş===\n* {{IPA|tr|/tanɯm/}}\n====Ad====\n# [[kavram|kavramın]] [[tarif]]i\n" + "===Kaynakça===\n====Sıfat====\n# x\n");
+    assertEquals(1, senseCount(m, "tanım__Ad__1"));
+    assertEquals(1, senseCount(m, "tanım__Sıfat__1"));
+  }
+
   // --------------------------------------------------------------------------------------------
   // {{anlam|..}} (aliases {{mânâ}} 777x, {{mana}} 10x in nym sections) starts a nym line and gives
   // the meaning the following items belong to -> dbnary:gloss of each nym of that line (several

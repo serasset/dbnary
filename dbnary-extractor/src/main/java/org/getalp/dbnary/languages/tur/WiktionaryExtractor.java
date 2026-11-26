@@ -166,7 +166,8 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     pronunciationModel.setPageName(getWiktionaryPageName());
     // System.out.println(pageContent);
     Matcher languageFilter = languageSectionPattern.matcher(pageContent);
-    while (languageFilter.find() && !languageFilter.group(1).equals("Türkçe")) {
+    // trim: "== Türkçe ==" (90 pages) captures a trailing space
+    while (languageFilter.find() && !languageFilter.group(1).trim().equals("Türkçe")) {
     }
     // Either the filter is at end of sequence or on German language header.
     if (languageFilter.hitEnd()) {
@@ -208,12 +209,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
         // Misspelling pages ({{mânâ|doğrusu}} [[correct form]]): not entries
       } else if ("Söyleniş".equals(header)) {
         extractPron(section.getContent());
+        // ===Söyleniş=== / ====Ad====: the PoS is wrongly nested, but it is an entry
+        extractNestedPosSections(section);
         extractChildTranslationSections(section);
       } else if (partOfSpeechMarkers.contains(header)) {
         extractPosSection(section, header);
       } else {
         log.debug("Unexpected header {} in {}", header, getWiktionaryPageName());
-        // Kaynakça, Ek okumalar, Çekimleme..: a ====Çeviriler==== there is page level
+        // Kaynakça, Ek okumalar, Çekimleme..: a ====Çeviriler==== there is page level, a
+        // misplaced ====Ad==== is still an entry
+        extractNestedPosSections(section);
         extractChildTranslationSections(section);
       }
     }
@@ -221,8 +226,13 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     wdh.finalizeLanguageSection();
   }
 
-  /** Inflection templates: a PoS whose definitions are only these is an inflected form (skipped). */
-  private static final Set<String> inflectionTemplates = Set.of("tr-çekim", "fiil");
+  /**
+   * Inflection templates: a definition made only of one of these is an inflected form, not a sense
+   * (#70), and a PoS whose definitions are all inflections is not an entry. ({{hâl}} redirects to
+   * {{ad-hâl}}, {{çoğulu}} to {{çoğul ad}}.)
+   */
+  private static final Set<String> inflectionTemplates =
+      Set.of("tr-çekim", "tr-çekim:m1", "fiil", "çekim", "mçekim", "ad-hâl", "hâl", "eylem-hâl", "çoğul ad", "çoğulu");
 
   /** A PoS section, at level 3 or at level 4 under ===Köken N===. */
   private void extractPosSection(WikiSection section, String header) {
@@ -259,14 +269,12 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     }
   }
 
-  /** True when every definition is a sole {{tr-çekim|..}} / {{fiil|..}} (punctuation allowed). */
+  /** True when every definition is an inflection (see isInflection). */
   private static boolean isInflectedOnly(WikiContent content) {
     boolean any = false;
     for (Token t : content.wikiTokens()) {
       if (t instanceof NumberedListItem item && item.getListPrefix().length() == item.getLevel()) {
-        List<Token> significant =
-            item.getContent().tokens().stream().filter(x -> !(x instanceof Text && x.getText().replaceAll("[\\s.,;]", "").isEmpty())).toList();
-        if (significant.size() != 1 || !(significant.get(0) instanceof Template tpl) || !inflectionTemplates.contains(tpl.getName().trim())) {
+        if (!isInflection(item)) {
           return false;
         }
         any = true;
@@ -275,7 +283,14 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
     return any;
   }
 
-  /** PoS headings at level 4 under an etymology (===Köken N=== / ====Ad====). */
+  /** True when a definition is a sole inflection template, e.g. "# {{çekim|dil=tr|..}}." */
+  private static boolean isInflection(NumberedListItem item) {
+    List<Token> significant =
+        item.getContent().tokens().stream().filter(x -> !(x instanceof Text && x.getText().replaceAll("[\\s.,;]", "").isEmpty())).toList();
+    return significant.size() == 1 && significant.get(0) instanceof Template tpl && inflectionTemplates.contains(tpl.getName().trim());
+  }
+
+  /** PoS headings at level 4 under a non PoS section (===Köken N===, ===Söyleniş===, ..). */
   private void extractNestedPosSections(WikiSection section) {
     for (Token t : section.getContent().wikiTokens()) {
       if (t instanceof WikiSection ws) {
@@ -474,12 +489,16 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
 
   protected void extractDefinitions(WikiContent wk) {
     WikiEventsSequence indentationsOrTemplates = wk.filteredTokens(new ClassBasedFilter().allowIndentedItem().allowTemplates());
+    boolean skippedSense = false; // the examples of a skipped inflection sense are skipped too
     label: for (Token indent : indentationsOrTemplates) {
       switch (indent) {
         case NumberedListItem numberedListItem -> {
           // Do not extract numbered list items that begin with ":" as they are indeed examples.
           String additionalPrefix = numberedListItem.getListPrefix().substring(numberedListItem.getLevel());
           if (additionalPrefix.startsWith(":") || additionalPrefix.startsWith("*")) {
+            if (skippedSense) {
+              continue;
+            }
             Template nymList = soleNymTemplate(numberedListItem.getContent());
             if (null != nymList) {
               registerNymTemplate(nymList);
@@ -488,7 +507,10 @@ public class WiktionaryExtractor extends AbstractWiktionaryExtractor {
             String expandedExample = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
             expandedExample = CONTROL_CHAR.matcher(expandedExample).replaceAll("");
             wdh.registerExample(expandedExample, null);
+          } else if (isInflection(numberedListItem)) {
+            skippedSense = true; // an inflected form, not a sense (#70)
           } else {
+            skippedSense = false;
             String expandedDefinition = expander.expandAll(numberedListItem.getContent().getText().trim(), null);
             expandedDefinition = CONTROL_CHAR.matcher(expandedDefinition).replaceAll("");
             wdh.registerNewDefinition(expandedDefinition.replace("\n", ""));

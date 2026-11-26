@@ -1,0 +1,48 @@
+==Türkçe==
+
+===Köken===       
+{{k|dil=tr|tr}}
+
+===Ad===
+{{tr-ad}}
+# [[yular|yularından]] çekilerek götürülen boş binek hayvanı
+#* {{kt|başlık=İstanbul'da Semai Kahveleri ve Meydan Şairleri|vikikaynak=İstanbul'da Semai Kahveleri ve Meydan Şairleri|yazar=Osman Cemal KAYGILI|yayıncı=Merkez Kitapçılık|yıl=2007|tanıklık= Tam Galata Köprüsü'nden geçerken Perişan Halil' in '''yedeğindeki''' gürbüz dana oradan anası, ablası ile geçmekte olan sekiz-on yaşlarında bir çocuğun koluna hızlıca boynuz yapıştırmış, çocuk da feryadı salıvermiş. |sayfa=48|dil=tr}}
+# hayvanı yedeğe alan ip, [[yular]]
+# {{t|dil=tr|edebiyat}} [[redif]]
+
+===Ön ad===
+{{tr-ön ad}}
+# gereğinde kullanılmak için elde bulundurulan, asıl karşıtı
+# gereğinde kullanılmak için fazladan bulundurulan, ayrılmış olan
+#* ''Demir çekme kapının yedek anahtarını ona armağan edip usulca cebine soktu.'' - L. Tekin
+
+====Deyimler====
+{{üst}}
+[[boş yedek]], 
+[[geçerli yedek]], 
+[[yedek akçe]], 
+[[yedek almaç]], 
+[[yedek anamal]], 
+[[yedek iz]], 
+[[yedek parça]], 
+[[yedek takım]]
+[[yedek lastik]], 
+[[yedek parça]], 
+[[yedek subay]]
+{{alt}}
+
+====Çeviriler====
+{{üst|isim|tip=çeviriler}}
+*Fince: {{ç|fi|vastike}}
+{{alt}}
+
+====Çeviriler====
+{{üst|sıfat|tip=çeviriler}}
+*Fince: {{ç|fi|vara-}}
+* Fransızca: {{ç|fr|de rechange}}
+* İspanyolca: {{ç|es|repuesto}}
+* Macarca: {{ç|hu|tartalék}}
+{{alt}}
+
+===Kaynakça===
+{{kaynak-TDK}}

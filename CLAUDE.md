@@ -1,4 +1,4 @@
-/p# CLAUDE.md
+# CLAUDE.md
 
 ## Branching & release workflow
 
@@ -11,9 +11,13 @@ README.md, "Performing releases" section.
 
 **Feature branches:**
 - Start: `mvn gitflow:feature-start -DpushRemote=true`
-- Push commits, open a GitLab MR targeting `develop` (triggers the CI/CD
-  extraction-diff validation — can take hours; scope it with the
-  `VALIDATION_LANGUAGES` commit-message variable if needed, see README)
+- Push commits, open a GitLab MR targeting `develop`. Pushes only run
+  `mvn verify`; the extraction-diff validation (`sampling` job) is **not**
+  automatic: start it from GitLab CI/CD → Pipelines → Run pipeline on the
+  feature branch (a `feature/*` branch is compared against `develop`, see
+  `.gitlab-ci/settings`). It can take hours: scope it with the
+  `VALIDATION_LANGUAGES` pipeline variable (or `VALIDATION_LANGUAGES="tr"` in
+  the last commit message)
 - Finish, after MR approval: `mvn gitflow:feature-finish` — or merge via the
   GitLab MR UI and delete the feature branch. Do not run a manual `git merge`.
 

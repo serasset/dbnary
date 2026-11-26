@@ -1,0 +1,9 @@
+==Türkçe==
+===Atasözü===
+{{tr-atasözü}}
+[[Misafir]] üç gün misafirdir
+
+# Geleneğe göre konukluk hakkı üç gündür. Konuk bir yerde üç gün kalırsa ne ev sahibi bunu fazla bulur, ne de konuk uzun kaldım diye üzülür. Ama üç günden sonrası, her ikisi için de sıkıcı olur. Konuk, senli benli bir arkadaş ise, üç günden sonra konukluğu bırakıp ev sahibine yardımcı olmalıdır.
+
+====Kaynakça====
+*{{Aksoy, Ömer Asım-ADS-1995}}

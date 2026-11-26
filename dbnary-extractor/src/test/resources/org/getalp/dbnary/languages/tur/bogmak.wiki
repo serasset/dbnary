@@ -1,0 +1,61 @@
+==Türkçe==
+
+===Söyleniş===
+* {{IPA|dil=tr|[boːˈmak]}}
+* {{h|dil=tr||boğ|mak}}
+
+===Ad===
+{{tr-ad}} 
+# [[boğum]]  yeri.
+
+===Eylem===
+{{tr-eylem}} 
+
+[[File:Image943-knee mount.jpg|küçükresim|Adamı, yerdeki adamı '''boğuyor.''' (1)]]
+[[File:Aluminium-can-squeezed-by-hand.jpg|küçükresim|Adamı, şişeyi '''boğuyor.''' (2)]]
+
+# {{t|dil=tr|cinayet}} Bir canlıyı, soluk almasına engel olarak öldürmek.
+#*      "Zavallıyı az kalsın gırtlağından yakalayıp boğacaktı." - Yakup Kadri Karaosmanoğlu
+# El, ip vb. ile bir şeyi çepeçevre sıkmak.
+# {{t|dil=tr|otomotiv}} Motorlu taşıtlarda fazla yakıt motoru çalışmaz duruma getirmek.
+#* {{kt|dil=tr|başlık=Kurdun Postu|yazar=Batuhan AŞIKTOPRAK|yayıncı=Varlık Yayınları |yıl=2019|sayfa=63|tanıklık=Numan ve it, Sargis'in başında nöbeti sürdürürken, motoru birkaç kez '''boğarak''' da olsa pikabı çalıştırdım.}}
+# {{t|dil=tr|renkler}} Renklerin uygun düşmemesi.
+#*    Koyu yeşil renk odayı boğdu. Bu renk seni boğmuş.
+# {{t|dil=tr|mecaz}} Silik bir duruma getirmek.
+#*      "Galiba bunları dinlememek, duymamak için konuşuyorum; seslerini boğmak, bastırmak için durmamacasına gevezelik ediyorum." - Refik Halit Karay
+# {{t|dil=tr|mecaz}} Tamamıyla kaplamak.
+#* {{kt|dil=tr|başlık=Yanımda Kal|yazar=Eylem ATA GÜLEÇ|yayıncı=Yapı Kredi Yayınları|yıl=2024
+|sayfa=35
+|tanıklık=Cam kavanoza korukları basıyorum. İki elma da atıyorum içine. Bir kaşık şeker. Bir kaşık tuz. '''Boğmayacak''' kadar su.
+}}
+# {{t|dil=tr|mecaz}} Peş peşe yapmak, bir kimseyi bir şeyin fazlasına eriştirmek veya uğratmak.
+#*      "Güllü'nün boynuna sarılan Cemile, kadının hafif çilli, tombul yanaklarını öpücüklere boğdu." - Orhan Kemal
+# {{t|dil=tr|mecaz}} Bir durumu başka bir durum yaratarak örtmeye çalışmak.
+#*      "Zaten durumun vahametini sezen müdürle hoca, işi gürültüye boğmak için Atatürk'e müfredat programına dair bir şeyler anlatmaya başladılar." - Haldun Taner
+# {{t|dil=tr|mecaz}} Gelişmesine engel olmak.
+# {{t|dil=tr|mecaz}} [[bunaltmak]]
+#*    "Daha sıcak basmamıştı; güneş henüz yakmıyor, hava daha boğmuyordu." - Refik Halit Karay
+
+====Çekimleme====
+{{tr-eylem-tablo}}
+
+====Deyimler====
+:[[bir kaşık suda boğmak]]
+
+====Çeviriler====
+{{üst|ad|tip=çeviriler}}
+*Fince: {{ç|fi|solmukohta}}
+{{alt}}
+
+====Çeviriler====
+{{üst|ön ad|tip=çeviriler}}
+*Azerice: {{ç|az|boğmaq}}
+*Eski Türkçe: {{ç|otk|bogmak}}, {{ç|otk|boguşmak}}
+*Fince: {{ç|fi|hukkua}}, {{ç|fi|tukehtua}}
+*Karaçay Balkarca: {{ç|krc|buv}}
+*Tatarca: {{ç|tt|bu}}
+*Türkmence: {{ç|tk|boğmak}}
+{{alt}}
+
+===Kaynakça===
+{{kaynak-TDK}}

@@ -1,0 +1,70 @@
+{{Haftanın kelimesi|8|2007}}
+==Türkçe==
+
+===Köken===
+{{k|en|dil=tr}} {{ç|en|empathy}} veya {{k|fr|dil=tr}} {{ç|fr|empathie}} biçiminden Türkçeye girmiştir. [[Yunanca]] "'{{ç|el|en-}}"' ("iç, içine, içinde") ve "'{{ç|el|-patheia}}"' ("duygu, acı, hissetme, algılama"; Yunanca {{ç|el|paskhein}} fiilinin perfekt kökü {{ç|el|path-}}'tan) kelimelerinin birleşmesiyle oluşmuştur. İngilizce kelime 1930 dolayında Sigmund Freud'un teknik bir terim olarak kullandığı Almanca {{ç|de|Einfühlung}} kelimesinin tercümesi olarak türetilmiştir.
+
+===Ad===
+{{tr-ad}}
+# Kişinin kendisini başka bir bilincin yerine koyarak o bilincin [[duygu]]larını, isteklerini ve [[düşünce]]lerini anlayabilmesi becerisi 
+#* "'''Empati''' kurmada, karşımızdaki kişiye yardım etme davranışı vardır." E. Nar
+# {{t|dil=tr|ruh bilimi}} Bir başkasının [[duygu]]larını, içinde bulunduğu durum ya da [[davranış]]larındaki [[motivasyon]]u anlamak ve [[içselleştirmek]]
+# {{t|dil=tr|ruh bilimi}} Kendi [[duygu]]larını başka [[nesne]]lere [[yansıtmak]]
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+====Eş anlamlılar====
+* [[eşduyum]]
+* [[anlayış]]
+* [[duyarlılık]]
+* [[duygudaşlık]]
+
+====Karşıt anlamlılar====
+* [[anlayışsızlık]]
+* [[duyarsızlık]]
+* [[egoizm]]
+
+====Üst kavramlar====
+* [[davranış]]
+* [[duygu]]
+* [[psikoloji]]
+
+====Sözcük birliktelikleri====
+* [[empati kurmak]]
+* [[empati yapmak]]
+
+====Türetilmiş kavramlar====
+* [[empatice]]
+* [[empatici]]
+* [[empaticik]]
+* [[empatik]]
+* [[empatili]]
+* [[empatisiz]]
+* [[empatiyken]]
+* [[empatiyle]]
+* [[empatiyse]]
+
+====Benzer sözcükler====
+* [[antipati]]
+* [[apati]]
+* [[sempati]]
+
+====Çeviriler====
+{{üst|ruh bilimsel davranış|tip=çeviriler}}
+*Almanca: {{ç|de|Einfühlung|f}}, {{ç|de|Einfühlungsvermögen|n}}, {{ç|de|Empathie|f}}
+*Danca: {{ç|da|empati}}
+*Esperanto: {{ç|eo|empatio}}
+*Felemenkçe: {{ç|nl|empathie}}
+*Fince: {{ç|fi|empatia}}
+*Fransızca: {{ç|fr|empathie|f}}
+*İngilizce: {{ç|en|empathy}}
+*İspanyolca: {{ç|es|comprensión|f}}, {{ç|es|intuición}} 
+*Portekizce: {{ç|pt|empatia}}
+{{alt}}
+
+===Ayrıca bakınız===
+* [https://web.archive.org/web/20081204100549/http://access.autistics.org/resources/glossary/main.html A World Apart, definitions]
+
+===Kaynakça===
+* {{kaynak-TDK}}

@@ -1,0 +1,256 @@
+{{bakınız|köyün}}
+==Türkçe==
+{{Haftanın kelimesi|4|2008}}
+
+===Söyleniş===
+* {{IPA|dil=tr|/ko.ˈjun/}}
+* {{h|dil=tr||ko|yun}}
+
+===Köken 1===
+{{ek|dil=tr|koy|un}}
+
+====Ad====
+{{başlık başı|tr|çekimli ad}}
+
+# {{tr-çekim|koy|söz=ad}}
+
+===Köken 2===
+{{ek|dil=tr|koyu|n}}
+
+====Ad====
+{{başlık başı|tr|çekimli ad}}
+
+# {{tr-çekim|koyu|söz=ad}}
+
+===Köken 3===
+{{kökenli|tr|ota|قویون|ç=koyun}}, o da {{devralınan|gag|otk|𐰸𐰆𐰪}}.
+[[Resim:Flock of sheep.jpg|küçükresim|150px|'''Koyunlar''']]
+
+====Ad====
+{{tr-ad}}
+
+# {{t|dil=tr|boynuzlugiller|evcil hayvanlar}} [[geviş getirenler]]den, [[et]]i, [[süt]]ü, [[yapağı]]sı ve [[deri]]si için yetiştirilen [[evcil hayvan]]
+# {{mecaz|tr}} [[verilmek|verilen]] [[buyruk]]lara uyan, kendi [[kişilik|kişiliğini]] gösteremeyen [[kişi]]
+
+=====Çekimleme=====
+{{tr-ad-tablo}}
+
+=====Bilimsel adı=====
+* {{mana|boynuzlugiller|evcil hayvanlar}} [[Ovis aries]]
+
+=====Üst kavramlar=====
+* [[boynuzlugiller]], [[evcil hayvan]]
+
+=====Alt kavramlar=====
+{{Üst|evcil hayvan|tip=alt kavramlar}}
+* [[Anadolu yaban koyunu]]
+* [[Asya koyunu]]
+* [[bozkır koyunu]]
+* [[kıvırcık koyun]]
+* [[merinos koyunu]]
+* [[yaban koyunu]]
+{{Alt}}
+
+=====Atasözleri=====
+{{Üst|evcil hayvan|tip=atasözleri}}
+* [[Ak koyun ak bacağından, kara koyun kara bacağından asılır]]
+* [[Ak koyun kara koyun geçit başında belli olur]]
+* [[Buğday ile koyun, geri yanı oyun]]
+* [[Erkek koyun kasap dükkanına yakışır]]
+* [[Her koyun kendi bacağından asılır]]
+* [[Koyun can derdinde, kasap et derdinde]]
+* [[Kurtla koyun, kılıçla oyun olmaz]]
+* [[Koyunun olmadığı yerde keçiye Abdurrahman Çelebi derler]]
+* [[Yabancı koyun kenarda yatar]]
+* [[Ziyan olan koyunun kuyruğu yağlı olur]]
+{{Alt}}
+
+=====Deyimler=====
+{{Üst|evcil hayvan|tip=deyimler}}
+* [[her koyun kendi bacağından asılır]], 
+* [[koyun kaval dinler gibi dinlemek]], 
+* [[koynunda yılan beslemek]], 
+* [[koyunun kaval dinlediği gibi dinlemek]]
+{{Alt}}
+
+=====Kelime birliktelikleri=====
+{{Üst|evcil hayvan|tip=kelime birliktelikleri}}
+* [[koyun bakışlı]]
+* [[koyun baklası]]
+* [[koyun dede]]
+* [[koyun eti]]
+* [[koyun etkisi]]
+* [[koyun gibi]]
+* [[koyun koyuna]]
+* [[koyun mantarı]]
+* [[koyun otu]]
+* [[koynuna almak]]
+* [[koynuna girmek]]
+{{Alt}}
+
+=====Türetilmiş kavramlar=====
+{{sütun|4|
+* [[koyuncu]]
+* [[koyuncuk]]
+* [[koyungöbeği]]
+* [[koyungözü]]
+* [[koyunken]]
+* [[koyunla]]
+* [[koyunlu]]
+* [[koyunsa]]
+* [[koyunyünü]]
+}}
+
+=====Çeviriler=====
+{{Üst|evcil hayvan|tip=çeviriler}}
+* Afrikaanca: {{ç|af|skaap}}
+* Almanca: {{ç|de|Schaf|n}}
+*: İsviçre Almancası: {{ç|de|Schaf|n}}
+* Aragonca: {{ç|an|borrega}}, {{ç|an|güella}}, {{ç|an|ñisca}}, {{ç|an|obella}}
+* Arapça: {{ç|ar|غَنَم|m}}
+* Arnavutça: {{ç|sq|dele}}
+* Asturyasça: {{ç|ast|oveya}}
+* Aymaraca: {{ç|ay|uwija}}
+* Azerice: {{ç|az|qoyun}}
+* Baskça: {{ç|eu|ardi}}
+* Bengalce: {{ç|bn|েমষ}}
+* Beyaz Rusça: {{ç|be|аве́чка}}
+* Bretonca: {{ç|br|dañvad}}, {{ç|br|penn-dañvad}}, {{ç|br|dañvadez}}
+* Bulgarca: {{ç|bg|овца}}
+* Calo dili: {{ç|rmq|braquí}}, {{ç|rmq|jeubí}}, {{ç|rmq|jeulí}}
+* Çeçence: {{ç|ce|zhii}}
+* Çekçe: {{ç|cs|ovce}}
+* Çince: {{ç|zh|羊}}
+* Danca: {{ç|da|får}}
+* Endonezce: {{ç|id|biri-biri}}, {{ç|id|domba}}
+* Ermenice: {{ç|hy|ոչխար}}
+* Ersya dili: {{ç|myv|реве}}
+* Esperanto: {{ç|eo|ŝafo}}
+* Estonca: {{ç|et|lammas}}
+* Evenkice: {{ç|evn|беру}}, {{ç|evn|овец}}
+* Faroece: {{ç|fo|seyður}}
+* Farsça: {{ç|fa|گوسفند}}
+* Felemenkçe: {{ç|nl|schaap}}
+* Fince: {{ç|fi|lammas}}
+* Fransızca: {{ç|fr|mouton}}
+* Friuli dili: {{ç|fur|piore}}
+* Frizce: {{ç|fy|skiep}}
+* Gagavuzca: {{ç|gag|koyun}}
+* Galce: {{ç|cy|dafad}}
+* Galiçyaca: {{ç|gl|ovella}}, {{ç|gl|pelandrón}}, {{ç|gl|perica}}
+* Guarani dili: {{ç|gn|ovechá}}
+* Gucaratça: {{ç|gu|ઘેંટું}}, {{ç|gu|મેંઢું}}
+* Hausaca: {{ç|ha|tunkiya}}
+* Hintçe: {{ç|hi|भेड़}}
+* İbranice: {{ç|he|כבס}}, {{ç|he|קוזי}}
+* İngilizce: {{ç|en|sheep}}
+* İrlandaca: {{ç|ga|caora}}
+* İspanyolca: {{ç|es|oveja}}
+*: Yahudi İspanyolcası: {{ç|lad|kuzi}}
+* İsveççe: {{ç|sv|får|n}}, {{ç|sv|tacka|c}}
+* İtalyanca: {{ç|it|pecora}}
+* İzlandaca: {{ç|is|kind}}, {{ç|is|sauðkind}}, {{ç|is|sauðsauður}}
+* Japonca: {{ç|ja|羊}}
+* Karaçay-Balkarca: {{ç|krc|koy}}
+* Katalanca: {{ç|ca|ovella}}
+* Kazakça: {{ç|kk|қой}}, {{ç|kk|қошқар}}
+* Keçuva dili: {{ç|qu|uyja}}
+* Kırgızca: {{ç|ky|кой}}
+* Korece: {{ç|ko|양}}
+* Kürtçe: {{ç|ku|mêşin}}, {{ç|ku|mih}}, {{ç|ku|mî}}
+* Ladince: {{ç|lld|biscia}}
+* Latince: {{ç|la|ovis}}, {{ç|la|pecus}}
+* Lazca​: {{ç|lzz|oba}}
+* Lehçe: {{ç|pl|owca}}
+* Letonca: {{ç|lv|aita}}
+* Ligurya dili: {{ç|lij|bè}}, {{ç|lij|pégua}}
+* Lingala: {{ç|ln|meme}}, {{ç|ln|mpata}}
+* Litvanca: {{ç|lt|avis}}
+* Maasai dili: {{ç|mas|enger}}
+* Macarca: {{ç|hu|juh}}, {{ç|hu|birka}}
+* Makedonca: {{ç|mk|овца}}
+* Malayca: {{ç|ms|bebiri}}
+* Malgaşça: {{ç|mg|ondry}}
+* Manksça: {{ç|gv|keyrrey}}
+* Maorice: {{ç|mi|hipi}}
+* Marathi dili: {{ç|mr|मेंढी}}
+* Mari dili: {{ç|chm|шорык}}
+* Moğolca: {{ç|mn|хонь}}
+* Norveççe: {{ç|sv|får|n}}, {{ç|no|sau|m}}
+* Oksitanca: {{ç|oc|fea}}, {{ç|oc|feda}}
+* Özbekçe: {{ç|uz|qoʻy}}
+* Pali dili: {{ç|pi|mesa}}
+* Pencapça: {{ç|pa|ਭੇਡ}}
+* Portekizce: {{ç|pt|ovelha}}
+* Romanşça: {{ç|rm|nursa}}
+* Rumence: {{ç|ro|oaie}}
+* Rusça: {{ç|ru|овца}}
+* Samoaca: {{ç|sm|māmoe}}
+* Sanskritçe: {{ç|sa|मेषः}}
+* Sarduca: {{ç|sc|barbeghe}}
+* Sırp-Hırvatça:
+*: Kiril: {{ç|sh|овца}}
+*: Latin: {{ç|sh|ovca}}
+* Slovence: {{ç|sl|óvca}}
+* Somalice: {{ç|so|ido}}
+* Svahili dili: {{ç|sw|kondoo}}
+* Şona dili: {{ç|sn|hwayi}}
+* Tatarca: {{ç|tt|sarıq}}
+*: Kırım Tatarcası: {{ç|crh|koy}}, {{ç|crh|qoy}}
+* Tayca: {{ç|th|แกะ}}
+* Türkçe:
+*: Eski Türkçe: {{ç|otk|𐰸𐰆𐰪}}, {{ç|otk|kon}}, {{ç|otk|koyn}}, {{ç|otk|ögür}}
+*: Osmanlı Türkçesi: {{ç|ota|قویون}} 
+* Türkmence: {{ç|tk|goýun}}, {{ç|tk|гойун}}
+* Ukraynaca: {{ç|uk|вівця}}, {{ç|uk|ягниця}}, {{ç|uk|овечка}}
+* Uygurca: {{ç|ug|k̡oy}}
+* Venedikçe: {{ç|vec|feda}}, {{ç|vec|piègora}}
+* Vepsice: {{ç|vep|lambaz}}
+* Yunanca
+*: Modern Yunanca: {{ç|el|πρόβατο}}
+{{Alt}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}
+
+===Köken 4===
+{{devralınan|tr|otk|𐰸𐰆𐰪}}
+
+====Ad====
+{{tr-ad|istisna=düşme}}
+
+# [[kol]]lar [[ara]]sı
+#: {{eş anlamlılar|tr|göğüs|kucak|sine}}
+#*: {{örnek|dil=tr|Ninem bizde bulunduğu zamanlar onun '''koynundan''' başka bir yerde yattığımı hiç bilmem.|Yâkup Kadri Karaosmanoğlu|Y. K. Karaosmanoğlu}}
+# {{t|dil=tr|giyim}} [[göğüs]]le [[giysi]] [[ara]]sı
+#: {{örnek|dil=tr|Kesesini '''koynunda''' taşır.}}
+# {{mecaz|tr}} [[koruyucu]], [[şefkatli]] [[çevre]]
+#: {{örnek|dil=tr|Hepimiz bu yurdun '''koynunda''' yetiştik.}}
+
+=====Çekimleme=====
+{{tr-ad-tablo|istisna=düşme}}
+
+===Kaynakça===
+* {{Kaynak-TDK}}
+
+===Köken 5===
+{{ek|dil=tr|koymak|alt1=koy|un}}
+
+====Eylem====
+{{başlık başı|tr|çekimli ad}}
+
+# {{fiil|koy|un}}
+#: {{zıt anlamlılar|tr|koymayın}}
+
+==Gagavuzca==
+
+===Köken===
+{{kökenli|gag|otk|𐰸𐰆𐰪}}
+
+===Söyleniş===
+* {{h|dil=gag||ko|yun}}
+
+===Ad===
+{{başlık başı|gag|ad}}
+
+# {{t|dil=gag|boynuzlugiller}} {{b|tr|koyun}}

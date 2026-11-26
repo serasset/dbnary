@@ -1,5 +1,11 @@
 package org.getalp.dbnary.languages.tur;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import org.apache.jena.rdf.model.Resource;
 import org.getalp.dbnary.LexinfoOnt;
 import org.getalp.dbnary.languages.OntolexBasedRDFDataHandler;
 import org.getalp.dbnary.OntolexOnt;
@@ -21,7 +27,7 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Atasözü", new PosAndType(LexinfoOnt.proverb, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Bağlaç", new PosAndType(LexinfoOnt.conjunction, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Belirteç", new PosAndType(LexinfoOnt.adverb, OntolexOnt.LexicalEntry));
-    posAndTypeValueMap.put("Deyim", new PosAndType(LexinfoOnt.idiom, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Deyim", new PosAndType(LexinfoOnt.idiom, OntolexOnt.MultiWordExpression));
     posAndTypeValueMap.put("Emir", new PosAndType(LexinfoOnt.imperative, OntolexOnt.LexicalEntry));
     posAndTypeValueMap.put("Erkek adı", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry)); // Male name ?
     posAndTypeValueMap.put("Erkek ismi", new PosAndType(LexinfoOnt.properNoun, OntolexOnt.LexicalEntry)); // Male name ?
@@ -39,6 +45,15 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
     posAndTypeValueMap.put("Ünlem", new PosAndType(LexinfoOnt.interjection, OntolexOnt.LexicalEntry));
 
     posAndTypeValueMap.put("Soyadı", posAndTypeValueMap.get("Özel ad"));
+    posAndTypeValueMap.put("Sayı adı", posAndTypeValueMap.get("Sayı"));
+    posAndTypeValueMap.put("Sıral sayı", new PosAndType(LexinfoOnt.ordinalAdjective, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Yardımcı eylem", posAndTypeValueMap.get("Eylem")); // auxiliary verb
+    posAndTypeValueMap.put("Ek eylem", new PosAndType(LexinfoOnt.copula, OntolexOnt.LexicalEntry));
+    posAndTypeValueMap.put("Birleşik eylem", posAndTypeValueMap.get("Eylem")); // compound verb
+    posAndTypeValueMap.put("Birleşik ad", posAndTypeValueMap.get("Ad")); // compound noun
+    posAndTypeValueMap.put("Ön Ad", posAndTypeValueMap.get("Ön ad"));
+    posAndTypeValueMap.put("Önad", posAndTypeValueMap.get("Ön ad"));
+    posAndTypeValueMap.put("ön ad", posAndTypeValueMap.get("Ön ad"));
 
     // Excerpt taken from template "Şablon:İsim soylu kelime" in Turkish
     posAndTypeValueMap.put("Aile ismi", posAndTypeValueMap.get("Soyadı"));
@@ -82,6 +97,57 @@ public class WiktionaryDataHandler extends OntolexBasedRDFDataHandler {
       log.debug("Unknown POS : {} in {}", pos, currentPagename());
     }
     initializeLexicalEntry(pos, posResource(pat), typeResource(pat));
+    sectionEntries.add(currentLexEntry);
+    entryPos.put(currentLexEntry, posResource(pat));
+  }
+
+  // Entries of the current language section, used to attach page level translation blocks once
+  // all entries are known.
+  private final List<Resource> sectionEntries = new ArrayList<>();
+  private final Map<Resource, Resource> entryPos = new HashMap<>();
+  private static final Locale TURKISH = Locale.forLanguageTag("tr");
+
+  @Override
+  public void initializeLanguageSection(String language) {
+    super.initializeLanguageSection(language);
+    sectionEntries.clear();
+    entryPos.clear();
+  }
+
+  public Resource currentEntry() {
+    return currentLexEntry;
+  }
+
+  public Resource lastEntry() {
+    return sectionEntries.isEmpty() ? null : sectionEntries.get(sectionEntries.size() - 1);
+  }
+
+  /**
+   * Target of a page level translation block: the only entry, else the only entry whose part of
+   * speech is named by the block gloss (PoS synonyms included, case-insensitive), else the page. Null
+   * when the section has no entry.
+   */
+  public Resource pageLevelTarget(String glossText) {
+    if (sectionEntries.size() <= 1) {
+      return lastEntry();
+    }
+    Resource pos = null == glossText ? null : posByLowercaseName(glossText.trim().toLowerCase(TURKISH));
+    if (null != pos) {
+      List<Resource> named = sectionEntries.stream().filter(e -> pos.equals(entryPos.get(e))).toList();
+      if (named.size() == 1) {
+        return named.get(0);
+      }
+    }
+    return currentMainLexEntry;
+  }
+
+  private static Resource posByLowercaseName(String name) {
+    for (Map.Entry<String, PosAndType> e : posAndTypeValueMap.entrySet()) {
+      if (null != e.getValue() && e.getKey().toLowerCase(TURKISH).equals(name)) {
+        return e.getValue().pos;
+      }
+    }
+    return null;
   }
 
 }

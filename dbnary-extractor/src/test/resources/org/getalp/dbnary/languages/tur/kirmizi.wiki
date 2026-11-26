@@ -1,0 +1,169 @@
+==Türkçe==
+
+===Köken===
+{{devralınan|tr|ota|قرمزی}}, {{kökenli|tr|ar|قِرْمِزِيّ}}; son olarak {{kökenli|tr|iir-pro|*kŕ̥miš||solucan}}.
+
+===Söyleniş===
+* {{IPA|dil=tr|/kɯɾmɯˈzɯ/|[kʰɯɾ̞.mɯ.ˈz̟ɯ]}}
+* {{ses|dil=tr|LL-Q256 (tur)-ToprakM-kırmızı.wav}}
+* {{h|dil=tr||kır|mı|zı}}
+
+===Ad===
+{{tr-ad}}
+{{Vikipedi}}
+# {{t|dil=tr|renkler}} dalga boyu 650 [[nanometre]] [[olmak|olan]] [[ışık|ışığın]] [[vermek|verdiği]] [[renk|rengin]] [[isim|ismi]], [[kızıl]], [[al]]{{renk|red}}
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+====Deyimler====
+[[kırmızı başlı]], 
+[[kırmızı bayrak]], 
+[[kırmızı bülten]], 
+[[kırmızı çizgi]], 
+[[kırmızı çürük]], 
+[[kırmızı şarap]], 
+[[kırmızı yılan]]
+
+====Açıklamalar====
+:"Kor" sözcüğünden "korumsu" benzerliği var. Yaygın yanlış (galatı meşhur) olarak "al" sözcüğü eş anlamlısı (sinonim) sanılır, hâlbuki "al"; "alev rengi, turuncu" rengin adıdır.
+
+====Eş anlamlılar====
+* {{mânâ|mecâzî de olur}} [[ahmer]] {{şerh|eskimiş}}
+
+====Üst kavramlar====
+[[ışık]], 
+[[renk]], 
+[[tayf]]
+
+====Türetilmiş kavramlar====
+[[kırmızıca]], 
+[[kırmızılı]], 
+[[kırmızısı]], 
+[[kırmızısız]], 
+[[kırmızıyken]], 
+[[kırmızıyla]], 
+[[kırmızıysa]]
+
+====Çeviriler====
+{{üst|kırmızı|tip=çeviriler}}
+*Afrikanca: {{ç|af|rooi}}
+*Almanca: {{ç|de|Rote|n}}
+*Arapça: {{ç|ar|أَحْمَر|m}}, {{ç|ar|حَمْرَاءٌ|m}}
+*Arnavutça: {{ç|sq|i kuq}}
+*Asturyasça: {{ç|ast|roxu}}
+*Aymaraca: {{ç|ay|wila}}
+*Azerice: {{ç|az|qırmızı}}
+*Baskça: {{ç|eu|gorri}}
+*Bretonca: {{ç|br|ruz}}
+*Bulgarca: {{ç|bg|червен}}
+*Çekçe: {{ç|cs|červená}}, {{ç|cs|červený}}, {{ç|cs|rudý}}
+*Çince: {{ç|zh|红色}}
+*Danca: {{ç|da|rød}}
+*Endonezce: {{ç|id|merah}}
+*Ermenice: {{ç|hy|կարմիր}}
+*Esperanto dili: {{ç|eo|ruĝa}}
+*Estonca: {{ç|et|punane}}
+*Evenki dili: {{ç|evn|хуларин}}
+*Faroe dili: {{ç|fo|reyður}}
+*Farsça: {{ç|fa|قرمز}}
+*Felemenkçe: {{ç|nl|rood}}
+*Fince: {{ç|fi|punainen}}
+*Fransızca: {{ç|fr|rouge}}
+*Gagavuzca: {{ç|gag|kırmızı}}
+*Galce: {{ç|cy|coch}}, {{ç|cy|rhudd}}
+*Galiçyaca: {{ç|gl|vermello}}, {{ç|gl|rubio}}, {{ç|gl|encarnado}}
+*Gucaratça: {{ç|gu|લાલ}}
+*Gürcüce: {{ç|ka|წითელი}}
+*Hintçe: {{ç|hi|लाल}}, {{ç|hi|रक्तिम}}
+*İbranice: {{ç|he|אדום}}
+*İngilizce: {{ç|en|red}}
+*İrlandaca: {{ç|ga|dearg}}, {{ç|ga|rua}}
+*İskoçça: {{ç|gd|dearg}}
+*İspanyolca: {{ç|es|rojo}}, {{ç|es|encarnado}}, {{ç|es|colorado}}
+*İsveççe: {{ç|sv|rött|n}}
+*İtalyanca: {{ç|it|rosso}}
+*İzlandaca: {{ç|is|rauður}}
+*Japonca: {{ç|ja|赤}}
+*Kazakça: {{ç|kk|қызыл}}
+*Katalanca: {{ç|ca|vermell}}
+*Keçuva dili: {{ç|qu|puka}}
+*Kırgızca: {{ç|ky|кызыл}}
+* Kırım Tatarcası: {{ç|crh|qırmızı}}, {{ç|crh|qızıl}}
+*Korece: {{ç|ko|빨갛다}}, {{ç|ko|붉다}}
+*Kürtçe: {{ç|ku|sor}}
+*Latince: {{ç|la|ruber}}, {{ç|la|rufus}}, {{ç|la|russus}}
+*Lehçe: {{ç|pl|czerwony}}
+*Lingala: {{ç|ln|ngola}}
+*Litvanca: {{ç|lt|raudonas}}
+*Lüksemburgca: {{ç|lb|Roud}}
+*Macarca: {{ç|hu|piros}}
+*Makedonca: {{ç|mk|црвен}}
+*Malayca: {{ç|ms|merah}}
+*Malgaşça: {{ç|mg|mena}}
+*Maorice: {{ç|mi|hiiwera}}
+*Marathi dili: {{ç|mr|लाळ}}
+*Moğolca: {{ç|mn|улаан}}
+*Norveççe: {{ç|no|rød}}
+*Oksitanca: {{ç|oc|ros}}
+*Osmanlı Türkçesi: {{ç|ota|قیرمیزی}}
+*Özbekçe: {{ç|uz|қизил}}
+*Portekizce: {{ç|pt|vermelho}}
+*Rapanui dili: {{ç|rap|mea mea}}
+*Romanşça: {{ç|rm|cotschen}}
+*Rumence: {{ç|ro|roşu}}
+*Rusça: {{ç|ru|красный}}
+*Samoaca: {{ç|sm|mūmū}}
+*Sanskritçe: {{ç|sa|शोणित}}
+*Savahili dili: {{ç|sw|ekundu}}
+*Sırp-Hırvatça: {{ç|sh|црвен}}, {{ç|sh|crveni}}
+*Sicilyaca: {{ç|scn|russu}}
+*Slovakça: {{ç|sk|červená}} 
+*Slovence: {{ç|sl|rdeča}}
+*Somalice: {{ç|so|gaduud}}
+*Tabasaran dili: {{ç|tab|}}
+*Tagalogca: {{ç|tl|pula}}
+*Tatarca: {{ç|tt|kızıl}}
+*Tayca: {{ç|th|สีแดง}}
+*Türkmence: {{ç|tk|gyrmyzy}}
+*Udmurtça: {{ç|udm|горд}}
+*Ukraynaca: {{ç|uk|червоний}}
+*Yahudi Almancası: {{ç|yi|royt}}
+*Yahudi İspanyolcası: {{ç|lad|kolorado}}
+*Yunanca: {{ç|el|κόκκινο}}
+{{alt}}
+
+===Ön ad===
+{{tr-ön ad}}
+# {{t|renkler|dil=tr}} [[kırmızı#Türkçe|kırmızı]] olan {{renk|red}}, [[al]], [[kızıl]]
+
+====Deyimler====
+* [[para peşin kırmızı meşin]]
+
+====Çeviriler====
+{{üst|kırmızı|tip=çeviriler}}
+*Almanca: {{ç|de|rot}}
+*Arapça: {{ç|ar|أَحْمَر}}, {{ç|ar|حَمْرَاءُ}}
+*Aşağı Almanca: {{ç|nds|root}}
+*Azerice: {{ç|az|qırmızı}}
+*Bulgarca: {{ç|bg|червен}}
+*Evenki dili: {{ç|evn|хуларин}}
+*Fince: {{ç|fi|punainen}}
+*İngilizce: {{ç|en|red}}
+*İsveççe: {{ç|sv|röd}}
+*Kazakça: {{ç|kk|қызыл}}
+* Kırım Tatarcası: {{ç|crh|qırmızı}}, {{ç|crh|qızıl}}
+*Kırgızca: {{ç|ky|кызыл}}
+*Norveççe: {{ç|no|rød}}
+*Osmanlı Türkçesi: {{ç|ota|قیرمیزی}}
+*Özbekçe: {{ç|uz|қизил}}
+*Rusça: {{ç|ru|красный}}
+*Tatarca: {{ç|tt|kızıl}}
+*Türkmence: {{ç|tk|gyrmyzy}}
+{{alt}}
+
+===Kaynakça===
+* {{kaynak-TDK}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}

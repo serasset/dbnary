@@ -1,0 +1,351 @@
+==Türkçe==
+[[Resim:Circle sign 1.svg|sağ|küçükresim|'''Bir''' rakamı]]
+
+===Köken===
+{{devralınan|tr|ota|بر|ç=bir}}. Bu sözcük ise {{devralınan|tr|trk-pro|*bīr}}.
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||bir}}
+
+===Ad===
+{{tr-ad}}
+
+# {{t|dil=tr|rakamlar|sayılar}} Sayıların ilki.
+#* {{eş anlamlılar|tr|yek   }}
+#  Bu sayıyı gösteren 1 ve I rakamlarının adı.
+# Sıfat, isim veya zarf olan bir kelimenin başına geldiğinde kelimenin anlamını güçlendirir.
+#*      "Feyyaz bir sabah yataklı Ankara ekspresiyle öyle bir geldi ki… Gayet şık giyinmiş." - Yılmaz Çetiner
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+===Ön ad===
+{{tr-ön ad}}
+
+[[File:-Two Young Men in Bow Ties, One Seated Holding a Book, One Standing- MET DP700161.jpg|küçükresim|'''Bir''' kitap. (1)]]
+#  Bu sayı kadar olan.
+#*      Bir kalem
+# Herhangi bir varlığı belirsiz olarak gösteren sayı.
+#*      "Aydınlık bir odada, iki duvarın kesiştiği köşede zayıf, yaşlı bir adam yatıyordu." - Ayla Kutlu
+# Eşi bulunmayan.
+#  Değer, önem ve nitelik bakımlarından birbirinden farksız, birbirine eşit, birbirine benzer.
+#*      Bu kalemlerin ikisi birdir, hangisini isterseniz alınız.
+# Ortaklaşa olan.
+#*      Bizim kesemiz birdir
+
+===Belirteç===
+{{tr-belirteç}}
+
+# {{eş anlamlı|dil=tr|beraber  }}
+#* {{örnek|dil=tr|Bunu '''bir''' sen yapabilirsin.}} 
+# Bir kez.
+#*      "Şunu bileniniz varsa bir anlatın, dedi." - Kemal Tahir
+# {{eş anlamlı|dil=tr|yalnızca  }}
+#*  "İsterseniz ondan sonra bizi öldürün, yapmadığınız bir bu kaldı, onu da yapın!" - Sabahattin Ali
+
+====Sembol====
+* {{l|mul|1}}
+
+====Deyimler====
+* [[ağzı bir karış açık kalmak]], 
+* [[ağzına bir parmak bal çalmak]], 
+* [[aklı başından bir karış yukarda]], 
+* [[Azrail’e bir can borcu olmak]], 
+* [[bir ağızdan çıkan bin dile yayılır]], 
+* [[bir arpa boyu yol almak]]
+
+====Türetilmiş kavramlar====
+[[bir ağızdan]], [[bir alay]], [[bir âlem]], [[bir an]], [[bir anlamda]], [[bir anlık]], [[bir ara]], [[bir aralık]], [[bir araba]], [[bir arada]], [[bir atımlık]], [[bir avuç]], [[bir ayak evvel]], [[bir ayak önce]], [[biraz]], [[bir bakıma]], [[bir başına]], [[bir başkası]], [[bir bir]], [[bir boy]], [[bir çenekliler]], [[bir çenetli]], [[bir çırpıda]], [[bir çift]], [[bir çuval dolusu]], [[bir daha]], [[bir damla]], [[bir defa]], [[bir defacık]], [[bir derece]], [[bir diğeri]], [[bir dikişte]], [[bir dirhem]], [[bir dizi]], [[bir dolu]], [[bir düzine]], [[bir düziye]], [[bir evcikli]], [[bir gıdım]], [[bir gözeli]], [[bir gün]], [[bir güzel]], [[bir hamlede]], [[bir hayli]], [[bir hoş]], [[bir hücreli]], [[bir iki]], [[birkaç]], [[bir kalem]], [[bir karar]], [[bir karış]], [[bir kere]], [[bir koşu]], [[bir küme]], [[bir lahza]], [[bir lokma]], [[bir milyonluk]], [[bir müddet]], [[bir nebze]], [[bir nefes]], [[bir nevi]], [[bir nice]], [[bir numara]], [[bir ölçüde]], [[bir örnek]], [[bir paralık]], [[bir parça]], [[bir parmak]], [[bir sıra]], [[bir solukta]], [[bir süre]], [[bir sürü]], [[bir tabur]], [[bir tahtada]], [[birtakım]], [[bir tane]], [[bir temiz]], [[bir terimli]], [[bir tomar]], [[bir tuhaf]], [[bir tutam]], [[bir türlü]], [[bir vakit]], [[bir yana]], [[bir yanda]], [[bir yandan]], [[bir yığın]], [[bir yol]], [[bir yudum]], [[bir zahmet]], [[bir zaman]], [[birdenbire]], [[birdirbir]], [[birebir]], [[bire bir]], [[bire bir eşleme]], [[ağzı bir]], [[arada bir]], [[ayda yılda bir]], [[binbir]], [[binde bir]], [[daha bir]], [[elde bir]], [[ellibir]], [[hangi bir]], [[hep bir ağızdan]], [[her bir]], [[herhangi bir]], [[hiçbir]], [[ikide bir]], [[kapı bir komşu]], [[kırkyılda bir]], [[nisan bir]], [[nisan bir şakası]], [[onbiraylık]], [[şöyle bir]], [[yirmibir]], [[ikide birde]], [[başka biri]], [[hiçbiri]]
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}
+{{sayılar/tr}}
+
+====Çeviriler====
+{{Üst|sembol|tip=çeviriler}}
+* Almanca: {{ç|de|eins}}
+* Arapça: {{ç|ar|أَحَد}}
+* Fince: {{ç|fi|ykkönen}}
+* Fransızca: {{ç|fr|un}}
+* İngilizce: {{ç|en|one}}
+* İsveççe: {{ç|en|ett}}
+* Lehçe: {{ç|pl|jeden}}
+* Livonca: {{ç|liv|ikš}}
+*:Osmanlı Türkçesi: {{ç|ota|بر}}
+* Urduca: {{ç|ur|ایک}}
+{{Alt}}
+
+{{Üst|insan, şey|tip=çeviriler}}
+* Almanca: {{ç|de|irgendein}}
+* Estonca: {{ç|et|mõni}}
+* Fince: {{ç|fi|eräs}}, {{ç|fi|jokin}}
+* İbranice: {{ç|he|אחד}}
+* İngilizce: {{ç|en|anyone}}, {{ç|en|some}}, {{ç|en|somebody}}, {{ç|en|someone}}, {{ç|en|something}}
+* İsveççe: {{ç|sv|någon|c}}, {{ç|sv|något|n}}
+* Livonca: {{ç|liv|ikš}}
+* Norveççe: {{ç|no|noen}}
+* Rusça: {{ç|ru|один}}
+* Tagalogca: {{ç|tl|isa}}
+*:Osmanlı Türkçesi: {{ç|ota|بر}}
+* Ukraynaca: {{ç|uk|один}}
+{{Alt}}
+
+====Çeviriler====
+{{Üst|belirteç|tip=çeviriler}}
+* Fince: {{ç|fi|kerran}}, {{ç|fi|joskus}}, {{ç|fi|yksin}}, {{ç|fi|vain}}
+* Livonca: {{ç|liv|ikš}}
+* Türkçe:
+*: Osmanlı Türkçesi: {{ç|ota|بر}}
+{{Alt}}
+{{Üst|sayı|tip=çeviriler}}
+* Aari dili: {{ç|aiw|walha}}
+* Abazaca: {{ç|abq|закIы}}
+* Abhazca: {{ç|ab|акы}}
+* Afrikaanca: {{ç|af|een}}
+* Akatça: {{ç|akk|ištēn}}
+* Almanca: {{ç|de|ein|m}}, {{ç|de|eine|f}}, {{ç|de|ein|n}}, {{ç|de|eins|n}}
+* Altayca: {{ç|alt|бир}}
+* Amharca: {{ç|am|አንድ}}
+* Aragonca: {{ç|an|uno}}
+* Arapça: {{ç|ar|وَاحِد|m}}, {{ç|ar|وَاحِدَة|f}}
+* Arnavutça: {{ç|sq|një}}
+* Arpitanca: {{ç|frp|yon}}
+* Assamca: {{ç|as|এক}}
+* Asturyasça: {{ç|ast|ún}}
+* Aşağı Almanca: {{ç|nds|een}}
+* Aymaraca: {{ç|ay|maya}}
+* Azerice: {{ç|az|bir}}
+* Baskça: {{ç|eu|bat}}
+* Başkurtça: {{ç|ba|бер}}
+* Bengalce: {{ç|bn|এক}}
+* Beyaz Rusça: {{ç|be|адзін}}
+* Birmanca: {{ç|my|တစ်}}
+* Bretonca: {{ç|br|unan}}
+* Bulgarca: {{ç|bg|един}}
+* Çağatayca: {{ç|chg|bir}}
+* Çuvaşça: {{ç|cv|пӗр}}
+* Çekçe: {{ç|cs|jeden}}
+* Çerkesçe:
+*: Batı Çerkesçesi: {{ç|ady|зы}}
+* Çerokice: {{ç|csh|ᏌᏊᎢ|tr=saquui}}
+* Çince:
+*: Mandarin: {{ç|cmn|一}}, {{ç|cmn|壹|tr=yī}}
+* Danca: {{ç|da|én}}
+* Divehi dili: {{ç|dv|އެކެއް}}
+* Dogri dili: {{ç|dgi|इक}}
+* Endonezce: {{ç|id|satu}} 
+* Ermenice: {{ç|hy|մեկ}}, {{ç|hy|մի}}
+* Esperanto: {{ç|eo|unu}}
+* Estonca: {{ç|et|üks}} 
+* Faroece: {{ç|fo|ein}}
+* Farsça: {{ç|fa|یک}}
+* Felemenkçe: {{ç|nl|één}}, {{ç|nl|een}}
+* Fiji dili: {{ç|fj|dua}}
+* Fince: {{ç|fi|yksi}}, {{ç|fi|yksittäinen}}
+* Fransızca: {{ç|fr|un|m}}, {{ç|fr|une|f}}
+* Friuli dili: {{ç|fur|un}}
+* Frizce: {{ç|fy|ien}}
+* Gagavuzca: {{ç|gag|bir}}
+* Galce: {{ç|cy|un}}
+* Galiçyaca: {{ç|gl|un}}
+* Guarani dili: {{ç|gn|peteĩ}}
+* Gucaratça: {{ç|gu|એક}}
+* Gürcüce: {{ç|ka|ერთი}}
+* Haitice: {{ç|ht|en}}
+* Hausaca: {{ç|ha|ɗaya}}
+* Hawaii dili: {{ç|haw|ʻekahi}}
+* Hintçe: {{ç|hi|एक}}
+* İbranice: {{ç|he|אחת}}
+* İdo dili: {{ç|io|un}}
+* İngilizce: {{ç|en|one}}, {{ç|en|single}}
+*: Eski İngilizce: {{ç|ang|ān}}
+* İrlandaca: {{ç|ga|aon}}
+* İskoçça: {{ç|gd|aon}}
+*: Eski İskoçça: {{ç|sco|ane}}, {{ç|sco|ae}}
+* İspanyolca: {{ç|es|uno}}
+* İsveççe: {{ç|sv|en|c}}, {{ç|sv|ett|n}}
+* İtalyanca: {{ç|it|uno}}, {{ç|it|una}}
+* İzlandaca: {{ç|is|einn}}
+* Japonca: {{ç|ja|一}} (いち, ichí), {{ç|ja|一つ}} (ひとつ, hitótsu)
+* Kabarca: {{ç|kbd|зы}}
+* Kannada dili: {{ç|kn|ಒಂದು}}
+* Karaçay-Balkarca: {{ç|krc|бир}}
+* Karakalpakça: {{ç|kaa|bir}}
+* Katalanca: {{ç|ca|un|m}}, {{ç|ca|una|f}}
+* Kazakça: {{ç|kk|бір}}, {{ç|kk|сыңар}}
+* Keçuva dili: {{ç|qu|huk}}
+* Kernevekçe: {{ç|kw|un}}
+* Kırgızca: {{ç|ky|бир}}
+* Kmer dili: {{ç|km|មួយ}}
+* Komi dili: {{ç|kv|ӧтік}}
+* Konkani dili: {{ç|kok|एक}}
+* Korece: {{ç|ko|일}}
+* Koryakça: {{ç|kpy|té}}
+* Kürtçe: {{ç|ku|yek}}
+* Ladince: {{ç|lld|un}}
+* Laoca: {{ç|lo|ໜຶ່ງ}}
+* Latince: {{ç|la|unus|m}}, {{ç|la|una|f}}, {{ç|la|unum|n}}
+* Lehçe: {{ç|pl|jeden}}
+* Letonca: {{ç|lv|viens}}
+* Ligurya dili: {{ç|lij|ün}}
+* Limburgca: {{ç|li|ein}}
+* Litvanca: {{ç|lt|vienas}}
+* Livonca: {{ç|liv|ikš}}
+* Lüksemburgca: {{ç|lb|eent}}
+* Macarca: {{ç|hu|egy}}
+* Malayalam dili: {{ç|ml|ഒന്ന്}}
+* Malayca: {{ç|ms|satu}}
+* Maltaca: {{ç|mt|wieħed}}
+* Mançuca: {{ç|mnc|ᡝᠮᡠ}}
+* Maorice: {{ç|mi|tahi}}
+* Maranao dili: {{ç|mrw|isa}}
+* Marathi dili: {{ç|mr|एक}}
+* Mari dili: {{ç|chm|икте}}
+* Napolice: {{ç|nap|uno}}
+* Nauruca: {{ç|na|aikwen}}, {{ç|na|ion}}
+* Norveççe: {{ç|no|én}}, {{ç|no|ett}}
+* Oriya dili: {{ç|or|ଏକ}}
+* Özbekçe: {{ç|uz|bir}}
+* Pali dili: {{ç|pi|eka}}
+* Pencapça: {{ç|pa|ਇੱਕ}}
+* Piyemontece: {{ç|pms|un}}
+* Portekizce: {{ç|pt|um}}
+* Romanşça: {{ç|rm|in|m}}, {{ç|rm|ina|f}}
+* Rumence: {{ç|ro|unu}}
+* Rusça: {{ç|ru|один|m}}, {{ç|ru|одна|f}}, {{ç|ru|одно|n}}
+* Sanskritçe: {{ç|sa|एक}}
+* Sarduca: {{ç|sc|unu}}
+* Sırp-Hırvatça:
+*: Kiril: {{ç|sh|један}}
+*: Latin: {{ç|sh|jedam}}
+* Sicilyaca: {{ç|scn|unu}}
+* Slovakça: {{ç|sk|jeden}}
+* Slovence: {{ç|sl|en}}, {{ç|sl|ena}}
+* Somalice: {{ç|so|kow}}
+* Sorbca:
+*: Aşağı Sorbça: {{ç|dsb|jaden}}
+*: Yukarı Sorbca: {{ç|hsb|jedyn}}
+* Şorca: {{ç|cjs|pir}}
+* Tacikçe: {{ç|tg|як}}, {{ç|tg|یک}}
+* Tagalogca: {{ç|tl|isa}}
+* Tatarca: {{ç|tt|ber}}, {{ç|tt|бер}}
+*: Kırım Tatarcası: {{ç|crh|zu}}
+* Tayca: {{ç|th|หนึ่ง}}
+*: Kuzey Tayca: {{ç|nod|ᨶᩧ᩠᩵ᨦ}}
+* Tibetçe: {{ç|bo|གཅིག}}
+* Tuvaca: {{ç|tyv|бир}}
+*: Osmanlı Türkçesi: {{ç|ota|بر}}
+* Türkmence: {{ç|tk|bir}}
+* Ukraynaca: {{ç|uk|один}}
+* Uygurca: {{ç|ug|بىر}}
+* Valonca: {{ç|wa|onk}}
+* Venedikçe: {{ç|vec|un}}
+* Vepsice: {{ç|vep|üks'}}
+* Volapük dili: {{ç|vo|bal}}
+* Votça: {{ç|vot|ühsi}}
+* Võro dili: {{ç|vro|üts}}
+* Xhosa dili: {{ç|xh|nye}}
+* Yakutça: {{ç|sah|биир}}
+* Yunanca:
+*: Modern Yunanca: {{ç|el|ένα}}
+* Zuluca: {{ç|zu|nye}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}
+
+==Arnavutça==
+
+===Söyleniş===
+* {{h|dil=sq||bir}}
+
+===Ad===
+{{başlık başı|sq|ad}}
+
+# {{t|dil=sq|aile|primatlar}} [[oğul]]
+
+==Azerice==
+
+===Söyleniş===
+* {{h|dil=az||bir}}
+
+===Sayı adı===
+{{başlık başı|az|sayı adı}}
+
+# {{t|dil=az|rakamlar|sayılar}} {{b|tr|bir}}
+
+==Endonezce==
+
+===Söyleniş===
+* {{h|dil=id||bir}}
+
+===Ad===
+{{başlık başı|id|ad}}
+
+# {{t|dil=id|alkollü içecekler}} [[bira]]
+
+==Karakalpakça==
+
+===Söyleniş===
+* {{h|dil=kaa||bir}}
+
+===Sayı adı===
+{{başlık başı|kaa|sayı adı}}
+
+# {{t|dil=kaa|rakamlar|sayılar}} {{b|tr|bir}}
+
+==Malayca==
+
+===Söyleniş===
+* {{h|dil=ms||bir}}
+
+===Ad===
+{{başlık başı|ms|ad}}
+
+# {{t|dil=ms|alkollü içecekler}} [[bira]]
+
+==Özbekçe==
+
+===Söyleniş===
+* {{h|dil=uz||bir}}
+
+===Sayı adı===
+{{başlık başı|uz|sayı adı}}
+
+# {{t|dil=uz|rakamlar|sayılar}} {{b|tr|bir}}
+
+==Somalice==
+
+===Söyleniş===
+* {{h|dil=so||bir}}
+
+===Ad===
+{{başlık başı|so|ad}}
+
+# {{t|dil=so|elementler|metaller}} [[demir]]
+# {{t|dil=so|metalurji|yapı malzemeleri}} [[çelik]]
+
+==Volapük dili==
+
+===Söyleniş===
+* {{h|dil=vo||bir}}
+
+===Ad===
+{{başlık başı|vo|ad}}
+
+# {{t|dil=vo|alkollü içecekler}} [[bira]]
+
+==Zazaca==
+
+===Söyleniş===
+* {{h|dil=zza||bir}}
+
+===Ad ===
+{{başlık başı|zza|ad|c=e}}
+
+# [[çukur]] 
+# [[düden]] 
+# [[kuyu]]

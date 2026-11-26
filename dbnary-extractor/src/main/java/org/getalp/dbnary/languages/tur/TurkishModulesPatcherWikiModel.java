@@ -26,7 +26,10 @@ public class TurkishModulesPatcherWikiModel extends DbnaryWikiModel {
           // This is problematic here as we compile lua code (hence the limit, while interpreted lua
           // seems not to bear the same issue)
           // we fix it by a hack that replaces the local functions and first level vars with global functions
-          return getAndPatchModule(parsedPagename, map, t -> t.replace("\nlocal function ", "\nfunction "), t -> t.replace("\n\tlocal ", "\n\t"));
+          // Only un-local assignments ("local x = ..." -> global "x = ..."): a declaration-only
+          // "local a, b;" would become the invalid statement "a, b;".
+          return getAndPatchModule(parsedPagename, map, t -> t.replace("\nlocal function ", "\nfunction "),
+              t -> t.replaceAll("\n\tlocal ([\\w, ]+=)", "\n\t$1"));
       }
     }
     return super.getRawWikiContent(parsedPagename, map);

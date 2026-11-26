@@ -1,0 +1,196 @@
+{{bakınız|Beyaz}} 
+==Türkçe==
+
+===Köken===
+{{köken|dil=tr|ar}} {{b|ar|بياض|ç=bayāḍ|anlam=beyaz olma, beyazlık, beyaz renk}} sözcüğünden. Bu sözcük Arapça {{b|ar|أبيض|ç=ˀabyaḍ}} ve {{b|ar|بيضاء|ç=bayḍāˀ}} “beyaz (sıfat)” sözcüğünün faˁāl vezninde masdarıdır. Arapça sözcük {{b|ar|بيض|ç=bayḍ}} “yumurta” sözcüğünden türetilmiştir.
+
+===Söyleniş===
+* {{tr-IPA}}
+* {{h|dil=tr||be|yaz}}
+
+===Ad===
+{{tr-ad}}
+[[File:Blue flag with white star in centre 1x2.png|küçükresim|{{mana|ad}} '''Beyaz''', bayrağın ortasındaki yıldızın rengidir. (1)<p> {{mana|ön ad}}Bayrağın ortasında '''beyaz''' bir yıldız var.]]
+
+# {{t|dil=tr|renkler}} Bir renk. {{renk|FFFFFF}}
+#* {{eş anlamlılar|tr|ak}}
+#* {{zıt anlamlılar|tr|kara }}
+# [[beyaz ırk|Beyaz ırktan]] olan kimse
+#*''Agni'nin iki kızı var, biri '''beyaz''', biri siyah.'' - H. R. Gürpınar
+# {{t|dil=tr|matbaacılık}} Baskıda normal karalıkta görünen harf türü
+# {{eş anlamlı|dil=tr|beyaz zehir  }}
+#* {{tanıklık|dil=tr|yazar=Mehmet KARTAL|başlık=Karanlığın Çocukları|dergi=Öküz|sayı=44|yıl=1998|sayfa=45|tanıklık=Ama artık esrar ve alkol onu kesmez olmuştur. Günde üç külah '''beyaz''' çekip, iki kilo elma yemek tek mutluluğudur.}}
+
+====Çekimleme====
+{{tr-ad-tablo}}
+
+===Ön ad===
+{{tr-ön ad}}
+# {{t|dil=tr|renkler}} beyaz renkte, [[ak]] olan
+#*''Ellerini, omuzlarını silkeledikten sonra cebinden çekip aldığı beyaz mendile sildi.'' - L. Tekin
+
+====Atasözleri====
+* [[fukaranın düşkünü, beyaz giyer kış günü]]
+* [[siyah inekten beyaz süt sağılır]]
+
+====Deyimler====
+[[beyaza çekmek]], [[beyaz sayfa açmak]] 
+
+====Türetilmiş kavramlar====
+[[beyaz adam]], [[beyaz baston]], [[beyaz bayrak]], [[beyaz cam]], [[beyaz dizi]], [[beyaz eşya]], [[beyaz et]], [[beyaz ırk]], [[beyaz iş]], [[beyaz kitap]], [[beyaz kömür]], [[beyazmasa]], [[beyaz oy]], [[beyaz perde]], [[beyaz peynir]], [[beyaz propaganda]], [[Beyaz Rus]], [[Beyaz Rusyalı]], [[beyazsinek]], [[beyaz sirke]], [[beyaz şarap]], [[beyaztilki]], [[beyaz toprak]], [[beyaz yakalı]], [[beyaz yalan]], [[beyaz zehir]], [[kar beyaz]], [[kırık beyaz]], [[kirli beyaz]], [[siyah beyaz]], [[süt beyaz]], [[üç beyaz]], [[buz beyazı]], [[tarsusbeyazı]]
+
+====Çeviriler====
+{{Üst|tip=çeviriler}}
+*Afrikanca: {{ç|af|wit}}
+*Almanca: {{ç|de|Weiß|n}}
+*Amharca: {{ç|am|ነጭ}}
+*Arapça: {{ç|ar|أبيض|alt=أبيض|tr=ʔabjadˤ}}
+*Arnavutça: {{ç|sq|bardhë}}
+*Asturyasça: {{ç|ast|blancu}}
+*Aymaraca: {{ç|ay|janq'u}}
+*Azerice: {{ç|az|ağ}}, {{ç|az|ağ rəng}}, {{ç|az|beyaz}}
+*Baskça: {{ç|eu|zuri}}
+*Bretonca: {{ç|br|gwenn}}
+*Bulgarca: {{ç|bg|бял}}
+*Çağatayca: {{ç|chg|ağ}}
+*Calo dili: {{ç|rmq|plasnó}}, {{ç|rmq|parnó}}
+*Çekçe: {{ç|cs|bílý}}
+*Çince: {{ç|zh|白|tr=bái}}
+*Danca: {{ç|da|hvid}}
+*Felemenkçe: {{ç|nl|wit}}
+*Fince: {{ç|fi|valkea}}, {{ç|fi|valkoinen}}
+*Fransızca: {{ç|fr|blanc|m}}
+*Friuli dili: {{ç|fur|blanc}}
+*Galiçyaca: {{ç|gl|branco}}
+*İngilizce: {{ç|en|white}}, {{ç|en|white person}}
+*İskoç İngilizcesi: {{ç|sco|white}}
+*İspanyolca: {{ç|es|blanco}} 
+*İsveççe: {{ç|sv|vitt|n}}
+*İsviçre Almancası: {{ç|de|Weiss}}
+*İtalyanca: {{ç|it|bianco}} 
+*Japonca: {{ç|ja|白い}}, {{ç|ja|しろい|tr=shiroi}}
+*Katalanca: {{ç|ca|blanc}}
+*Keçuva dili: {{ç|qu|yuraq}}
+*Kazakça: {{ç|kk|ақ}}
+* Kırım Tatarcası: {{ç|crh|beyaz}}
+*Korece: {{ç|ko|흰}} (huin)
+*Macarca: {{ç|hu|fehér}}
+*Moldovaca: {{ç|mo|алб}}
+*Oksitanca: {{ç|oc|blanc|m}}
+*Osmanlı Türkçesi: {{ç|ota|سفيد}}
+*Özbekçe: {{ç|uz|oq}} 
+*Portekizce: {{ç|pt|branco}}
+*Rusça: {{ç|ru|белый|tr=bélyj}}
+*Tatarca: {{ç|tt|aq}} 
+*Yahudi İspanyolcası: {{ç|lad|blanko}}
+{{Alt}}
+ 
+{{Üst|tip=çeviriler}}
+*Afrikanca: {{ç|af|wit}}
+*Almanca: {{ç|de|weiß}}
+*Amharca: {{ç|am|ነጭ}}
+*Arapça: {{ç|ar|أبيض}}
+*Arnavutça: {{ç|sq|bardhë}}
+*Asturyasça: {{ç|ast|blancu}}
+*Aymaraca: {{ç|ay|janq'u}}
+*Baskça: {{ç|eu|zuri}}
+*Bretonca: {{ç|br|gwenn}}
+*Bulgarca: {{ç|bg|бял}}
+*Çağatayca: {{ç|chg|ağ}}
+*Calo dili: {{ç|rmq|plasnó}}, {{ç|rmq|parnó}}
+*Çekçe: {{ç|cs|bílý}}
+*Çince: {{ç|zh|白色的}}
+*Danca: {{ç|da|hvid}}
+*Endonezce: {{ç|id|putih}}
+*Esperanto dili: {{ç|eo|blanka}}
+*Estonca: {{ç|et|valge}}
+*Faroe dili: {{ç|fo|hvítur}}
+*Farsça: {{ç|fa|سفيد}}
+*Felemenkçe: {{ç|nl|wit}}
+*Fince: {{ç|fi|valkoinen}}
+*Fransızca: {{ç|fr|blanc}}
+*Galiçyaca: {{ç|gl|branco}}
+*Galce: {{ç|cy|gwyn}}
+*Galiçyaca: {{ç|gl|albo}}, {{ç|gl|branco}}
+*Gucaratça: {{ç|gu|સફેદ}}
+*Hintçe: {{ç|hi|सफ़ेद}}, {{ç|hi|उजला}}
+*İbranice: {{ç|he|לבן}}
+*İngilizce: {{ç|en|white}}
+*İrlandaca: {{ç|ga|bán}}, {{ç|ga|fionn}}
+*İskoçça: {{ç|gd|bàn}}, {{ç|gd|geal}}
+*İspanyolca: {{ç|es|albo}}, {{ç|es|albar}}, {{ç|es|blanco}}, {{ç|es|cándido}}, {{ç|es|níveo}}
+*İsveççe: {{ç|sv|vit}}
+*İsviçre Almancası: {{ç|de|weiss}}
+*İtalyanca: {{ç|it|bianco}}
+*Japonca: {{ç|ja|白}}, {{ç|ja|しろい|tr=shiroi}}
+*Katalanca: {{ç|ca|blanc}}
+*Keçuva dili: {{ç|qu|yuraq}}
+*Kernevekçe: {{ç|kw|gwynn}}
+* Kırım Tatarcası: {{ç|crh|beyaz}}
+*Korece: {{ç|ko|하얗다}}, {{ç|ko|희다}}
+*Kürtçe: {{ç|ku|spî}}
+*Latince: {{ç|la|albus}}
+*Lehçe: {{ç|pl|biały}}
+*Lingala: {{ç|ln|pembe}}
+*Litvanca: {{ç|lt|balta}}
+*Lüksemburgca: {{ç|lb|wäiss}}
+*Macarca: {{ç|hu|fehér}}
+*Makedonca: {{ç|mk|бел}}
+*Moldovaca: {{ç|mo|алб}}
+*Malgaşça: {{ç|mg|fotsy}}
+*Malayca: {{ç|ms|putih}}
+*Maorice: {{ç|mi|ahoaho}}
+*Marathi dili: {{ç|mr|पांढरा}}
+*Moğolca: {{ç|mn|цагаан}}
+*Norveççe: {{ç|no|hvit}}
+*Oksitanca: {{ç|oc|blanch}}
+*Portekizce: {{ç|pt|branco}}
+*Rapanui dili: {{ç|rap|tea tea}}
+*Romanşça: {{ç|rm|alv}}
+*Rumence: {{ç|ro|alb}}
+*Rusça: {{ç|ru|белый}}
+*Samoaca: {{ç|sm|pa'epa'e}}
+*Sanskritçe: {{ç|sa|श्वेत}}
+*Savahili dili: {{ç|sw|nyeupe}}
+*Sırp-Hırvatça: {{ç|sh|bijel}}
+*Sicilyaca: {{ç|scn|jancu}}
+*Sırp-Hırvatça: {{ç|sh|бео}}, {{ç|sh|beli}}
+*Slovakça: {{ç|sk|biely}}
+*Slovence: {{ç|sl|bel}}
+*Tayca: {{ç|th|สีขาว}}
+*Ukraynaca: {{ç|uk|білий}}
+*Yahudi Almancası: {{ç|yi|vays}}
+*Yahudi İspanyolcası: {{ç|lad|blanko}}
+*Yunanca: {{ç|el|άσπρος}}, {{ç|el|λευκός}}
+{{Alt}}
+
+===Kaynakça===
+* {{KYK:TDK}}
+* {{KYK:Kubbealtı}}
+* {{KYK:Nişanyan}}
+* {{KYK:Aktunç, Hulki-BAS-2001}}
+
+===Ek okumalar===
+* {{proje bağlantısı|Vikipedi}}
+==Azerice==
+
+===Ad===
+{{başlık başı|az|ad}}
+# {{t|renkler|dil=az}} [[ak]], [[beyaz#Türkçe|beyaz]]
+
+===Ön ad===
+{{başlık başı|az|ön ad}}
+# {{t|renkler|dil=az}} [[ak]], [[beyaz#Türkçe|beyaz]]
+
+==Kırım Tatarcası==
+
+===Ad===
+{{başlık başı|crh|ad}}
+# {{t|renkler|dil=crh}}  [[ak]], [[beyaz#Türkçe|beyaz]]
+
+===Ön ad===
+{{başlık başı|crh|ön ad}}
+# {{t|renkler|dil=crh}}  [[ak]], [[beyaz#Türkçe|beyaz]]
+
+===Kaynakça===
+{{kaynak-TDK|beyaz}}
